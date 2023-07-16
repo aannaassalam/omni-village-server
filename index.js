@@ -17,6 +17,8 @@ app.use(express.json());
 
 app.use("/api/user", user);
 
+app.get("/", (req, res) => res.send("Welcome to Omni Village Server!!!"));
+
 mongoose
   .connect(connection_url, {
     useNewUrlParser: true,
