@@ -77,7 +77,7 @@ module.exports.send_otp = (req, res) => {
       digits: true,
     });
 
-    res.send(otp_keeper[`${phone}`]);
+    // res.send(otp_keeper[`${phone}`]);
 
     client.messages
       .create({
