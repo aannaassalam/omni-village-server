@@ -137,17 +137,24 @@ module.exports.register = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-  const { email, phone, password } = req.body;
+  const { phone, otp } = req.body;
 
   try {
-    const user = await User.login(email, phone, password);
-    const refreshToken = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWT_SECRET_KEY
-    );
-    res.status(200).json({ accessToken: createToken(user._id), refreshToken });
+    if (otp.trim() === otp_keeper[`${phone}`]) {
+      delete otp_keeper[`${phone}`];
+      const user = await User.findOne({
+        phone,
+      });
+      const refreshToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWT_SECRET_KEY
+      );
+      res.json({ token: createToken(user._id), refreshToken });
+    } else {
+      res.status(401).send({ message: "Incorrect OTP" });
+    }
   } catch (err) {
     console.log(err);
     res.status(400).json(handleErrors(err));

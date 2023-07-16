@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/8e72637e-3a66-4fc9-b944-58070c585d58/resourceGroups/omnivillage_resource/providers/Microsoft.Web/sites/omnivillage",
+  "appService.deploySubpath": "."
+}
