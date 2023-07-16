@@ -166,44 +166,44 @@ module.exports.get_current_user = (req, res) => {
   res.json(user);
 };
 
-module.exports.forgot_password = async (req, res) => {
-  const { email } = req.body;
+// module.exports.forgot_password = async (req, res) => {
+//   const { phone } = req.body;
 
-  forgot_password_otp_keeper[email] = otpGenerator.generate(6, {
-    upperCaseAlphabets: false,
-    specialChars: false,
-    lowerCaseAlphabets: false,
-    digits: true,
-  });
+//   forgot_password_otp_keeper[email] = otpGenerator.generate(6, {
+//     upperCaseAlphabets: false,
+//     specialChars: false,
+//     lowerCaseAlphabets: false,
+//     digits: true,
+//   });
 
-  const mailOptions = {
-    from: "anasalam027@gmail.com",
-    to: email,
-    subject: "Reset Password for Dealzup",
-    text: `One time password for ${email} password reset is ${otp_keeper[email]}`,
-  };
+//   const mailOptions = {
+//     from: "anasalam027@gmail.com",
+//     to: email,
+//     subject: "Reset Password for Dealzup",
+//     text: `One time password for ${email} password reset is ${otp_keeper[email]}`,
+//   };
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-      res.status(500).json(error);
-    } else {
-      console.log("Email sent: " + info.response);
-      res.send("Mail sent!");
-    }
-  });
-};
+//   transporter.sendMail(mailOptions, function (error, info) {
+//     if (error) {
+//       console.log(error);
+//       res.status(500).json(error);
+//     } else {
+//       console.log("Email sent: " + info.response);
+//       res.send("Mail sent!");
+//     }
+//   });
+// };
 
-module.exports.confirm_otp = (req, res) => {
-  const { email, otp } = req.body;
+// module.exports.confirm_otp = (req, res) => {
+//   const { phone, otp } = req.body;
 
-  if (otp.trim() === forgot_password_otp_keeper[email]) {
-    res.send("Otp Verified Successfully!");
-    delete forgot_password_otp_keeper[email];
-  } else {
-    res.status(400).json({ msg: "Incorrect OTP, please try again!" });
-  }
-};
+//   if (otp.trim() === forgot_password_otp_keeper[phone]) {
+//     res.send("Otp Verified Successfully!");
+//     delete forgot_password_otp_keeper[phone];
+//   } else {
+//     res.status(400).json({ msg: "Incorrect OTP, please try again!" });
+//   }
+// };
 
 module.exports.refresh = (req, res) => {
   if (req.body.refresh_token) {
@@ -234,23 +234,23 @@ module.exports.refresh = (req, res) => {
   }
 };
 
-module.exports.change_password = async (req, res) => {
-  const { email, password } = req.body;
+// module.exports.change_password = async (req, res) => {
+//   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ email: email });
-    user.password = password;
-    user.save();
-    if (user._id) {
-      res.send("Password changed successfully!");
-    } else {
-      res.status(400).json({ msg: "User with this email not found!" });
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(handleErrors(err));
-  }
-};
+//   try {
+//     const user = await User.findOne({ email: email });
+//     user.password = password;
+//     user.save();
+//     if (user._id) {
+//       res.send("Password changed successfully!");
+//     } else {
+//       res.status(400).json({ msg: "User with this email not found!" });
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     res.status(400).json(handleErrors(err));
+//   }
+// };
 
 module.exports.edit_user = async (req, res) => {
   const { user } = res.locals;
