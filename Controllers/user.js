@@ -79,13 +79,13 @@ module.exports.send_otp = (req, res) => {
 
     res.send(otp_keeper[`${phone}`]);
 
-    // client.messages
-    //   .create({
-    //     body: `Your login OTP for Omni Village - ${otp_keeper[`${phone}`]}`,
-    //     messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
-    //     to: phone,
-    //   })
-    //   .then((message) => res.send(message));
+    client.messages
+      .create({
+        body: `Your login OTP for Omni Village - ${otp_keeper[`${phone}`]}`,
+        messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
+        to: phone,
+      })
+      .then((message) => res.send(message));
   } catch (err) {
     console.log(err);
     res.send(400).json({ message: "Bad request" });
