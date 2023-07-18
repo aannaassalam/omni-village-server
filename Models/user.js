@@ -46,10 +46,10 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       required: [true, "Please enter your address!"],
     },
-    // address_proof: {
-    //   type: mongoose.Schema.Types.String,
-    //   required: [true, "Please upload an address proof!"],
-    // },
+    address_proof: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Please upload an address proof!"],
+    },
   },
   {
     timestamps: true,

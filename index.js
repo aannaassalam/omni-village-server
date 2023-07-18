@@ -14,6 +14,7 @@ app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api/user", user);
 

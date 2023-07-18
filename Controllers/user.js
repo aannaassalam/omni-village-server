@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const { options } = require("../Routes/user");
+const sharp = require("sharp");
+const fs = require("fs");
 
 const accountSid = "AC4d37b2cba30b46a0262ca0f7429c5fd0";
 const authToken = "e4be10a1e5ffccfbdfdbdc6a5e0a1430";
@@ -102,13 +104,14 @@ module.exports.register = async (req, res) => {
     username,
     social_security_number,
     address,
-    address_proof,
     otp,
   } = req.body;
 
   try {
     if (otp.trim() === otp_keeper[`${phone}`]) {
       delete otp_keeper[`${phone}`];
+      const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
+      await sharp(buffer).toFile("./" + req.file.path);
       const user = await User.create({
         first_name: first_name.trim(),
         last_name: last_name.trim(),
@@ -118,7 +121,7 @@ module.exports.register = async (req, res) => {
         username: username.trim(),
         social_security_number: social_security_number.trim(),
         address: address.trim(),
-        // address_proof,
+        address_proof: req.file.path,
       });
       const refreshToken = jwt.sign(
         {
@@ -128,9 +131,11 @@ module.exports.register = async (req, res) => {
       );
       res.json({ token: createToken(user._id), refreshToken });
     } else {
+      fs.unlinkSync("./" + req.file.path);
       res.status(401).send({ message: "Incorrect OTP" });
     }
   } catch (err) {
+    fs.unlinkSync("./" + req.file.path);
     console.log(err);
     res.status(400).json(handleErrors(err));
   }
@@ -262,9 +267,12 @@ module.exports.edit_user = async (req, res) => {
     username = "",
     social_security_number = "",
     address = "",
-    address_proof = "",
   } = req.body;
   try {
+    if (address_proof.filename) {
+      const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
+      await sharp(buffer).toFile("./" + req.file.path);
+    }
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
@@ -284,12 +292,16 @@ module.exports.edit_user = async (req, res) => {
           ? social_security_number.trim()
           : user.social_security_number,
         address: address?.trim().length ? address.trim() : user.address,
+        address_proof: req.body.filename.length
+          ? req.body.path
+          : user.address_proof,
       },
       { runValidators: true }
     );
     res.json({ msg: "User updated successfully!" });
   } catch (err) {
     console.log(err);
+    fs.unlinkSync("./" + req.body.path);
     res.status(400).json(err);
   }
 };
