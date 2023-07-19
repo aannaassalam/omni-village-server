@@ -72,7 +72,7 @@ const createToken = (id) => {
 module.exports.send_otp = (req, res) => {
   try {
     const { country_code, phone } = req.body;
-    otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(6, {
+    otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(4, {
       upperCaseAlphabets: false,
       specialChars: false,
       lowerCaseAlphabets: false,
