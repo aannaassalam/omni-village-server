@@ -71,8 +71,8 @@ const createToken = (id) => {
 
 module.exports.send_otp = (req, res) => {
   try {
-    const { phone } = req.body;
-    otp_keeper[`${phone}`] = otpGenerator.generate(6, {
+    const { country_code, phone } = req.body;
+    otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       specialChars: false,
       lowerCaseAlphabets: false,
@@ -83,9 +83,11 @@ module.exports.send_otp = (req, res) => {
 
     client.messages
       .create({
-        body: `Your login OTP for Omni Village - ${otp_keeper[`${phone}`]}`,
+        body: `Your login OTP for Omni Village - ${
+          otp_keeper[`${country_code}${phone}`]
+        }`,
         messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
-        to: phone,
+        to: `${country_code}${phone}`,
       })
       .then((message) => res.send(message));
   } catch (err) {
@@ -95,33 +97,22 @@ module.exports.send_otp = (req, res) => {
 };
 
 module.exports.register = async (req, res) => {
-  const {
-    first_name,
-    last_name,
-    village_name,
-    phone,
-    family_name,
-    username,
-    social_security_number,
-    address,
-    otp,
-  } = req.body;
+  const { country_code, phone, username, otp } = req.body;
 
   try {
-    if (otp.trim() === otp_keeper[`${phone}`]) {
-      delete otp_keeper[`${phone}`];
-      const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
-      await sharp(buffer).toFile("./" + req.file.path);
+    if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
+      delete otp_keeper[`${country_code}${phone}`];
       const user = await User.create({
-        first_name: first_name.trim(),
-        last_name: last_name.trim(),
-        village_name: village_name.trim(),
+        first_name: "-",
+        last_name: "-",
+        village_name: "-",
         phone,
-        family_name: family_name.trim(),
-        username: username.trim(),
-        social_security_number: social_security_number.trim(),
-        address: address.trim(),
-        address_proof: req.file.path,
+        family_name: "-",
+        country_code,
+        username: phone,
+        social_security_number: "-",
+        address: "-",
+        address_proof: "-",
       });
       const refreshToken = jwt.sign(
         {
@@ -131,24 +122,23 @@ module.exports.register = async (req, res) => {
       );
       res.json({ token: createToken(user._id), refreshToken });
     } else {
-      fs.unlinkSync("./" + req.file.path);
       res.status(401).send({ message: "Incorrect OTP" });
     }
   } catch (err) {
-    fs.unlinkSync("./" + req.file.path);
     console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.login = async (req, res) => {
-  const { phone, otp } = req.body;
+  const { country_code, phone, otp } = req.body;
 
   try {
-    if (otp.trim() === otp_keeper[`${phone}`]) {
-      delete otp_keeper[`${phone}`];
+    if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
+      delete otp_keeper[`${country_code}${phone}`];
       const user = await User.findOne({
         phone,
+        country_code,
       });
       const refreshToken = jwt.sign(
         {

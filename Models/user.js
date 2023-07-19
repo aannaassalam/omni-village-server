@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
     //   lowercase: true,
     //   validate: [isEmail, "Please enter a valid email!"],
     // },
+    country_code: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Please provide country code!"],
+    },
     phone: {
       type: mongoose.Schema.Types.Number,
       required: [true, "Please enter you mobile number!"],

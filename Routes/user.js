@@ -24,11 +24,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post(
-  "/register",
-  upload.single("address_proof"),
-  user_controller.register
-);
+router.post("/register", user_controller.register);
 router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", user_controller.get_current_user);
 router.post("/login", user_controller.login);
