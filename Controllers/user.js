@@ -71,25 +71,33 @@ const createToken = (id) => {
 
 module.exports.send_otp = (req, res) => {
   try {
-    const { country_code, phone } = req.body;
-    otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(4, {
-      upperCaseAlphabets: false,
-      specialChars: false,
-      lowerCaseAlphabets: false,
-      digits: true,
+    const { country_code, phone, type = "login" } = req.body;
+    const user = User.findOne({
+      phone,
+      country_code,
     });
+    if (user._id && type === "register") {
+      res.status(400).json({ message: "User already exists!" });
+    } else {
+      otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(4, {
+        upperCaseAlphabets: false,
+        specialChars: false,
+        lowerCaseAlphabets: false,
+        digits: true,
+      });
 
-    // res.send(otp_keeper[`${phone}`]);
+      // res.send(otp_keeper[`${phone}`]);
 
-    client.messages
-      .create({
-        body: `Your login OTP for Omni Village - ${
-          otp_keeper[`${country_code}${phone}`]
-        }`,
-        messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
-        to: `${country_code}${phone}`,
-      })
-      .then((message) => res.send(message));
+      client.messages
+        .create({
+          body: `Your login OTP for Omni Village - ${
+            otp_keeper[`${country_code}${phone}`]
+          }`,
+          messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
+          to: `${country_code}${phone}`,
+        })
+        .then((message) => res.send(message));
+    }
   } catch (err) {
     console.log(err);
     res.send(400).json({ message: "Bad request" });
@@ -140,15 +148,19 @@ module.exports.login = async (req, res) => {
         phone,
         country_code,
       });
-      const refreshToken = jwt.sign(
-        {
-          id: user._id,
-        },
-        process.env.JWT_SECRET_KEY
-      );
-      res.json({ token: createToken(user._id), refreshToken });
+      if (user._id) {
+        const refreshToken = jwt.sign(
+          {
+            id: user._id,
+          },
+          process.env.JWT_SECRET_KEY
+        );
+        res.json({ token: createToken(user._id), refreshToken });
+      } else {
+        res.status(401).json({ message: "User doesn't exists!" });
+      }
     } else {
-      res.status(401).send({ message: "Incorrect OTP" });
+      res.status(401).json({ message: "Incorrect OTP" });
     }
   } catch (err) {
     console.log(err);
