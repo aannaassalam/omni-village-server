@@ -270,6 +270,9 @@ module.exports.edit_user = async (req, res) => {
     social_security_number = "",
     address = "",
   } = req.body;
+
+  const address_proof = req.file;
+
   try {
     if (address_proof.filename) {
       const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
@@ -294,8 +297,8 @@ module.exports.edit_user = async (req, res) => {
           ? social_security_number.trim()
           : user.social_security_number,
         address: address?.trim().length ? address.trim() : user.address,
-        address_proof: req.body.filename.length
-          ? req.body.path
+        address_proof: address_proof.filename.length
+          ? address_proof.path
           : user.address_proof,
       },
       { runValidators: true }
@@ -303,8 +306,12 @@ module.exports.edit_user = async (req, res) => {
     res.json({ msg: "User updated successfully!" });
   } catch (err) {
     console.log(err);
-    fs.unlinkSync("./" + req.body.path);
-    res.status(400).json(err);
+    fs.unlinkSync("./" + req.file.path);
+    if (user._id) {
+      res.status(400).json({ error: err });
+    } else {
+      res.status(401).json({ error: "Token Expired!" });
+    }
   }
 };
 

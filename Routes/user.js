@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const multer = require("multer");
 const user_controller = require("../Controllers/user");
-const { verifyToken } = require("../Middlewares/user");
+const { verifyToken, checkUser } = require("../Middlewares/user");
 const fs = require("fs");
 const sharp = require("sharp");
 
@@ -30,8 +30,8 @@ router.get("/current_user", user_controller.get_current_user);
 router.post("/login", user_controller.login);
 router.post(
   "/edit_user",
-  verifyToken,
   upload.single("address_proof"),
+  checkUser,
   user_controller.edit_user
 );
 router.post("/refresh", user_controller.refresh);
