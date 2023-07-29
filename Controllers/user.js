@@ -281,7 +281,7 @@ module.exports.edit_user = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
-        ...user,
+        ...user._doc,
         first_name: first_name?.trim().length
           ? first_name.trim()
           : user.first_name,
@@ -301,7 +301,7 @@ module.exports.edit_user = async (req, res) => {
           ? address_proof.path
           : user.address_proof,
       },
-      { runValidators: true }
+      { runValidators: true, new: true }
     );
     res.json({ msg: "User updated successfully!" });
   } catch (err) {
