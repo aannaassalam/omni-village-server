@@ -69,15 +69,19 @@ const createToken = (id) => {
   });
 };
 
-module.exports.send_otp = (req, res) => {
+module.exports.send_otp = async (req, res) => {
   try {
     const { country_code, phone, type = "login" } = req.body;
-    const user = User.findOne({
-      phone,
+    const user = await User.findOne({
+      phone: phone,
       country_code,
     });
-    if (user._id && type === "register") {
-      res.status(400).json({ message: "User already exists!" });
+    if (user?._id && type === "register") {
+      res.status(400).json({ message: "User already exists, Please Login!" });
+    } else if (!user && type === "login") {
+      res
+        .status(400)
+        .json({ message: "User doesn't exists, Please Register!" });
     } else {
       otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(4, {
         upperCaseAlphabets: false,
