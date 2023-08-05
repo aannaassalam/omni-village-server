@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const country = require("countries-list");
 
 const user = require("./Routes/user");
 
@@ -18,7 +19,10 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/api/user", user);
 
-app.get("/", (req, res) => res.send("Welcome to Omni Village Server!!!"));
+app.get("/", (req, res) => {
+  res.json(country.getUnicode(country.getEmojiFlag("MY")));
+  // res.send("Welcome to Omni Village Server!!!")
+});
 
 mongoose
   .connect(connection_url, {
