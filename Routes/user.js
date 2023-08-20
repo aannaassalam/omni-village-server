@@ -42,6 +42,12 @@ router.post(
   checkUser,
   user_controller.land_allocation
 );
+router.post(
+  "/cultivation_land_allocation",
+  verifyToken,
+  checkUser,
+  user_controller.cultivation_land_allocation
+);
 // router.post("/check_url", upload.single("img"), async (req, res) => {
 //   console.log(req.body);
 //   console.log(req.file);

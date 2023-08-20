@@ -368,3 +368,42 @@ module.exports.land_allocation = async (req, res) => {
       .json({ msg: "Sub area cannot be greater than total land!" });
   }
 };
+
+module.exports.cultivation_land_allocation = async (req, res) => {
+  const { user } = res.locals;
+  const { once, twice, thrice } = req.body;
+
+  // if (
+  //   total_land >=
+  //   parseInt(cultivation) +
+  //     parseInt(trees) +
+  //     parseInt(poultry) +
+  //     parseInt(fishery) +
+  //     parseInt(storage)
+  // ) {
+  try {
+    const updated_doc = await User.findByIdAndUpdate(
+      user._id,
+      {
+        sub_area: {
+          cultivation: {
+            distribution: {
+              once,
+              twice,
+              thrice,
+            },
+          },
+        },
+      },
+      { runValidators: true, new: true }
+    );
+    res.json(updated_doc);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+  // } else {
+  //   res
+  //     .status(400)
+  //     .json({ msg: "Sub area cannot be greater than total land!" });
+  // }
+};
