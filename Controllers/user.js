@@ -358,7 +358,7 @@ module.exports.land_allocation = async (req, res) => {
         },
         { runValidators: true, new: true }
       );
-      res.json({ msg: "Land Allocation added successfully!" });
+      res.json(updated_doc);
     } catch (err) {
       res.status(400).json(handleErrors(err));
     }
