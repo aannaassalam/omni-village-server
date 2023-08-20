@@ -35,6 +35,13 @@ router.post(
   user_controller.edit_user
 );
 router.post("/refresh", user_controller.refresh);
+router.delete("/delete_user", verifyToken, user_controller.delete_user);
+router.post(
+  "/land_allocation",
+  verifyToken,
+  checkUser,
+  user_controller.land_allocation
+);
 // router.post("/check_url", upload.single("img"), async (req, res) => {
 //   console.log(req.body);
 //   console.log(req.file);
@@ -44,6 +51,5 @@ router.post("/refresh", user_controller.refresh);
 // router.post("/forgot_password", user_controller.forgot_password);
 // router.post("/confirm_otp", user_controller.confirm_otp);
 // router.post("/change_password", user_controller.change_password);
-router.delete("/delete_user", verifyToken, user_controller.delete_user);
 
 module.exports = router;

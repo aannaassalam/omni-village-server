@@ -4,12 +4,14 @@ const mongoose = require("mongoose");
 const country = require("countries-list");
 
 const user = require("./Routes/user");
+const cultivation = require("./Routes/cultivation");
+const crop = require("./Routes/crop");
 
 const connection_url = require("./Enviroment");
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5100;
 
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 
@@ -18,6 +20,8 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api/user", user);
+app.use("/api/cultivation", cultivation);
+app.use("/api/crop", crop);
 
 app.get("/", (req, res) => {
   res.json(country.getUnicode(country.getEmojiFlag("MY")));

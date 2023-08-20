@@ -109,7 +109,7 @@ module.exports.send_otp = async (req, res) => {
 };
 
 module.exports.register = async (req, res) => {
-  const { country_code, phone, username, otp } = req.body;
+  const { country_code, phone, otp } = req.body;
 
   try {
     if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
@@ -119,9 +119,7 @@ module.exports.register = async (req, res) => {
         last_name: "-",
         village_name: "-",
         phone,
-        family_name: "-",
         country_code,
-        username: phone,
         social_security_number: "-",
         address: "-",
         address_proof: "-",
@@ -269,8 +267,6 @@ module.exports.edit_user = async (req, res) => {
     first_name = "",
     last_name = "",
     village_name = "",
-    family_name = "",
-    username = "",
     social_security_number = "",
     address = "",
   } = req.body;
@@ -293,10 +289,6 @@ module.exports.edit_user = async (req, res) => {
         village_name: village_name?.trim().length
           ? village_name.trim()
           : user.village_name,
-        family_name: family_name?.trim().length
-          ? family_name.trim()
-          : user.family_name,
-        username: username?.trim().length ? username.trim() : user.username,
         social_security_number: social_security_number?.trim().length
           ? social_security_number.trim()
           : user.social_security_number,
@@ -333,5 +325,46 @@ module.exports.delete_user = async (req, res) => {
     }
   } catch (err) {
     res.status(400).json(handleErrors(err));
+  }
+};
+
+module.exports.land_allocation = async (req, res) => {
+  const { user } = res.locals;
+  const { total_land, cultivation, trees, poultry, fishery, storage } =
+    req.body;
+
+  if (
+    total_land >=
+    parseInt(cultivation) +
+      parseInt(trees) +
+      parseInt(poultry) +
+      parseInt(fishery) +
+      parseInt(storage)
+  ) {
+    try {
+      const updated_doc = await User.findByIdAndUpdate(
+        user._id,
+        {
+          total_land,
+          sub_area: {
+            cultivation: {
+              land: cultivation,
+            },
+            trees,
+            poultry,
+            fishery,
+            storage,
+          },
+        },
+        { runValidators: true, new: true }
+      );
+      res.json({ msg: "Land Allocation added successfully!" });
+    } catch (err) {
+      res.status(400).json(handleErrors(err));
+    }
+  } else {
+    res
+      .status(400)
+      .json({ msg: "Sub area cannot be greater than total land!" });
   }
 };

@@ -33,15 +33,15 @@ const userSchema = new mongoose.Schema(
       min: 10,
       unique: true,
     },
-    family_name: {
-      type: mongoose.Schema.Types.String,
-      required: [true, "Please enter your family name!"],
-    },
-    username: {
-      type: mongoose.Schema.Types.String,
-      required: [true, "Please enter a username!"],
-      unique: true,
-    },
+    // family_name: {
+    //   type: mongoose.Schema.Types.String,
+    //   required: [true, "Please enter your family name!"],
+    // },
+    // username: {
+    //   type: mongoose.Schema.Types.String,
+    //   required: [true, "Please enter a username!"],
+    //   unique: true,
+    // },
     social_security_number: {
       type: mongoose.Schema.Types.String,
       required: [true, "Please enter your social security number!"],
@@ -53,6 +53,48 @@ const userSchema = new mongoose.Schema(
     address_proof: {
       type: mongoose.Schema.Types.String,
       required: [true, "Please upload an address proof!"],
+    },
+    total_land: {
+      type: mongoose.Schema.Types.Number,
+      default: 0,
+    },
+    sub_area: {
+      cultivation: {
+        land: {
+          type: mongoose.Schema.Types.Number,
+          default: 0,
+        },
+        distribution: {
+          once: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+          },
+          twice: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+          },
+          thrice: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+          },
+        },
+      },
+      trees: {
+        type: mongoose.Schema.Types.Number,
+        default: 0,
+      },
+      poultry: {
+        type: mongoose.Schema.Types.Number,
+        default: 0,
+      },
+      fishery: {
+        type: mongoose.Schema.Types.Number,
+        default: 0,
+      },
+      storage: {
+        type: mongoose.Schema.Types.Number,
+        default: 0,
+      },
     },
   },
   {

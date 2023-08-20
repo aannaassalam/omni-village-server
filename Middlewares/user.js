@@ -17,7 +17,7 @@ const verifyToken = (req, res, next) => {
   } else {
     res
       .status(401)
-      .json({ msg: "unauthorized access, please login or create an account!" });
+      .json({ msg: "Unauthorized access, please login or create an account!" });
   }
 };
 
