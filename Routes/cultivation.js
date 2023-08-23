@@ -10,7 +10,7 @@ router.post(
   cultivation_controller.get_cultivation
 );
 router.post(
-  "/",
+  "/add_cultivation",
   verifyToken,
   checkUser,
   cultivation_controller.add_cultivation
