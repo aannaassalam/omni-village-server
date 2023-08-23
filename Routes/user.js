@@ -24,6 +24,40 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+/**
+ * @swagger
+ * /api/user/register:
+ *    post:
+ *      summary: Register a new user
+ *      description: Register a new user after the otp has been sent to user.
+ *      requestBody:
+ *          description: Request body
+ *          required: true
+ *          content:
+ *            application/x-www-form-urlencoded:
+ *              schema:
+ *                type: object
+ *                required:
+ *                   - phone
+ *                   - country_code
+ *                   - otp
+ *                properties:
+ *                  phone:
+ *                    type: string
+ *                  country_code:
+ *                    type: string
+ *                  otp:
+ *                    type: string
+ *                examples:
+ *                  phone: 1234567890
+ *      responses:
+ *        200:
+ *          description: Successfully registered a user.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
 router.post("/register", user_controller.register);
 router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", checkUser, user_controller.get_current_user);
