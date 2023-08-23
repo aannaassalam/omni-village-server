@@ -60,7 +60,7 @@ app.use("/api/cultivation", cultivation);
 app.use("/api/crop", crop);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to OmniVillage Server");
+  res.send("Welcome to OmniVillage Server!");
   // res.send("Welcome to Omni Village Server!!!")
 });
 
