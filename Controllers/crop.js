@@ -19,10 +19,12 @@ module.exports.get_crop = async (req, res) => {
 };
 
 module.exports.add_crop = async (req, res) => {
-  const { name } = req.body;
+  const { name, categoryId, category = 0 } = req.body;
   try {
     const crop_doc = await Crop.create({
       name,
+      category,
+      categoryId,
     });
     res.json(crop_doc);
   } catch (err) {
