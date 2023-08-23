@@ -19,7 +19,7 @@ const cropSchema = new mongoose.Schema(
       default: "",
       required: [
         function () {
-          this.category === 1;
+          this.category === 0;
         },
         "Crop category id is required!",
       ],
