@@ -12,7 +12,9 @@ const handleErrors = (err) => {
 module.exports.get_crop = async (req, res) => {
   try {
     const { categoryId } = req.body;
-    const crops = await Crop.find(categoryId ? { categoryId } : {});
+    const crops = await Crop.find(
+      categoryId ? { categoryId } : { category: 0 }
+    );
     res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
