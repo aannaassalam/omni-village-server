@@ -69,6 +69,22 @@ const createToken = (id) => {
   });
 };
 
+module.exports.generate_token = async (req, res) => {
+  const { phone, country_code } = req.body;
+  try {
+    const user = await User.findOne({ phone, country_code });
+    if (user) {
+      res.json({
+        token: createToken(user._id),
+      });
+    } else {
+      res.status(400).json({ message: "User not found!" });
+    }
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.send_otp = async (req, res) => {
   try {
     const { country_code, phone, type = "login" } = req.body;

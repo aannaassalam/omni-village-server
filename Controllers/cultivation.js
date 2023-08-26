@@ -11,12 +11,28 @@ module.exports.get_cultivation = async (req, res) => {
   const { user } = res.locals;
 
   try {
-    const cultivation_doc = await Cultivation.findOne({
-      season,
-      crop_id,
-      user_id: user._id,
-      cultivation_type,
-    });
+    const cultivation_doc = await Cultivation.aggregate([
+      {
+        $lookup: {
+          from: "crops",
+          localField: "crop_id",
+          foreignField: "_id",
+          as: "cultivation_crop",
+        },
+      },
+      {
+        $match: {
+          season,
+          // user_id: user._id,
+          cultivation_type: cultivation_type,
+        },
+      },
+      { $unwind: { path: "$cultivation_crop" } },
+      {
+        $project: { __v: 0, "cultivation_crop.__v": 0 },
+      },
+    ]);
+    // console.log(cultivation_doc);
     res.json(cultivation_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));

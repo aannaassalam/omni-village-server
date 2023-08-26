@@ -59,6 +59,7 @@ const upload = multer({ storage });
  *          description: Internal Server Error
  */
 router.post("/register", user_controller.register);
+router.post("/generate_token", user_controller.generate_token);
 router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", checkUser, user_controller.get_current_user);
 router.post("/login", user_controller.login);
