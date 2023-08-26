@@ -23,8 +23,8 @@ module.exports.get_cultivation = async (req, res) => {
       {
         $match: {
           season,
-          // user_id: user._id,
-          cultivation_type: cultivation_type,
+          user_id: user._id,
+          cultivation_type,
         },
       },
       { $unwind: { path: "$cultivation_crop" } },
