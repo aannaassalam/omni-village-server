@@ -11,7 +11,6 @@ const cropSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.Boolean,
       required: [true, "Please specify if its a category or not!"],
-      enum: [0, 1],
     },
     categoryId: {
       type: mongoose.Schema.Types.String,

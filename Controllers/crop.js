@@ -13,7 +13,7 @@ module.exports.get_crop = async (req, res) => {
   try {
     const { categoryId } = req.body;
     const crops = await Crop.find(
-      categoryId ? { categoryId } : { category: 0 }
+      categoryId ? { categoryId } : { category: false }
     );
     res.json(crops);
   } catch (err) {
@@ -23,7 +23,7 @@ module.exports.get_crop = async (req, res) => {
 
 module.exports.get_crop_categoies = async (req, res) => {
   try {
-    const crop_categories = await Crop.find({ category: 1 });
+    const crop_categories = await Crop.find({ category: true });
     res.json(crop_categories);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -31,7 +31,7 @@ module.exports.get_crop_categoies = async (req, res) => {
 };
 
 module.exports.add_crop = async (req, res) => {
-  const { name, categoryId, category = 0 } = req.body;
+  const { name, categoryId, category = false } = req.body;
   try {
     const crop_doc = await Crop.create({
       name,
