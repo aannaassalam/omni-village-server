@@ -64,9 +64,7 @@ const handleErrors = (err) => {
 };
 
 const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: 24 * 60 * 60,
-  });
+  return jwt.sign({ id }, process.env.JWT_SECRET_KEY);
 };
 
 module.exports.generate_token = async (req, res) => {
