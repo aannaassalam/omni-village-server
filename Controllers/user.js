@@ -362,6 +362,7 @@ module.exports.land_allocation = async (req, res) => {
           total_land,
           sub_area: {
             cultivation: {
+              ...user._doc.sub_area.cultivation,
               land: cultivation,
             },
             trees,
@@ -400,7 +401,9 @@ module.exports.cultivation_land_allocation = async (req, res) => {
       user._id,
       {
         sub_area: {
+          ...user._doc.sub_area,
           cultivation: {
+            ...user._doc.sub_area.cultivation,
             distribution: {
               once,
               twice,
