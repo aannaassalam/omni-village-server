@@ -32,7 +32,7 @@ const cultivationSchema = new mongoose.Schema({
     default: "kg",
     enum: ["kg", "ton", "quintol"],
   },
-  ultilization: {
+  utilization: {
     self_consumed: {
       type: mongoose.Schema.Types.Number,
       required: [true, "Self Comsumption is required!"],

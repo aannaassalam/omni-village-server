@@ -47,7 +47,7 @@ module.exports.add_cultivation = async (req, res) => {
     area_allocated,
     output,
     weight_measurement,
-    ultilization,
+    utilization,
     important_information,
   } = req.body;
   const { user } = res.locals;
@@ -62,7 +62,7 @@ module.exports.add_cultivation = async (req, res) => {
         area_allocated,
         output,
         weight_measurement,
-        ultilization,
+        utilization,
         important_information,
       });
       res.json(cultivation_doc);
@@ -82,7 +82,7 @@ module.exports.update_cultivation = async (req, res) => {
     area_allocated,
     output,
     weight_measurement,
-    ultilization,
+    utilization,
     important_information,
   } = req.body;
 
@@ -93,7 +93,7 @@ module.exports.update_cultivation = async (req, res) => {
         area_allocated,
         output,
         weight_measurement,
-        ultilization,
+        utilization,
         important_information,
       },
       { runValidators: true, new: true }
