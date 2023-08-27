@@ -66,6 +66,7 @@ const cultivationSchema = new mongoose.Schema({
     soil_health: {
       type: mongoose.Schema.Types.String,
       required: [true, "Soil health is required!"],
+      set: (value) => value.toLowerCase(),
       enum: ["stable", "decreasing yeild"],
     },
     decreasing_rate: {
@@ -81,11 +82,13 @@ const cultivationSchema = new mongoose.Schema({
     type_of_fertilizer_used: {
       type: mongoose.Schema.Types.String,
       required: [true, "Type of fertilizer used is required!"],
+      set: (value) => value.toLowerCase(),
       enum: ["organic self based", "organic purchased", "chemical based"],
     },
     type_of_pesticide_used: {
       type: mongoose.Schema.Types.String,
       required: [true, "Type of pesticide used is required!"],
+      set: (value) => value.toLowerCase(),
       enum: ["organic self based", "organic purchased", "chemical based"],
     },
     income_from_sale: {
