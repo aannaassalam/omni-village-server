@@ -108,6 +108,7 @@ module.exports.delete_cultivation = async (req, res) => {
   const { id } = req.body;
   try {
     const doc = await Cultivation.findByIdAndDelete(id);
+    console.log(doc);
     if (doc) {
       res.json({ message: "Cultivation deleted!" });
     } else {
