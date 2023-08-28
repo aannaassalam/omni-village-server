@@ -103,3 +103,17 @@ module.exports.update_cultivation = async (req, res) => {
     res.status(400).json(handleErrors(err));
   }
 };
+
+module.exports.delete_crop = async (req, res) => {
+  const { id } = req.body;
+  try {
+    const doc = await Cultivation.findByIdAndDelete(id);
+    if (doc) {
+      res.json({ message: "Cultivation deleted!" });
+    } else {
+      res.status(400).json({ message: "Something went wrong!" });
+    }
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
