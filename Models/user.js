@@ -23,6 +23,29 @@ const userSchema = new mongoose.Schema(
     //   lowercase: true,
     //   validate: [isEmail, "Please enter a valid email!"],
     // },
+    number_of_members: {
+      type: mongoose.Schema.Types.Number,
+      required: [true, "Please provide number of members!"],
+    },
+    members: [
+      {
+        name: {
+          type: mongoose.Schema.Types.String,
+          set: (val) => val.toLowerCase(),
+          required: [true, "Please provide member name!"],
+        },
+        age: {
+          type: mongoose.Schema.Types.Number,
+          required: [true, "Please provide member age!"],
+        },
+        gender: {
+          type: mongoose.Schema.Types.String,
+          required: [true, "Please provide member gender!"],
+          set: (val) => val.toLowerCase(),
+          enum: ["male", "female"],
+        },
+      },
+    ],
     country_code: {
       type: mongoose.Schema.Types.String,
       required: [true, "Please provide country code!"],

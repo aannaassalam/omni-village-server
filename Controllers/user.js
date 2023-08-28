@@ -132,6 +132,8 @@ module.exports.register = async (req, res) => {
         first_name: "-",
         last_name: "-",
         village_name: "-",
+        number_of_members: "0",
+        members: [],
         phone,
         country_code,
         social_security_number: "-",
@@ -283,6 +285,8 @@ module.exports.edit_user = async (req, res) => {
     village_name = "",
     social_security_number = "",
     address = "",
+    members = [],
+    number_of_members = "",
   } = req.body;
 
   const address_proof = req.file;
@@ -303,6 +307,10 @@ module.exports.edit_user = async (req, res) => {
         village_name: village_name?.trim().length
           ? village_name.trim()
           : user.village_name,
+        number_of_members: number_of_members.trim().length
+          ? number_of_members.trim()
+          : user.number_of_members,
+        members: members.length > 0 ? members : user.members,
         social_security_number: social_security_number?.trim().length
           ? social_security_number.trim()
           : user.social_security_number,

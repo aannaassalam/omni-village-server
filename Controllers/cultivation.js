@@ -104,7 +104,7 @@ module.exports.update_cultivation = async (req, res) => {
   }
 };
 
-module.exports.delete_crop = async (req, res) => {
+module.exports.delete_cultivation = async (req, res) => {
   const { id } = req.body;
   try {
     const doc = await Cultivation.findByIdAndDelete(id);

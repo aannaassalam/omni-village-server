@@ -21,5 +21,11 @@ router.post(
   checkUser,
   cultivation_controller.update_cultivation
 );
+router.post(
+  "/delete_cultivation",
+  verifyToken,
+  checkUser,
+  cultivation_controller.delete_cultivation
+);
 
 module.exports = router;
