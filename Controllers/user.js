@@ -310,10 +310,6 @@ module.exports.edit_user = async (req, res) => {
         number_of_members: number_of_members.trim().length
           ? number_of_members.trim()
           : user.number_of_members,
-        members:
-          JSON.parse(members || "[]").length > 0
-            ? JSON.parse(members)
-            : user.members,
         social_security_number: social_security_number?.trim().length
           ? social_security_number.trim()
           : user.social_security_number,
