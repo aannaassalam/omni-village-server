@@ -8,6 +8,8 @@ const swaggerUi = require("swagger-ui-express");
 const user = require("./Routes/user");
 const cultivation = require("./Routes/cultivation");
 const crop = require("./Routes/crop");
+const trees = require("./Routes/trees");
+const tree_crop = require("./Routes/treeCrop");
 
 const connection_url = require("./Enviroment");
 
@@ -16,7 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 5100;
 
 const swaggerDefinition = {
-  openapi: "3.0.0",
+  swagger: "2.0",
   info: {
     title: "Omni Village API Documentation",
     version: "1.0.0",
@@ -27,16 +29,20 @@ const swaggerDefinition = {
       url: "https://www.linkedin.com/in/anas-alam-0207331b2/",
     },
   },
-  // servers: [
-  //   {
-  //     url: "http://localhost:5100",
-  //     description: "Development server",
-  //   },
-  //   {
-  //     url: "https://omnivillage.azurewebsites.net",
-  //     description: "Production server",
-  //   },
-  // ],
+  basePath: "/api",
+  securityDefinitions: {
+    bearerAuth: {
+      type: "apiKey",
+      name: "Authorization",
+      scheme: "bearer",
+      in: "header",
+    },
+  },
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
 };
 
 const options = {
@@ -58,6 +64,8 @@ app.use("/api/documentation", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/user", user);
 app.use("/api/cultivation", cultivation);
 app.use("/api/crop", crop);
+app.use("/api/trees", trees);
+app.use("/api/tree_crop", tree_crop);
 
 app.get("/", (req, res) => {
   res.send("Welcome to OmniVillage Server!");

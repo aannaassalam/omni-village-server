@@ -26,10 +26,14 @@ const upload = multer({ storage });
 
 /**
  * @swagger
- * /api/user/register:
+ * /user/register:
  *    post:
+ *      tags:
+ *        - User
  *      summary: Register a new user
  *      description: Register a new user after the otp has been sent to user.
+ *      produces:
+ *        - application/json
  *      requestBody:
  *          description: Request body
  *          required: true
@@ -59,6 +63,41 @@ const upload = multer({ storage });
  *          description: Internal Server Error
  */
 router.post("/register", user_controller.register);
+
+/**
+ * @swagger
+ * /user/generate_token:
+ *    post:
+ *      tags:
+ *        - User
+ *      summary: Generate token without login.
+ *      description: Generate a bearer token without logging in.
+ *      produces:
+ *        - application/json
+ *
+ *      parameters:
+ *       - name: body
+ *         in: body
+ *         description:
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *               example: 9086754532
+ *             country_code:
+ *               type: string
+ *               example: "+91"
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully generated token.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
 router.post("/generate_token", user_controller.generate_token);
 router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", checkUser, user_controller.get_current_user);
