@@ -1,15 +1,11 @@
 const mongoose = require("mongoose");
 
-const treeProductSchema = new mongoose.Schema({
-  name: {
-    type: mongoose.Schema.Types.String,
-    required: [true, "Product name is required!"],
-  },
+const poultryProductSchema = new mongoose.Schema({
   production_output: {
     type: mongoose.Schema.Types.Number,
     required: [true, "Production output is required!"],
   },
-  tree_crop_id: {
+  poultry_crop_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "Tree Crop id is required!"],
     ref: "tree_crop",
@@ -17,10 +13,6 @@ const treeProductSchema = new mongoose.Schema({
   self_consumed: {
     type: mongoose.Schema.Types.Number,
     required: [true, "Self Comsumption is required!"],
-  },
-  fed_to_livestock: {
-    type: mongoose.Schema.Types.Number,
-    required: [true, "Fed to Livestock is required!"],
   },
   sold_to_neighbours: {
     type: mongoose.Schema.Types.Number,
@@ -52,4 +44,4 @@ const treeProductSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Tree_product", treeProductSchema);
+module.exports = mongoose.model("Poultry_product", poultryProductSchema);

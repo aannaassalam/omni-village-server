@@ -75,6 +75,9 @@ router.get("/", verifyToken, checkUser, tree_controller.get_trees);
  *               items:
  *                 type: object
  *                 properties:
+ *                   name:
+ *                      type: string
+ *                      example: Fur
  *                   production_output:
  *                      type: number
  *                      example: 70

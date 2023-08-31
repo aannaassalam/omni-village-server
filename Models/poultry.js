@@ -23,23 +23,18 @@ const poultrySchema = new mongoose.Schema(
     avg_age_time_period: {
       type: mongoose.Schema.Types.String,
       required: [true, "Average age time period is required"],
-      enum: [
-        "days",
-        "weeks",
-        "months",
-        "years",
-      ],
+      enum: ["days", "weeks", "months", "years"],
     },
     type_of_feed: {
       type: mongoose.Schema.Types.String,
       required: [true, "Type of feed is required"],
     },
-    other_type_of_feed:{
-      type: mongooose.Schema.Types.String,
-      default: ""
+    other_type_of_feed: {
+      type: mongoose.Schema.Types.String,
+      default: "",
     },
     weight_measurement: {
-      type: mongooose.Schema.Types.String,
+      type: mongoose.Schema.Types.String,
       required: [true, "Weight measurement is required!"],
     },
     personal_information: {
@@ -51,22 +46,22 @@ const poultrySchema = new mongoose.Schema(
         type: mongoose.Schema.Types.Number,
         required: [true, "Self produced is required!"],
       },
-      neighbours:{
+      neighbours: {
         type: mongoose.Schema.Types.Number,
         required: [true, "Neighbours is required!"],
       },
-      purchased_from_market:{
+      purchased_from_market: {
         type: mongoose.Schema.Types.Number,
         required: [true, "Purchased from market is required!"],
       },
-      other:{
+      other: {
         type: mongoose.Schema.Types.String,
         default: "",
       },
-      other_value:{
+      other_value: {
         type: mongoose.Schema.Types.Number,
         default: "",
-      }
+      },
     },
     income_from_sale: {
       type: mongoose.Schema.Types.Number,
