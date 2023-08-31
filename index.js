@@ -10,6 +10,8 @@ const cultivation = require("./Routes/cultivation");
 const crop = require("./Routes/crop");
 const trees = require("./Routes/trees");
 const tree_crop = require("./Routes/treeCrop");
+const poultry = require("./Routes/poultry");
+const poultry_crop = require("./Routes/poultryCrop");
 
 const connection_url = require("./Enviroment");
 
@@ -66,6 +68,8 @@ app.use("/api/cultivation", cultivation);
 app.use("/api/crop", crop);
 app.use("/api/trees", trees);
 app.use("/api/tree_crop", tree_crop);
+app.use("/api/poultry", poultry);
+app.use("/api/poultry_crop", poultry_crop);
 
 app.get("/", (req, res) => {
   res.send("Welcome to OmniVillage Server!");

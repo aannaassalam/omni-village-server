@@ -37,7 +37,7 @@ module.exports.get_trees = async (req, res) => {
       },
       // { $unwind: { path: "$cultivation_crop" } },
       {
-        $project: { __v: 0, "tree_crop.__v": 0, "tree_products.__v": 0 },
+        $project: { __v: 0, "tree_crop.__v": 0, "products.__v": 0 },
       },
     ]);
     // console.log(cultivation_doc);

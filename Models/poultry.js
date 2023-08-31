@@ -17,7 +17,7 @@ const poultrySchema = new mongoose.Schema(
       required: [true, "Number of live stocks is required!"],
     },
     avg_age_of_live_stocks: {
-      type: mongoose.Schema.Types.number,
+      type: mongoose.Schema.Types.Number,
       required: [true, "Average age of live stock is required"],
     },
     avg_age_time_period: {
