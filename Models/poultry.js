@@ -38,6 +38,36 @@ const poultrySchema = new mongoose.Schema(
       type: mongooose.Schema.Types.String,
       default: ""
     },
+    weight_measurement: {
+      type: mongooose.Schema.Types.String,
+      required: [true, "Weight measurement is required!"],
+    },
+    personal_information: {
+      total_feed: {
+        type: mongoose.Schema.Types.Number,
+        required: [true, "Total feed is required!"],
+      },
+      self_produced: {
+        type: mongoose.Schema.Types.Number,
+        required: [true, "Self produced is required!"],
+      },
+      neighbours:{
+        type: mongoose.Schema.Types.Number,
+        required: [true, "Neighbours is required!"],
+      },
+      purchased_from_market:{
+        type: mongoose.Schema.Types.Number,
+        required: [true, "Purchased from market is required!"],
+      },
+      other:{
+        type: mongoose.Schema.Types.String,
+        default: "",
+      },
+      other_value:{
+        type: mongoose.Schema.Types.Number,
+        default: "",
+      }
+    },
     income_from_sale: {
       type: mongoose.Schema.Types.Number,
       required: [true, "Income from sale is required!"],
@@ -52,6 +82,10 @@ const poultrySchema = new mongoose.Schema(
         ref: "Poultry_product",
       },
     ],
+    steroids: {
+      type: mongoose.Schema.Types.Boolean,
+      required: [true, "Steroids used field is required!"],
+    },
     status: {
       type: mongoose.Schema.Types.Number,
       default: 1,
