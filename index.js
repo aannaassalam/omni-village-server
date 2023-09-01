@@ -12,6 +12,8 @@ const trees = require("./Routes/trees");
 const tree_crop = require("./Routes/treeCrop");
 const poultry = require("./Routes/poultry");
 const poultry_crop = require("./Routes/poultryCrop");
+const hunting = require("./Routes/hunting");
+const hunting_crop = require("./Routes/huntingCrop");
 
 const connection_url = require("./Enviroment");
 
@@ -61,7 +63,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-app.use("/api/documentation", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api/documentation",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      docExpansion: "none",
+    },
+  })
+);
 
 app.use("/api/user", user);
 app.use("/api/cultivation", cultivation);
@@ -70,6 +80,8 @@ app.use("/api/trees", trees);
 app.use("/api/tree_crop", tree_crop);
 app.use("/api/poultry", poultry);
 app.use("/api/poultry_crop", poultry_crop);
+app.use("/api/hunting_crop", hunting_crop);
+app.use("/api/hunting", hunting);
 
 app.get("/", (req, res) => {
   res.send("Welcome to OmniVillage Server!");
