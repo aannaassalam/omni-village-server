@@ -224,7 +224,7 @@ router.post("/edit_tree", verifyToken, checkUser, tree_controller.update_trees);
 
 /**
  * @swagger
- * /trees/delete_tree:
+ * /trees/delete_tree/{id}:
  *    delete:
  *      tags:
  *        - Trees, Grass & Shrubs
@@ -234,16 +234,12 @@ router.post("/edit_tree", verifyToken, checkUser, tree_controller.update_trees);
  *        - application/json
  *
  *      parameters:
- *       - name: body
- *         in: body
+ *       - name: id
+ *         in: path
  *         description:
  *         required: true
  *         schema:
- *           type: object
- *           properties:
- *             id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
+ *           type: string
  *
  *      responses:
  *        200:
@@ -254,7 +250,7 @@ router.post("/edit_tree", verifyToken, checkUser, tree_controller.update_trees);
  *          description: Internal Server Error
  */
 router.delete(
-  "/delete_tree",
+  "/delete_tree/:id",
   verifyToken,
   checkUser,
   tree_controller.delete_tree

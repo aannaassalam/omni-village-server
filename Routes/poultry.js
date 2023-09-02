@@ -270,7 +270,7 @@ router.post(
 
 /**
  * @swagger
- * /poultry/delete_poultry:
+ * /poultry/delete_poultry/{id}:
  *    delete:
  *      tags:
  *        - Poultry
@@ -280,16 +280,12 @@ router.post(
  *        - application/json
  *
  *      parameters:
- *       - name: body
- *         in: body
+ *       - name: id
+ *         in: path
  *         description:
  *         required: true
  *         schema:
- *           type: object
- *           properties:
- *             id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
+ *           type: string
  *
  *      responses:
  *        200:
@@ -300,7 +296,7 @@ router.post(
  *          description: Internal Server Error
  */
 router.delete(
-  "/delete_poultry",
+  "/delete_poultry/:id",
   verifyToken,
   checkUser,
   poultry_controller.delete_poultry

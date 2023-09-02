@@ -168,7 +168,7 @@ module.exports.update_poultries = async (req, res) => {
 };
 
 module.exports.delete_poultry = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const doc = await Poultry.findByIdAndDelete(id);
     for (const product of doc.products) {

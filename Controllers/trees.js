@@ -165,7 +165,7 @@ module.exports.update_trees = async (req, res) => {
 };
 
 module.exports.delete_tree = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const doc = await Trees.findByIdAndDelete(id);
     if (doc?.products.length > 0) {

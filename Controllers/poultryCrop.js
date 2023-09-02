@@ -47,7 +47,7 @@ module.exports.edit_poultry_crop = async (req, res) => {
 };
 
 module.exports.delete_poultry_crop = async (req, res) => {
-  const { poultry_crop_id } = req.body;
+  const { id } = req.params;
   try {
     const poultry_doc = await PoultryCrop.findByIdAndDelete(poultry_crop_id);
     res.json(poultry_doc);

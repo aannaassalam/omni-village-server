@@ -61,7 +61,7 @@ module.exports.edit_crop = async (req, res) => {
 };
 
 module.exports.delete_crop = async (req, res) => {
-  const { crop_id } = req.body;
+  const { id } = req.params;
   try {
     const crop_doc = await Crop.findByIdAndDelete(crop_id);
     res.json(crop_doc);

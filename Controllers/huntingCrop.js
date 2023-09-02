@@ -47,7 +47,7 @@ module.exports.edit_hunting_crop = async (req, res) => {
 };
 
 module.exports.delete_hunting_crop = async (req, res) => {
-  const { hunting_crop_id } = req.body;
+  const { id } = req.params;
   try {
     const hunting_doc = await HuntingCrop.findByIdAndDelete(hunting_crop_id);
     res.json(hunting_doc);

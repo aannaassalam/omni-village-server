@@ -186,7 +186,7 @@ router.post(
 
 /**
  * @swagger
- * /hunting/delete_hunting:
+ * /hunting/delete_hunting/{id}:
  *    delete:
  *      tags:
  *        - Hunting
@@ -196,16 +196,12 @@ router.post(
  *        - application/json
  *
  *      parameters:
- *       - name: body
- *         in: body
+ *       - name: id
+ *         in: path
  *         description:
  *         required: true
  *         schema:
- *           type: object
- *           properties:
- *             id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
+ *           type: string
  *
  *      responses:
  *        200:
@@ -216,7 +212,7 @@ router.post(
  *          description: Internal Server Error
  */
 router.delete(
-  "/delete_hunting",
+  "/delete_hunting/:id",
   verifyToken,
   checkUser,
   hunting_controller.delete_hunting

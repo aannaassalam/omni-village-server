@@ -137,7 +137,7 @@ module.exports.update_hunting = async (req, res) => {
 };
 
 module.exports.delete_hunting = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const doc = await Hunting.findByIdAndDelete(id);
     if (doc) {

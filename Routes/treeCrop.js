@@ -98,7 +98,7 @@ router.post(
 
 /**
  * @swagger
- * /tree_crop:
+ * /tree_crop/{id}:
  *    delete:
  *      tags:
  *        - Tree Crops
@@ -108,16 +108,12 @@ router.post(
  *        - application/json
  *
  *      parameters:
- *       - name: body
- *         in: body
+ *       - name: id
+ *         in: path
  *         description:
  *         required: true
  *         schema:
- *           type: object
- *           properties:
- *             tree_crop_id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
+ *           type: string
  *
  *      responses:
  *        200:
@@ -127,6 +123,6 @@ router.post(
  *        500:
  *          description: Internal Server Error
  */
-router.delete("/", tree_crop_controller.delete_tree_crop);
+router.delete("/:id", tree_crop_controller.delete_tree_crop);
 
 module.exports = router;

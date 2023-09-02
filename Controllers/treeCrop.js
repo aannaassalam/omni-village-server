@@ -47,7 +47,7 @@ module.exports.edit_tree_crop = async (req, res) => {
 };
 
 module.exports.delete_tree_crop = async (req, res) => {
-  const { tree_crop_id } = req.body;
+  const { id } = req.params;
   try {
     const crop_doc = await TreeCrop.findByIdAndDelete(tree_crop_id);
     res.json(crop_doc);
