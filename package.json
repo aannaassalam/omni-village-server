@@ -26,6 +26,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "twilio": "^4.14.0",
-    "validator": "^13.9.0"
+    "validator": "^13.9.0",
+    "winston": "^3.10.0"
   }
 }

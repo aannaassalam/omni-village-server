@@ -2,6 +2,7 @@ const Trees = require("../Models/trees");
 const TreeProducts = require("../Models/treeProducts");
 const TreeCrop = require("../Models/treeCrop");
 const mongoose = require("mongoose");
+const Logger = require("../Logger");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -62,7 +63,7 @@ module.exports.add_trees = async (req, res) => {
     status = 1,
   } = req.body;
   const { user } = res.locals;
-
+  // Logger.info(JSON.stringify(req.body));
   try {
     // if (parseInt(season) <= parseInt(cultivation_type)) {
     const tree_product_docs = await TreeProducts.insertMany(
@@ -89,6 +90,7 @@ module.exports.add_trees = async (req, res) => {
     //   });
     // }
   } catch (err) {
+    // Logger.error(err);
     res.status(400).json(handleErrors(err));
   }
 };
@@ -107,9 +109,11 @@ module.exports.update_trees = async (req, res) => {
     products,
     status = 1,
   } = req.body;
-
+  Logger.info(req.body);
   try {
     const current_tree = await Trees.findById(tree_id);
+    console.log(current_tree, "current tree");
+    console.log(products, "old products");
     const all_products = await TreeProducts.find({
       _id: { $in: products.map((p) => p._id) },
     });
@@ -155,7 +159,7 @@ module.exports.update_trees = async (req, res) => {
     );
     res.json(cultivation_doc);
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     res.status(400).json(handleErrors(err));
   }
 };
@@ -164,15 +168,19 @@ module.exports.delete_tree = async (req, res) => {
   const { id } = req.body;
   try {
     const doc = await Trees.findByIdAndDelete(id);
-    for (const product of doc.products) {
-      await TreeProducts.findByIdAndDelete(product);
+    if (doc?.products.length > 0) {
+      for (const product of doc.products) {
+        await TreeProducts.findByIdAndDelete(product);
+      }
     }
+    console.log(doc, "doc");
     if (doc) {
-      res.json({ message: "Cultivation deleted!" });
+      res.json({ message: "Trees deleted!" });
     } else {
       res.status(400).json({ message: "Something went wrong!" });
     }
   } catch (err) {
-    res.status(400).json(handleErrors(err));
+    console.log(err, "err");
+    res.status(400).json(err);
   }
 };

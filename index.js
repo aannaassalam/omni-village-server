@@ -16,6 +16,7 @@ const hunting = require("./Routes/hunting");
 const hunting_crop = require("./Routes/huntingCrop");
 
 const connection_url = require("./Enviroment");
+const Logger = require("./Logger");
 
 const app = express();
 
@@ -87,6 +88,16 @@ app.get("/", (req, res) => {
   res.send("Welcome to OmniVillage Server!");
   // res.send("Welcome to Omni Village Server!!!")
 });
+
+// app.use((err, req, res, next) => {
+//   console.log(err);
+//   res.status(500).send("Internal Server Error!");
+//   Logger.error(
+//     `${err.status || 500} - ${res.statusMessage} - ${err.message} - ${
+//       req.originalUrl
+//     } - ${req.method} - ${req.ip}`
+//   );
+// });
 
 mongoose
   .connect(connection_url, {
