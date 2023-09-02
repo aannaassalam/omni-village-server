@@ -1,37 +1,36 @@
-const { checkUser, verifyToken } = require("../Middlewares/user");
-const storage_controller = require("../Controllers/storage");
-
 const router = require("express").Router();
+const selling_channel_method_controller = require("../Controllers/sellingChannelMethod");
+const { verifyToken } = require("../Middlewares/user");
 
 /**
  * @swagger
- * /storage:
+ * /selling_channel_method/:
  *    get:
  *      tags:
- *        - Storage
- *      summary: Get Storages.
- *      description: Get all the Storages added by current user..
+ *        - Selling Channel Method
+ *      summary: Get selling channel methods.
+ *      description: Get all selling channel methods.
  *      produces:
  *        - application/json
  *
  *      responses:
  *        200:
- *          description: Successfully added data.
+ *          description: Successfully fetched data.
  *        400:
  *          description: Bad request
  *        500:
  *          description: Internal Server Error
  */
-router.get("/", verifyToken, checkUser, storage_controller.get_storage);
+router.get("/", selling_channel_method_controller.get_selling_channel_method);
 
 /**
  * @swagger
- * /storage/add_storage:
+ * /selling_channel_method/add_selling_channel_method:
  *    post:
  *      tags:
- *        - Storage
- *      summary: Add Storage.
- *      description: Add a Storage to current user..
+ *        - Selling Channel Method
+ *      summary: Add selling channel method.
+ *      description: Add a selling channel method.
  *      produces:
  *        - application/json
  *
@@ -43,15 +42,9 @@ router.get("/", verifyToken, checkUser, storage_controller.get_storage);
  *         schema:
  *           type: object
  *           properties:
- *             storage_method_id:
+ *             name:
  *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
- *             stock_name:
- *               type: string
- *               example: for grains
- *             stock_quantity:
- *               type: number
- *               example: 5
+ *               example: Local Market
  *
  *      responses:
  *        200:
@@ -62,20 +55,19 @@ router.get("/", verifyToken, checkUser, storage_controller.get_storage);
  *          description: Internal Server Error
  */
 router.post(
-  "/add_storage",
+  "/add_selling_channel_method",
   verifyToken,
-  checkUser,
-  storage_controller.add_storage
+  selling_channel_method_controller.add_selling_channel_method
 );
 
 /**
  * @swagger
- * /storage/edit_storage:
+ * /selling_channel_method/edit_selling_channel_method:
  *    post:
  *      tags:
- *        - Storage
- *      summary: Edit storage.
- *      description: Update a storage from current user..
+ *        - Selling Channel Method
+ *      summary: Edit selling channel method.
+ *      description: Edit a selling channel method.
  *      produces:
  *        - application/json
  *
@@ -87,15 +79,12 @@ router.post(
  *         schema:
  *           type: object
  *           properties:
- *             storage_id:
+ *             selling_channel_method_id:
  *               type: string
  *               example: 64ee46ad2f3332cd78c7e7e2
- *             storage_method_id:
+ *             name:
  *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
- *             stock_quantity:
- *               type: number
- *               example: 5
+ *               example: Export
  *
  *      responses:
  *        200:
@@ -106,20 +95,19 @@ router.post(
  *          description: Internal Server Error
  */
 router.post(
-  "/edit_storage",
+  "/edit_selling_channel_method",
   verifyToken,
-  checkUser,
-  storage_controller.update_storage
+  selling_channel_method_controller.edit_selling_channel_method
 );
 
 /**
  * @swagger
- * /storage/delete_storage/{id}:
+ * /selling_channel_method/{id}:
  *    delete:
  *      tags:
- *        - Storage
- *      summary: Delete storage.
- *      description: Delete a storage from current user..
+ *        - Selling Channel Method
+ *      summary: Delete selling channel method.
+ *      description: Delete a selling channel method.
  *      produces:
  *        - application/json
  *
@@ -140,10 +128,8 @@ router.post(
  *          description: Internal Server Error
  */
 router.delete(
-  "/delete_storage/:id",
-  verifyToken,
-  checkUser,
-  storage_controller.delete_storage
+  "/:id",
+  selling_channel_method_controller.delete_selling_channel_method
 );
 
 module.exports = router;
