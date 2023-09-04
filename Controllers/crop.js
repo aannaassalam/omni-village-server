@@ -63,7 +63,7 @@ module.exports.edit_crop = async (req, res) => {
 module.exports.delete_crop = async (req, res) => {
   const { id } = req.params;
   try {
-    const crop_doc = await Crop.findByIdAndDelete(crop_id);
+    const crop_doc = await Crop.findByIdAndDelete(id);
     res.json(crop_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));

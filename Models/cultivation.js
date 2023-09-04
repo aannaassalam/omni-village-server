@@ -73,7 +73,7 @@ const cultivationSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.Number,
       required: [
         function () {
-          this.soil_health === "decreasing yield";
+          return this.soil_health === "decreasing yield";
         },
         "Soil decreasing field is required!",
       ],

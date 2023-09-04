@@ -18,6 +18,7 @@ const storage = require("./Routes/storage");
 const storage_method = require("./Routes/storageMethod");
 const selling_channel = require("./Routes/sellingChannel");
 const selling_channel_method = require("./Routes/sellingChannelMethod");
+const fishery_crop = require("./Routes/fisheryCrop");
 
 const connection_url = require("./Enviroment");
 const Logger = require("./Logger");
@@ -91,6 +92,7 @@ app.use("/api/storage_method", storage_method);
 app.use("/api/storage", storage);
 app.use("/api/selling_channel_method", selling_channel_method);
 app.use("/api/selling_channel", selling_channel);
+app.use("/api/fishery_crop", fishery_crop);
 
 app.get("/", (req, res) => {
   res.send("Welcome to OmniVillage Server!");

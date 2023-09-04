@@ -49,7 +49,7 @@ module.exports.edit_poultry_crop = async (req, res) => {
 module.exports.delete_poultry_crop = async (req, res) => {
   const { id } = req.params;
   try {
-    const poultry_doc = await PoultryCrop.findByIdAndDelete(poultry_crop_id);
+    const poultry_doc = await PoultryCrop.findByIdAndDelete(id);
     res.json(poultry_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));

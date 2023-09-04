@@ -49,7 +49,7 @@ module.exports.edit_hunting_crop = async (req, res) => {
 module.exports.delete_hunting_crop = async (req, res) => {
   const { id } = req.params;
   try {
-    const hunting_doc = await HuntingCrop.findByIdAndDelete(hunting_crop_id);
+    const hunting_doc = await HuntingCrop.findByIdAndDelete(id);
     res.json(hunting_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
