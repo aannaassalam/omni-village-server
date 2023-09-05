@@ -11,7 +11,7 @@ module.exports.get_selling_channel = async (req, res) => {
   const { user } = res.locals;
 
   try {
-    const selling_channel_doc = await SellingChannel.find({
+    const selling_channel_doc = await SellingChannel.findOne({
       user_id: user._id,
     });
     // console.log(cultivation_doc);
