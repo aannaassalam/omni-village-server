@@ -21,7 +21,7 @@ const fisherySchema = new mongoose.Schema({
     ],
     default: "",
   },
-  fish_crop_id: {
+  fishery_crop_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "fish_crop",
     required: [true, "Fish Crop is required!"],
@@ -62,7 +62,7 @@ const fisherySchema = new mongoose.Schema({
       required: [true, "Wastage is required!"],
     },
     other: {
-      type: mongoose.Schema.Types.Number,
+      type: mongoose.Schema.Types.String,
       default: "",
     },
     other_value: {
