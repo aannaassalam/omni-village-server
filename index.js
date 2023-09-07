@@ -20,6 +20,9 @@ const selling_channel = require("./Routes/sellingChannel");
 const selling_channel_method = require("./Routes/sellingChannelMethod");
 const fishery_crop = require("./Routes/fisheryCrop");
 const fishery = require("./Routes/fishery");
+const villages = require("./Routes/villages");
+const land_measurement = require("./Routes/landMeasurement");
+const weight_measurement = require("./Routes/weightMeasurement");
 
 const connection_url = require("./Enviroment");
 const Logger = require("./Logger");
@@ -95,6 +98,9 @@ app.use("/api/selling_channel_method", selling_channel_method);
 app.use("/api/selling_channel", selling_channel);
 app.use("/api/fishery", fishery);
 app.use("/api/fishery_crop", fishery_crop);
+app.use("/api/villages", villages);
+app.use("/api/land_measurements", land_measurement);
+app.use("/api/weight_measurements", weight_measurement);
 
 app.get("/", (req, res) => {
   res.send("Welcome to OmniVillage Server!");
