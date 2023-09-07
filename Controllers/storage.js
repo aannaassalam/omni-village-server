@@ -9,7 +9,7 @@ const handleErrors = (err) => {
 
 module.exports.get_storage = async (req, res) => {
   const { user } = res.locals;
-
+  console.log(user._id);
   try {
     const storage_doc = await Storage.aggregate([
       {
@@ -26,7 +26,7 @@ module.exports.get_storage = async (req, res) => {
         },
       },
       { $unwind: { path: "$storage_method" } },
-      // { $unwind: { path: "$cultivation_crop" } },
+      // // { $unwind: { path: "$cultivation_crop" } },
       {
         $project: { __v: 0, "storage_method.__v": 0 },
       },
@@ -39,41 +39,53 @@ module.exports.get_storage = async (req, res) => {
 };
 
 module.exports.add_storage = async (req, res) => {
-  const { stock_name, storage_method_id, stock_quantity } = req.body;
+  const { storages } = req.body;
   const { user } = res.locals;
 
   try {
+    const storage_docs = [];
+    console.log(storages);
     // if (parseInt(season) <= parseInt(cultivation_type)) {
-    const storage_doc = await Storage.create({
-      user_id: user._id,
-      stock_name,
-      storage_method_id,
-      stock_quantity,
-    });
-    res.json(storage_doc);
+    for await (const storage of storages) {
+      console.log(storage);
+      const storage_doc = await Storage.create({
+        user_id: user._id,
+        stock_name: storage.stock_name,
+        storage_method_id: storage.storage_method_id,
+        stock_quantity: storage.stock_quantity,
+      });
+      storage_docs.push(storage_doc);
+    }
+    res.json(storage_docs);
     // } else {
     //   res.status(400).json({
     //     message: `Season ${season} is not valid for type ${cultivation_type} cultivation`,
     //   });
     // }
   } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.update_storage = async (req, res) => {
-  const { storage_id, storage_method_id, stock_quantity } = req.body;
+  const { storages } = req.body;
 
   try {
-    const storage_doc = await Storage.findByIdAndUpdate(
-      storage_id,
-      {
-        storage_method_id,
-        stock_quantity,
-      },
-      { runValidators: true, new: true }
-    );
-    res.json(storage_doc);
+    const storage_docs = [];
+    for await (const storage of storages) {
+      const storage_doc = await Storage.findByIdAndUpdate(
+        storage.storage_id,
+        {
+          storage_method_id: storage.storage_method_id,
+          stock_quantity: storage.stock_quantity,
+        },
+        { runValidators: true, new: true }
+      );
+      storage_docs.push(storage_doc);
+    }
+
+    res.json(storage_docs);
   } catch (err) {
     console.log(err);
     res.status(400).json(handleErrors(err));

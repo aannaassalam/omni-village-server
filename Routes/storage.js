@@ -43,15 +43,20 @@ router.get("/", verifyToken, checkUser, storage_controller.get_storage);
  *         schema:
  *           type: object
  *           properties:
- *             storage_method_id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
- *             stock_name:
- *               type: string
- *               example: for grains
- *             stock_quantity:
- *               type: number
- *               example: 5
+ *              storages:
+ *                 type: array
+ *                 items:
+ *                    type: object
+ *                    properties:
+ *                      storage_method_id:
+ *                        type: string
+ *                        example: 64ee46ad2f3332cd78c7e7e2
+ *                      stock_name:
+ *                        type: string
+ *                        example: for grains
+ *                      stock_quantity:
+ *                        type: number
+ *                        example: 5
  *
  *      responses:
  *        200:
@@ -87,15 +92,20 @@ router.post(
  *         schema:
  *           type: object
  *           properties:
- *             storage_id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
- *             storage_method_id:
- *               type: string
- *               example: 64ee46ad2f3332cd78c7e7e2
- *             stock_quantity:
- *               type: number
- *               example: 5
+ *              storages:
+ *                 type: array
+ *                 items:
+ *                    type: object
+ *                    properties:
+ *                      storage_id:
+ *                        type: string
+ *                        example: 64ee46ad2f3332cd78c7e7e2
+ *                      storage_method_id:
+ *                        type: string
+ *                        example: 64ee46ad2f3332cd78c7e7e2
+ *                      stock_quantity:
+ *                        type: number
+ *                        example: 5
  *
  *      responses:
  *        200:
