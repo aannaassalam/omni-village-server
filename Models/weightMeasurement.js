@@ -8,8 +8,8 @@ const weightMeasurementSchema = new mongoose.Schema(
       unique: true,
       set: (value) => value.toLowerCase(),
     },
-    unit_to_cm: {
-      type: mongoose.Schema.Types.Number,
+    unit_to_g: {
+      type: mongoose.Schema.Types.Decimal128,
       required: [true, "Weight Measurement unit is required!"],
     },
   },
