@@ -3,7 +3,7 @@ const villages_controller = require("../Controllers/villages");
 
 /**
  * @swagger
- * /villages/:
+ * /villages/{country}:
  *    get:
  *      tags:
  *        - Villages
