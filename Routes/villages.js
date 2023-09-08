@@ -3,7 +3,7 @@ const villages_controller = require("../Controllers/villages");
 
 /**
  * @swagger
- * /villages/{country}:
+ * /villages/{country_name}:
  *    get:
  *      tags:
  *        - Villages
@@ -12,7 +12,7 @@ const villages_controller = require("../Controllers/villages");
  *      produces:
  *        - application/json
  *      parameters:
- *        - name: country
+ *        - name: country_name
  *          in: path
  *          description:
  *          required: true
@@ -28,6 +28,6 @@ const villages_controller = require("../Controllers/villages");
  *        500:
  *          description: Internal Server Error
  */
-router.get("/:country", villages_controller.get_villages);
+router.get("/:country_name", villages_controller.get_villages);
 
 module.exports = router;
