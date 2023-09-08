@@ -27,15 +27,6 @@ const fish_feed = require("./Routes/fishFeed");
 const feed = require("./Routes/feed");
 
 const connection_url = require("./Enviroment");
-const Logger = require("./Logger");
-const cultivationCrop = require("./Models/crop");
-const poultryCrop = require("./Models/poultryCrop");
-const huntingCrop = require("./Models/huntingCrop");
-const fisheryCrop = require("./Models/fisheryCrop");
-const landMeasurement = require("./Models/landMeasurement");
-const weightMeasurement = require("./Models/weightMeasurement");
-const fishFeed = require("./Models/fishFeed");
-const Feed = require("./Models/feed");
 
 const app = express();
 
@@ -145,14 +136,11 @@ app.get("/", async (req, res) => {
 // });
 
 mongoose
-  .connect(
-    "mongodb+srv://oneearthbalancesheet:oneearthbalancesheet2023@omni-village-cluster.db6lmvl.mongodb.net/OmniVillage?retryWrites=true&w=majority",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      family: 4,
-    }
-  )
+  .connect(connection_url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    family: 4,
+  })
   .then(() => {
     app.listen(PORT, () => {
       console.log("listening to port ", PORT);
