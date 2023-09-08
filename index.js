@@ -23,9 +23,19 @@ const fishery = require("./Routes/fishery");
 const villages = require("./Routes/villages");
 const land_measurement = require("./Routes/landMeasurement");
 const weight_measurement = require("./Routes/weightMeasurement");
+const fish_feed = require("./Routes/fishFeed");
+const feed = require("./Routes/feed");
 
 const connection_url = require("./Enviroment");
 const Logger = require("./Logger");
+const cultivationCrop = require("./Models/crop");
+const poultryCrop = require("./Models/poultryCrop");
+const huntingCrop = require("./Models/huntingCrop");
+const fisheryCrop = require("./Models/fisheryCrop");
+const landMeasurement = require("./Models/landMeasurement");
+const weightMeasurement = require("./Models/weightMeasurement");
+const fishFeed = require("./Models/fishFeed");
+const Feed = require("./Models/feed");
 
 const app = express();
 
@@ -101,10 +111,27 @@ app.use("/api/fishery_crop", fishery_crop);
 app.use("/api/villages", villages);
 app.use("/api/land_measurements", land_measurement);
 app.use("/api/weight_measurements", weight_measurement);
+app.use("/api/fish_feeds", fish_feed);
+app.use("/api/feeds", feed);
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  // const {} = req.body;
+  // const data = [];
+  // try {
+  //   for await (const item of json_data) {
+  //     const res = await Feed.create({
+  //       name: item.name,
+  //     });
+  //     console.log(data);
+  //     data.push(res);
+  //   }
+  //   res.json(data);
+  // } catch (err) {
+  //   console.log(err);
+  //   res.status(400).json(err);
+  // }
+
   res.send("Welcome to OmniVillage Server!");
-  // res.send("Welcome to Omni Village Server!!!")
 });
 
 // app.use((err, req, res, next) => {
@@ -118,11 +145,14 @@ app.get("/", (req, res) => {
 // });
 
 mongoose
-  .connect(connection_url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    family: 4,
-  })
+  .connect(
+    "mongodb+srv://oneearthbalancesheet:oneearthbalancesheet2023@omni-village-cluster.db6lmvl.mongodb.net/OmniVillage?retryWrites=true&w=majority",
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      family: 4,
+    }
+  )
   .then(() => {
     app.listen(PORT, () => {
       console.log("listening to port ", PORT);
