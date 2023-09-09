@@ -123,7 +123,7 @@ module.exports.send_otp = async (req, res) => {
 };
 
 module.exports.register = async (req, res) => {
-  const { country_code, phone, otp } = req.body;
+  const { country_code, phone, currency, country, otp } = req.body;
 
   try {
     if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
@@ -139,6 +139,8 @@ module.exports.register = async (req, res) => {
         social_security_number: "-",
         address: "-",
         address_proof: "-",
+        currency,
+        country,
       });
       const refreshToken = jwt.sign(
         {
@@ -287,6 +289,7 @@ module.exports.edit_user = async (req, res) => {
     address = "",
     members = [],
     number_of_members = "",
+    land_measurement = "",
   } = req.body;
 
   const address_proof = req.file;
@@ -317,6 +320,9 @@ module.exports.edit_user = async (req, res) => {
         address_proof: address_proof.filename.length
           ? address_proof.path
           : user.address_proof,
+        land_measurement: land_measurement.trim().length
+          ? land_measurement.trim()
+          : user.land_measurement,
       },
       { runValidators: true, new: true }
     );

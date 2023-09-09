@@ -81,6 +81,18 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Number,
       default: 0,
     },
+    currency: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Currency is required!"],
+    },
+    country: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Country is required!"],
+    },
+    land_measurement: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Land Measurement is required!"],
+    },
     sub_area: {
       cultivation: {
         land: {
