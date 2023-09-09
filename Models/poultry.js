@@ -14,20 +14,44 @@ const poultrySchema = new mongoose.Schema(
     },
     number: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Number of live stocks is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Number of live stocks is required!",
+      ],
+      default: "",
     },
     avg_age_of_live_stocks: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Average age of live stock is required"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Average age of live stock is required",
+      ],
+      default: "",
     },
     avg_age_time_period: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Average age time period is required"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Average age time period is required",
+      ],
       enum: ["days", "weeks", "months", "years"],
+      default: "",
     },
     type_of_feed: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Type of feed is required"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Type of feed is required",
+      ],
+      default: "",
     },
     other_type_of_feed: {
       type: mongoose.Schema.Types.String,
@@ -35,24 +59,54 @@ const poultrySchema = new mongoose.Schema(
     },
     weight_measurement: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Weight measurement is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Weight measurement is required!",
+      ],
+      default: "",
     },
     personal_information: {
       total_feed: {
         type: mongoose.Schema.Types.Number,
-        required: [true, "Total feed is required!"],
+        required: [
+          function () {
+            return this.status === 1;
+          },
+          "Total feed is required!",
+        ],
+        default: "",
       },
       self_produced: {
         type: mongoose.Schema.Types.Number,
-        required: [true, "Self produced is required!"],
+        required: [
+          function () {
+            return this.status === 1;
+          },
+          "Self produced is required!",
+        ],
+        default: "",
       },
       neighbours: {
         type: mongoose.Schema.Types.Number,
-        required: [true, "Neighbours is required!"],
+        required: [
+          function () {
+            return this.status === 1;
+          },
+          "Neighbours is required!",
+        ],
+        default: "",
       },
       purchased_from_market: {
         type: mongoose.Schema.Types.Number,
-        required: [true, "Purchased from market is required!"],
+        required: [
+          function () {
+            return this.status === 1;
+          },
+          "Purchased from market is required!",
+        ],
+        default: "",
       },
       other: {
         type: mongoose.Schema.Types.String,
@@ -65,11 +119,23 @@ const poultrySchema = new mongoose.Schema(
     },
     income_from_sale: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Income from sale is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Income from sale is required!",
+      ],
+      default: "",
     },
     expenditure_on_inputs: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Expenditure on inputs in required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Expenditure on inputs in required!",
+      ],
+      default: "",
     },
     products: [
       {
@@ -79,7 +145,13 @@ const poultrySchema = new mongoose.Schema(
     ],
     steroids: {
       type: mongoose.Schema.Types.Boolean,
-      required: [true, "Steroids used field is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Steroids used field is required!",
+      ],
+      default: "",
     },
     status: {
       type: mongoose.Schema.Types.Number,

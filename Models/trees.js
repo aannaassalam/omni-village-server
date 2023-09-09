@@ -14,23 +14,41 @@ const treeSchema = new mongoose.Schema(
     },
     number_of_trees: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Number of trees is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Number of trees is required!",
+      ],
+      default: "",
     },
     avg_age_of_trees: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Average age of trees is required"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Average age of trees is required",
+      ],
       enum: [
         "less than a year",
         "1 to 2 years",
         "2 to 3 years",
         "3 to 5 years",
       ],
+      default: "",
     },
     soil_health: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Soil health is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Soil health is required!",
+      ],
       set: (value) => value.toLowerCase(),
       enum: ["stable", "decreasing yield"],
+      default: "",
     },
     decreasing_rate: {
       type: mongoose.Schema.Types.Number,
@@ -40,27 +58,51 @@ const treeSchema = new mongoose.Schema(
         },
         "Soil decreasing field is required!",
       ],
-      default: 0,
+      default: "",
     },
     type_of_fertilizer_used: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Type of fertilizer used is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Type of fertilizer used is required!",
+      ],
       set: (value) => value.toLowerCase(),
       enum: ["organic self made", "organic purchased", "chemical based"],
+      default: "",
     },
     type_of_pesticide_used: {
       type: mongoose.Schema.Types.String,
-      required: [true, "Type of pesticide used is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Type of pesticide used is required!",
+      ],
       set: (value) => value.toLowerCase(),
       enum: ["organic self made", "organic purchased", "chemical based"],
+      default: "",
     },
     income_from_sale: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Income from sale is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Income from sale is required!",
+      ],
+      default: "",
     },
     expenditure_on_inputs: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Expenditure on inputs in required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Expenditure on inputs in required!",
+      ],
+      default: "",
     },
     products: [
       {

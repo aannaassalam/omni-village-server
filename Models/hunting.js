@@ -14,27 +14,63 @@ const huntingSchema = new mongoose.Schema(
     },
     number_hunted: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Number hunted per year is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Number hunted per year is required!",
+      ],
+      default: "",
     },
     meat: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Meat is required"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Meat is required",
+      ],
+      default: "",
     },
     self_consumed: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Self Comsumption is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Self Comsumption is required!",
+      ],
+      default: "",
     },
     sold_to_neighbours: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Sold to neighbours is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Sold to neighbours is required!",
+      ],
+      default: "",
     },
     sold_in_consumer_market: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Sold in consumer market is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Sold in consumer market is required!",
+      ],
+      default: "",
     },
     wastage: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Wastage is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Wastage is required!",
+      ],
+      default: "",
     },
     other: {
       type: mongoose.Schema.Types.String,
@@ -46,19 +82,43 @@ const huntingSchema = new mongoose.Schema(
     },
     income_from_sale: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Income from sale is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Income from sale is required!",
+      ],
+      default: "",
     },
     expenditure_on_inputs: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Expenditure on inputs in required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Expenditure on inputs in required!",
+      ],
+      default: "",
     },
     yeild: {
       type: mongoose.Schema.Types.Number,
-      required: [true, "Yeild is required!"],
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Yeild is required!",
+      ],
+      default: "",
     },
     processing_method: {
       type: mongoose.Schema.Types.Boolean,
-      reqired: [true, "Processing method is it required?"],
+      reqired: [
+        function () {
+          return this.status === 1;
+        },
+        "Processing method is it required?",
+      ],
+      default: "",
     },
     status: {
       type: mongoose.Schema.Types.Number,
