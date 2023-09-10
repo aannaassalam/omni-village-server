@@ -139,6 +139,7 @@ module.exports.register = async (req, res) => {
         social_security_number: "-",
         address: "-",
         address_proof: "-",
+        land_measurement: "-",
         currency,
         country,
       });
