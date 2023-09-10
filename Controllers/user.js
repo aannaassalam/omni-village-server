@@ -140,6 +140,7 @@ module.exports.register = async (req, res) => {
         address: "-",
         address_proof: "-",
         land_measurement: "-",
+        land_measurement_symbol: "-",
         currency,
         country,
       });
@@ -291,6 +292,7 @@ module.exports.edit_user = async (req, res) => {
     members = [],
     number_of_members = "",
     land_measurement = "",
+    land_measurement_symbol = "",
   } = req.body;
 
   const address_proof = req.file;
@@ -325,6 +327,9 @@ module.exports.edit_user = async (req, res) => {
         land_measurement: land_measurement.trim().length
           ? land_measurement.trim()
           : user.land_measurement,
+        land_measurement_symbol: land_measurement_symbol.trim().length
+          ? land_measurement_symbol.trim()
+          : user.land_measurement_symbol,
       },
       { runValidators: true, new: true }
     );

@@ -93,6 +93,10 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.String,
       required: [true, "Land Measurement is required!"],
     },
+    land_measurement_symbol: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Land Measurement Symbol is required!"],
+    },
     sub_area: {
       cultivation: {
         land: {
