@@ -21,3 +21,21 @@ module.exports.get_villages = async (req, res) => {
     res.status(400).json(handleErrors(err));
   }
 };
+
+module.exports.add_village = async (req, res) => {
+  const { country, name } = req.body;
+  const { user } = res.locals;
+  try {
+    if (user) {
+      const village = await Villages.create({
+        country,
+        name,
+      });
+      res.json(village);
+    } else {
+      res.status(401).json({ message: "Unauthorized!" });
+    }
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
