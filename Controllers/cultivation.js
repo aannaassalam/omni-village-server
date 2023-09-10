@@ -49,6 +49,7 @@ module.exports.add_cultivation = async (req, res) => {
     weight_measurement,
     utilization,
     important_information,
+    status,
   } = req.body;
   const { user } = res.locals;
 
@@ -64,6 +65,7 @@ module.exports.add_cultivation = async (req, res) => {
         weight_measurement,
         utilization,
         important_information,
+        status,
       });
       res.json(cultivation_doc);
     } else {
@@ -84,6 +86,7 @@ module.exports.update_cultivation = async (req, res) => {
     weight_measurement,
     utilization,
     important_information,
+    status,
   } = req.body;
 
   try {
@@ -95,6 +98,7 @@ module.exports.update_cultivation = async (req, res) => {
         weight_measurement,
         utilization,
         important_information,
+        status,
       },
       { runValidators: true, new: true }
     );
