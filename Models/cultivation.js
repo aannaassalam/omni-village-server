@@ -41,9 +41,7 @@ const cultivationSchema = new mongoose.Schema({
   },
   weight_measurement: {
     type: mongoose.Schema.Types.String,
-    default: "kg",
-    enum: ["kg", "ton", "quintol"],
-    default: "",
+    default: "kilogram",
   },
   utilization: {
     self_consumed: {
@@ -115,7 +113,7 @@ const cultivationSchema = new mongoose.Schema({
         "Soil health is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["stable", "decreasing yield"],
+      enum: ["", "stable", "decreasing yield"],
       default: "",
     },
     decreasing_rate: {
@@ -137,7 +135,7 @@ const cultivationSchema = new mongoose.Schema({
         "Type of fertilizer used is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["organic self made", "organic purchased", "chemical based"],
+      enum: ["", "organic self made", "organic purchased", "chemical based"],
       default: "",
     },
     type_of_pesticide_used: {
@@ -149,7 +147,7 @@ const cultivationSchema = new mongoose.Schema({
         "Type of pesticide used is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["organic self made", "organic purchased", "chemical based"],
+      enum: ["", "organic self made", "organic purchased", "chemical based"],
       default: "",
     },
     income_from_sale: {

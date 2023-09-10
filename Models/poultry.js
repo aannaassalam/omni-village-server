@@ -41,7 +41,7 @@ const poultrySchema = new mongoose.Schema(
         "Average age time period is required",
       ],
       enum: ["days", "weeks", "months", "years"],
-      default: "",
+      default: "months",
     },
     type_of_feed: {
       type: mongoose.Schema.Types.String,

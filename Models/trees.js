@@ -31,6 +31,7 @@ const treeSchema = new mongoose.Schema(
         "Average age of trees is required",
       ],
       enum: [
+        "",
         "less than a year",
         "1 to 2 years",
         "2 to 3 years",
@@ -47,7 +48,7 @@ const treeSchema = new mongoose.Schema(
         "Soil health is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["stable", "decreasing yield"],
+      enum: ["", "stable", "decreasing yield"],
       default: "",
     },
     decreasing_rate: {
@@ -69,7 +70,7 @@ const treeSchema = new mongoose.Schema(
         "Type of fertilizer used is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["organic self made", "organic purchased", "chemical based"],
+      enum: ["", "organic self made", "organic purchased", "chemical based"],
       default: "",
     },
     type_of_pesticide_used: {
@@ -81,7 +82,7 @@ const treeSchema = new mongoose.Schema(
         "Type of pesticide used is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["organic self made", "organic purchased", "chemical based"],
+      enum: ["", "organic self made", "organic purchased", "chemical based"],
       default: "",
     },
     income_from_sale: {
