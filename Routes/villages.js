@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const villages_controller = require("../Controllers/villages");
+const { checkUser } = require("../Middlewares/user");
 
 /**
  * @swagger
@@ -28,6 +29,6 @@ const villages_controller = require("../Controllers/villages");
  *        500:
  *          description: Internal Server Error
  */
-router.get("/:country_name", villages_controller.get_villages);
+router.get("/:country_name", checkUser, villages_controller.get_villages);
 
 module.exports = router;

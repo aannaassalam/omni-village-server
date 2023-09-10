@@ -11,9 +11,10 @@ const handleErrors = (err) => {
 
 module.exports.get_villages = async (req, res) => {
   const { country_name } = req.params;
+  const { user } = res.locals;
   try {
     const villages = await Villages.find({
-      country: country_name.toLowerCase(),
+      country: user.village_name || country_name.toLowerCase(),
     });
     res.json(villages);
   } catch (err) {
