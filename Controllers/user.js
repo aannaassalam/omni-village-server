@@ -302,7 +302,7 @@ module.exports.edit_user = async (req, res) => {
       const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
       await sharp(buffer).toFile("./" + req.file.path);
     }
-    const new_members = members;
+    const new_members = JSON.parse(members);
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
