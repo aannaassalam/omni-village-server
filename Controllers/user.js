@@ -289,7 +289,7 @@ module.exports.edit_user = async (req, res) => {
     village_name = "",
     social_security_number = "",
     address = "",
-    members = [],
+    members = "[]",
     number_of_members = "",
     land_measurement = "",
     land_measurement_symbol = "",
@@ -302,6 +302,7 @@ module.exports.edit_user = async (req, res) => {
       const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
       await sharp(buffer).toFile("./" + req.file.path);
     }
+    const new_members = members;
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
@@ -316,7 +317,7 @@ module.exports.edit_user = async (req, res) => {
         number_of_members: number_of_members.trim().length
           ? number_of_members.trim()
           : user.number_of_members,
-        members: members.length > 2 ? JSON.parse(members) : user.members,
+        members: new_members.length > 0 ? new_members : user.members,
         social_security_number: social_security_number?.trim().length
           ? social_security_number.trim()
           : user.social_security_number,

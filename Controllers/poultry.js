@@ -116,15 +116,34 @@ module.exports.update_poultries = async (req, res) => {
 
   try {
     const current_poultry = await Poultry.findById(poultry_id);
+    const processed_products = []; // All products send via api after adding new ones
+
+    for await (const item of products) {
+      if (item._id) {
+        processed_products.push(item);
+      } else {
+        const new_product = await PoultryProducts.create({
+          ...item,
+          poultry_crop_id: current_poultry.poultry_crop_id,
+        });
+        processed_products.push(new_product);
+      }
+    }
+
+    // console.log(processed_products);
+
     const all_products = await PoultryProducts.find({
-      _id: { $in: products.map((p) => p._id) },
-    });
+      _id: { $in: processed_products.map((p) => p._id) },
+    }); // All products from products field in body
+
     const updated_products = await Promise.all(
-      all_products.map(async (product) => {
-        const current_product = products.find(
-          (p) => p._id === product._id.toString()
+      processed_products.map(async (product) => {
+        const current_product = all_products.find(
+          (p) => p._id.toString() === product._id.toString()
         );
+
         var updated_product;
+
         if (current_product) {
           updated_product = await PoultryProducts.findByIdAndUpdate(
             current_product._id,
