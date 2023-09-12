@@ -11,18 +11,44 @@ const handleErrors = (err) => {
 
 module.exports.get_storage_method = async (req, res) => {
   try {
-    const methods = await StorageMethod.find();
-    res.json(methods);
+    const methods = await StorageMethod.aggregate([
+      {
+        $group: {
+          _id: "$type",
+          result: {
+            $push: "$$ROOT",
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          results: {
+            $push: {
+              k: "$_id",
+              v: "$result",
+            },
+          },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: { $arrayToObject: "$results" },
+        },
+      },
+    ]);
+    res.json(methods[0]);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.add_storage_method = async (req, res) => {
-  const { name } = req.body;
+  const { name, type } = req.body;
   try {
     const method_doc = await StorageMethod.create({
       name,
+      type,
     });
     res.json(method_doc);
   } catch (err) {
@@ -31,12 +57,13 @@ module.exports.add_storage_method = async (req, res) => {
 };
 
 module.exports.edit_storage_method = async (req, res) => {
-  const { name, storage_method_id } = req.body;
+  const { name, type, storage_method_id } = req.body;
   try {
     const method_doc = await StorageMethod.findByIdAndUpdate(
       storage_method_id,
       {
         name,
+        type,
       },
       { new: true, runValidators: true }
     );

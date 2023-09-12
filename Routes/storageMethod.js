@@ -45,6 +45,9 @@ router.get("/", storage_method_controller.get_storage_method);
  *             name:
  *               type: string
  *               example: Cold Storage
+ *             type:
+ *               type: string
+ *               example: Grains
  *
  *      responses:
  *        200:
@@ -85,6 +88,9 @@ router.post(
  *             name:
  *               type: string
  *               example: Pallet Racking
+ *             type:
+ *               type: string
+ *               example: Grains
  *
  *      responses:
  *        200:
