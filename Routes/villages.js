@@ -16,7 +16,6 @@ const { checkUser } = require("../Middlewares/user");
  *        - name: country_name
  *          in: path
  *          description:
- *          required: true
  *          schema:
  *              type: string
  *

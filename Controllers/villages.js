@@ -14,7 +14,7 @@ module.exports.get_villages = async (req, res) => {
   const { user } = res.locals;
   try {
     const villages = await Villages.find({
-      country: user.country || country_name.toLowerCase(),
+      country: user?.country?.toLowerCase() || country_name.toLowerCase(),
     });
     res.json(villages);
   } catch (err) {
