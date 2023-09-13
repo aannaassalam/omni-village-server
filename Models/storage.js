@@ -9,7 +9,6 @@ const storageSchema = new mongoose.Schema({
   stock_name: {
     type: mongoose.Schema.Types.String,
     required: [true, "Stock name is required!"],
-    unique: true,
   },
   storage_method_id: {
     type: mongoose.Schema.Types.ObjectId,
