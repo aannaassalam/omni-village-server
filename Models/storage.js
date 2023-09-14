@@ -12,12 +12,11 @@ const storageSchema = new mongoose.Schema({
   },
   storage_method_id: {
     type: mongoose.Schema.Types.ObjectId,
-    required: [true, "Storage method id is required!"],
     ref: "storage_method",
   },
   stock_quantity: {
     type: mongoose.Schema.Types.Number,
-    required: [true, "Stock quantity is required!"],
+    required: [function(){return this.storage_method_id.length>0}, "Stock quantity is required!"],
   },
 });
 
