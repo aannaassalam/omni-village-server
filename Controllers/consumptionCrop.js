@@ -10,13 +10,19 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_consumption_crop = async (req, res) => {
-  const {consumption_type_id}=req.params
+  const { consumption_type_id } = req.params;
   try {
-    const consumption_crop_categories = await ConsumptionCrop.find({ category: true,consumption_type_id });
-    const consumption_crops = await ConsumptionCrop.find({category:false, consumption_type_id})
+    const consumption_crop_categories = await ConsumptionCrop.find({
+      category: true,
+      consumption_type_id,
+    });
+    const consumption_crops = await ConsumptionCrop.find({
+      category: false,
+      consumption_type_id,
+    });
     res.json({
       categories: consumption_crop_categories,
-      crops: consumption_crops
+      crops: consumption_crops,
     });
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -30,7 +36,7 @@ module.exports.add_consumption_crop = async (req, res) => {
       name,
       category,
       categoryId,
-      consumption_type_id
+      consumption_type_id,
     });
     res.json(consumption_crop_doc);
   } catch (err) {

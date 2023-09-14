@@ -12,7 +12,7 @@ const { verifyToken } = require("../Middlewares/user");
  *      description: Get all consumption crops.
  *      produces:
  *        - application/json
- * 
+ *
  *      parameters:
  *       - name: consumption_type_id
  *         in: path

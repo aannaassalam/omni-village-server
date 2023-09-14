@@ -298,11 +298,12 @@ module.exports.edit_user = async (req, res) => {
   const address_proof = req.file;
 
   try {
-    if (address_proof.filename) {
+    if (address_proof?.filename) {
       const buffer = await sharp(req.file.path).png({ quality: 10 }).toBuffer();
       await sharp(buffer).toFile("./" + req.file.path);
     }
-    const new_members = JSON.parse(members);
+    const new_members =
+      typeof members === "string" ? JSON.parse(members) : members;
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
