@@ -29,7 +29,7 @@ const { verifyToken } = require("../Middlewares/user");
  *        500:
  *          description: Internal Server Error
  */
-router.get("/:consumption_type_id", consumption_crop_controller.get_consumption_crop);
+// router.get("/:consumption_type_id", consumption_crop_controller.get_consumption_crop);
 
 /**
  * @swagger
@@ -71,11 +71,11 @@ router.get("/:consumption_type_id", consumption_crop_controller.get_consumption_
  *        500:
  *          description: Internal Server Error
  */
-router.post(
-  "/add_consumption_crop",
-  verifyToken,
-  consumption_crop_controller.add_consumption_crop
-);
+// router.post(
+//   "/add_consumption_crop",
+//   verifyToken,
+//   consumption_crop_controller.add_consumption_crop
+// );
 
 /**
  * @swagger
@@ -110,12 +110,12 @@ router.post(
  *          description: Bad request
  *        500:
  *          description: Internal Server Error
- */
-router.post(
-  "/edit_consumption_crop",
-  verifyToken,
-  consumption_crop_controller.edit_consumption_crop
-);
+//  */
+// router.post(
+//   "/edit_consumption_crop",
+//   verifyToken,
+//   consumption_crop_controller.edit_consumption_crop
+// );
 
 /**
  * @swagger
@@ -144,6 +144,6 @@ router.post(
  *        500:
  *          description: Internal Server Error
  */
-router.delete("/:id", consumption_crop_controller.delete_consumption_crop);
+// router.delete("/:id", consumption_crop_controller.delete_consumption_crop);
 
 module.exports = router;
