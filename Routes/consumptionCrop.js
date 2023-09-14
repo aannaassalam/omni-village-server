@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const consumption_crop_controller = require("../Controllers/consumptionType");
+const consumption_crop_controller = require("../Controllers/consumptionCrop");
 const { verifyToken } = require("../Middlewares/user");
 
 /**
@@ -29,7 +29,7 @@ const { verifyToken } = require("../Middlewares/user");
  *        500:
  *          description: Internal Server Error
  */
-// router.get("/:consumption_type_id", consumption_crop_controller.get_consumption_crop);
+router.get("/:consumption_type_id", consumption_crop_controller.get_consumption_crop);
 
 /**
  * @swagger
