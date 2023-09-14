@@ -16,7 +16,7 @@ const storageSchema = new mongoose.Schema({
   },
   stock_quantity: {
     type: mongoose.Schema.Types.Number,
-    required: [function(){return this.storage_method_id.length>0}, "Stock quantity is required!"],
+    required: [function(){return this.storage_method_id.toString().length>0}, "Stock quantity is required!"],
   },
 });
 
