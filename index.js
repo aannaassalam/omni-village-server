@@ -25,6 +25,9 @@ const land_measurement = require("./Routes/landMeasurement");
 const weight_measurement = require("./Routes/weightMeasurement");
 const fish_feed = require("./Routes/fishFeed");
 const feed = require("./Routes/feed");
+const consumptionType = require("./Routes/consumptionType");
+const consumptionCrop = require("./Routes/consumptionCrop");
+const consumption = require("./Routes/consumption");
 
 const connection_url = require("./Enviroment");
 
@@ -104,6 +107,9 @@ app.use("/api/land_measurements", land_measurement);
 app.use("/api/weight_measurements", weight_measurement);
 app.use("/api/fish_feeds", fish_feed);
 app.use("/api/feeds", feed);
+app.use("/api/consumption_type", consumptionType);
+app.use("/api/consumption_crop", consumptionCrop);
+app.use("/api/consumption", consumption);
 
 app.get("/", async (req, res) => {
   // const {} = req.body;
