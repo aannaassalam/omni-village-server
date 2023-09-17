@@ -9,12 +9,14 @@ const handleErrors = (err) => {
 
 module.exports.get_consumption = async (req, res) => {
   const { user } = res.locals;
+  const { consumption_type_name } = req.params;
 
   try {
     const consumption_doc = await Consumption.aggregate([
       {
         $match: {
           user_id: user._id,
+          consumption_type_name: consumption_type_name.toLowerCase(),
         },
       },
       {

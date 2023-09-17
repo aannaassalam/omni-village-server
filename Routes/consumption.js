@@ -14,6 +14,14 @@ const router = require("express").Router();
  *      produces:
  *        - application/json
  *
+ *      parameters:
+ *       - name: consumption_type_name
+ *         in: path
+ *         description:
+ *         required: true
+ *         schema:
+ *           type: string
+ *
  *      responses:
  *        200:
  *          description: Successfully added data.
@@ -22,7 +30,12 @@ const router = require("express").Router();
  *        500:
  *          description: Internal Server Error
  */
-router.get("/", verifyToken, checkUser, consumption_controller.get_consumption);
+router.get(
+  "/:consumption_type_name",
+  verifyToken,
+  checkUser,
+  consumption_controller.get_consumption
+);
 
 /**
  * @swagger

@@ -23,6 +23,7 @@ const consumptionSchema = new mongoose.Schema(
     },
     consumption_type_name: {
       type: mongoose.Schema.Types.String,
+      required: [true, "Consummption type name is required!"],
       default: "",
     },
     user_id: {

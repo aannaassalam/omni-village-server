@@ -126,8 +126,6 @@ module.exports.add_fishery = async (req, res) => {
 module.exports.update_fishery = async (req, res) => {
   const {
     fishery_id,
-    fishery_type,
-    pond_name,
     important_information,
     production_information,
     processing_method,
@@ -139,8 +137,6 @@ module.exports.update_fishery = async (req, res) => {
     const fishery_doc = await Fishery.findByIdAndUpdate(
       fishery_id,
       {
-        fishery_type,
-        pond_name,
         important_information,
         production_information,
         processing_method,
