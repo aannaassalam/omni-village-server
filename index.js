@@ -28,6 +28,7 @@ const feed = require("./Routes/feed");
 const consumptionType = require("./Routes/consumptionType");
 const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
+const cc = require("./Models/consumptionCrop");
 
 const connection_url = require("./Enviroment");
 
@@ -116,8 +117,9 @@ app.get("/", async (req, res) => {
   // const data = [];
   // try {
   //   for await (const item of json_data) {
-  //     const res = await Feed.create({
+  //     const res = await cc.create({
   //       name: item.name,
+  //       consumption_type_id: item.consumption_type_id,
   //     });
   //     console.log(data);
   //     data.push(res);
