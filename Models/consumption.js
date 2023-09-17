@@ -7,6 +7,16 @@ const consumptionSchema = new mongoose.Schema(
       default: "",
       // ref: "poultry_crop",
     },
+    weight_measurement: {
+      type: mongoose.Schema.Types.String,
+      required: [
+        function () {
+          return this.status === 1;
+        },
+        "Weight measurement is required!",
+      ],
+      default: "",
+    },
     consumption_crop_name: {
       type: mongoose.Schema.Types.String,
       default: "",

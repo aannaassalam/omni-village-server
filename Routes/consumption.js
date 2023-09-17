@@ -49,6 +49,9 @@ router.get("/", verifyToken, checkUser, consumption_controller.get_consumption);
  *             total_quantity:
  *               type: number
  *               example: 50
+ *             weight_measurement:
+ *               type: string
+ *               example: kg
  *             purchased_from_market:
  *               type: number
  *               example: 5
@@ -99,6 +102,9 @@ router.post(
  *             consumption_id:
  *               type: string
  *               example: 64ee46ad2f3332cd78c7e7e2
+ *             weight_measurement:
+ *               type: string
+ *               example: kg
  *             total_quantity:
  *               type: number
  *               example: 50

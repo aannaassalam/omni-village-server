@@ -42,6 +42,7 @@ module.exports.add_consumption = async (req, res) => {
   const {
     consumption_crop_id,
     total_quantity,
+    weight_measurement,
     purchased_from_market,
     purchased_from_neighbours,
     self_grown,
@@ -56,6 +57,7 @@ module.exports.add_consumption = async (req, res) => {
       consumption_crop_id,
       total_quantity,
       purchased_from_market,
+      weight_measurement,
       purchased_from_neighbours,
       self_grown,
       status,
@@ -77,6 +79,7 @@ module.exports.update_consumption = async (req, res) => {
     total_quantity,
     purchased_from_market,
     purchased_from_neighbours,
+    weight_measurement,
     self_grown,
     status = 1,
   } = req.body;
@@ -86,6 +89,7 @@ module.exports.update_consumption = async (req, res) => {
       consumption_id,
       {
         total_quantity,
+        weight_measurement,
         purchased_from_market,
         purchased_from_neighbours,
         self_grown,
@@ -107,7 +111,9 @@ module.exports.delete_consumption = async (req, res) => {
     if (doc) {
       res.json({ message: "Consumption deleted!" });
     } else {
-      res.status(400).json({ message: "Something went wrong or the document doesn't exists!" });
+      res.status(400).json({
+        message: "Something went wrong or the document doesn't exists!",
+      });
     }
   } catch (err) {
     res.status(400).json(handleErrors(err));
