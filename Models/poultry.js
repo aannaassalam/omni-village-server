@@ -4,8 +4,13 @@ const poultrySchema = new mongoose.Schema(
   {
     poultry_crop_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, "Poultry Crop id is required!"],
-      ref: "poultry_crop",
+      // required: [true, "Poultry Crop id is required!"],
+      // ref: "poultry_crop",
+      default: "",
+    },
+    poultry_crop_name: {
+      type: mongoose.Schema.Types.String,
+      default: "",
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,

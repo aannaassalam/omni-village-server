@@ -12,8 +12,13 @@ const treeProductSchema = new mongoose.Schema(
     },
     tree_crop_id: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, "Tree Crop id is required!"],
+      // required: [true, "Tree Crop id is required!"],
       ref: "tree_crop",
+      default: "",
+    },
+    tree_crop_name: {
+      type: mongoose.Schema.Types.String,
+      default: "",
     },
     self_consumed: {
       type: mongoose.Schema.Types.Number,

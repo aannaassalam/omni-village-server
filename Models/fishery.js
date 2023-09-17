@@ -23,8 +23,15 @@ const fisherySchema = new mongoose.Schema({
   },
   fishery_crop_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "fish_crop",
-    required: [true, "Fish Crop is required!"],
+    default: "",
+    // ref: "fish_crop",
+    // required: [true, "Fish Crop is required!"],
+  },
+  fishery_crop_name: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+    // ref: "fish_crop",
+    // required: [true, "Fish Crop is required!"],
   },
   important_information: {
     number_of_fishes: {
@@ -41,7 +48,7 @@ const fisherySchema = new mongoose.Schema({
       type: mongoose.Schema.Types.String,
       required: [
         function () {
-          return this.status === 1;
+          return this.status === 1 && this.fishery_type === "pond";
         },
         "Type of feed is required!",
       ],
@@ -53,7 +60,7 @@ const fisherySchema = new mongoose.Schema({
       type: mongoose.Schema.Types.Number,
       required: [
         function () {
-          return this.status === 1;
+          return this.status === 1 && fishery_type === "pond";
         },
         "Total Feed is required!",
       ],

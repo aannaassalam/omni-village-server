@@ -105,7 +105,7 @@ router.get("/", verifyToken, checkUser, tree_controller.get_trees);
  *                   month_harvested:
  *                      type: string
  *                      format: date
- *                      example: "30-08-2023"
+ *                      example: "2023-09-17"
  *                   processing_method:
  *                      type: boolean
  *                      example: true
@@ -204,7 +204,7 @@ router.post("/add_tree", verifyToken, checkUser, tree_controller.add_trees);
  *                   month_harvested:
  *                      type: string
  *                      format: date
- *                      example: "30-08-2023"
+ *                      example: "2023-09-17"
  *                   processing_method:
  *                      type: boolean
  *                      example: true

@@ -146,8 +146,8 @@ module.exports.update_poultries = async (req, res) => {
 
         if (current_product) {
           updated_product = await PoultryProducts.findByIdAndUpdate(
-            current_product._id,
-            current_product
+            product._id,
+            product
           );
           return updated_product._id;
         }

@@ -14,9 +14,18 @@ const storageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "storage_method",
   },
+  storage_method_name: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
   stock_quantity: {
     type: mongoose.Schema.Types.Number,
-    required: [function(){return this.storage_method_id.toString().length>0}, "Stock quantity is required!"],
+    required: [
+      function () {
+        return this.storage_method_id.toString().length > 0;
+      },
+      "Stock quantity is required!",
+    ],
   },
 });
 
