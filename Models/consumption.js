@@ -59,8 +59,7 @@ const consumptionSchema = new mongoose.Schema(
         },
         "Purchase from neighbours is required",
       ],
-      enum: ["days", "weeks", "months", "years"],
-      default: "months",
+      default: "",
     },
     self_grown: {
       type: mongoose.Schema.Types.Number,
