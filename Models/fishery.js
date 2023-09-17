@@ -15,7 +15,7 @@ const fisherySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.String,
     required: [
       function () {
-        return this.fisher_type === "pond";
+        return this.fishery_type === "pond";
       },
       "Pond name is required!",
     ],
@@ -60,7 +60,7 @@ const fisherySchema = new mongoose.Schema({
       type: mongoose.Schema.Types.Number,
       required: [
         function () {
-          return this.status === 1 && fishery_type === "pond";
+          return this.status === 1 && this.fishery_type === "pond";
         },
         "Total Feed is required!",
       ],
