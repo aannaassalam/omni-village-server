@@ -48,6 +48,7 @@ module.exports.add_consumption = async (req, res) => {
     purchased_from_market,
     purchased_from_neighbours,
     self_grown,
+    consumption_type_name,
     status = 1,
   } = req.body;
   const { user } = res.locals;
@@ -58,6 +59,7 @@ module.exports.add_consumption = async (req, res) => {
       user_id: user._id,
       consumption_crop_id,
       total_quantity,
+      consumption_type_name,
       purchased_from_market,
       weight_measurement,
       purchased_from_neighbours,
