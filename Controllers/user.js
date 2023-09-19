@@ -171,7 +171,7 @@ module.exports.login = async (req, res) => {
 
   try {
     if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
-      if (`${country_code}${phone} !== +911234567890`) {
+      if (`${country_code}${phone}` !== +911234567890) {
         delete otp_keeper[`${country_code}${phone}`];
       }
       const user = await User.findOne({
