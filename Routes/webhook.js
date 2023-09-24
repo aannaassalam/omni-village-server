@@ -10,7 +10,7 @@ router.post("/", (req, res) => {
     res.send("recieved");
   } catch (err) {
     res.status(400).json({
-      msg: "Invalid Request!",
+      msg: "Invalid Request",
       err,
     });
   }
