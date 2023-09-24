@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const webhookSchema = new mongoose.Schema(
   {
-    data: mongoose.Schema.Types.Map,
+    data: mongoose.Schema.Types.String,
   },
   { timestamps: true }
 );

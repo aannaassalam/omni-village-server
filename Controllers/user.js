@@ -117,7 +117,7 @@ module.exports.send_otp = async (req, res) => {
           }`,
           messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
           to: `${country_code}${phone}`,
-          statusCallback: "https://omnivillage.azurewebsites.net/api/webhook",
+          statusCallback: "https://omnivillage.azurewebsites.net/api/webhook/",
         })
         .then((message) => res.send(message));
     }
