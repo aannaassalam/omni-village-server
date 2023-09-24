@@ -28,7 +28,7 @@ const feed = require("./Routes/feed");
 const consumptionType = require("./Routes/consumptionType");
 const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
-const cc = require("./Models/consumptionCrop");
+const webhook = require("./Routes/webhook");
 
 const connection_url = require("./Enviroment");
 
@@ -111,6 +111,7 @@ app.use("/api/feeds", feed);
 app.use("/api/consumption_type", consumptionType);
 app.use("/api/consumption_crop", consumptionCrop);
 app.use("/api/consumption", consumption);
+app.use("/api/webhook", webhook);
 
 app.get("/", async (req, res) => {
   // const {} = req.body;
