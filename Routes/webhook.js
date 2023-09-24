@@ -2,9 +2,9 @@ const webhook = require("../Models/webhook");
 
 const router = require("express").Router();
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    webhook.create({
+    await webhook.create({
       data: req.body,
     });
     res.send("recieved");

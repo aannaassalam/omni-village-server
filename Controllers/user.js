@@ -7,7 +7,7 @@ const sharp = require("sharp");
 const fs = require("fs");
 
 const accountSid = "AC4d37b2cba30b46a0262ca0f7429c5fd0";
-const authToken = "e4be10a1e5ffccfbdfdbdc6a5e0a1430";
+const authToken = "c28896cc3542e87d9680453850ab6205";
 const client = require("twilio")(accountSid, authToken);
 
 const transporter = nodemailer.createTransport({
@@ -117,6 +117,7 @@ module.exports.send_otp = async (req, res) => {
           }`,
           messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
           to: `${country_code}${phone}`,
+          statusCallback: "https://omnivillage.azurewebsites.net/api/webhook",
         })
         .then((message) => res.send(message));
     }
