@@ -65,6 +65,10 @@ const userSchema = new mongoose.Schema(
     //   required: [true, "Please enter a username!"],
     //   unique: true,
     // },
+    document_type: {
+      type: mongoose.Schema.Types.String,
+      required: [true, "Please select your Document type!"],
+    },
     social_security_number: {
       type: mongoose.Schema.Types.String,
       required: [true, "Please enter your social security number!"],
