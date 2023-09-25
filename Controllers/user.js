@@ -87,6 +87,7 @@ module.exports.generate_token = async (req, res) => {
 
 module.exports.send_otp = async (req, res) => {
   try {
+    console.log(authToken);
     const { country_code, phone, type = "login" } = req.body;
     const user = await User.findOne({
       phone: phone,

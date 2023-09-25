@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 module.exports =
   process.env.NODE_ENV === "production"
     ? process.env.MONGO_URL
