@@ -7,7 +7,7 @@ const sharp = require("sharp");
 const fs = require("fs");
 
 const accountSid = "AC4d37b2cba30b46a0262ca0f7429c5fd0";
-const authToken = "c28896cc3542e87d9680453850ab6205";
+const authToken = process.env.TWILIO_SECRET;
 const client = require("twilio")(accountSid, authToken);
 
 const transporter = nodemailer.createTransport({
