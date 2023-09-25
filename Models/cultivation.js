@@ -141,7 +141,13 @@ const cultivationSchema = new mongoose.Schema({
         "Type of fertilizer used is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["", "organic self made", "organic purchased", "chemical based"],
+      enum: [
+        "",
+        "organic self made",
+        "organic purchased",
+        "chemical based",
+        "none",
+      ],
       default: "",
     },
     type_of_pesticide_used: {
@@ -153,7 +159,13 @@ const cultivationSchema = new mongoose.Schema({
         "Type of pesticide used is required!",
       ],
       set: (value) => value.toLowerCase(),
-      enum: ["", "organic self made", "organic purchased", "chemical based"],
+      enum: [
+        "",
+        "organic self made",
+        "organic purchased",
+        "chemical based",
+        "none",
+      ],
       default: "",
     },
     income_from_sale: {
