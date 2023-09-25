@@ -143,6 +143,7 @@ module.exports.register = async (req, res) => {
         members: [],
         phone,
         country_code,
+        document_type: "-",
         social_security_number: "-",
         address: "-",
         address_proof: "-",
@@ -302,6 +303,7 @@ module.exports.edit_user = async (req, res) => {
     number_of_members = "",
     land_measurement = "",
     land_measurement_symbol = "",
+    document_type=""
   } = req.body;
 
   const address_proof = req.file;
@@ -328,6 +330,9 @@ module.exports.edit_user = async (req, res) => {
           ? number_of_members.trim()
           : user.number_of_members,
         members: new_members.length > 0 ? new_members : user.members,
+        document_type: document_type?.trim().length
+          ? document_type.trim()
+          : user.document_type,
         social_security_number: social_security_number?.trim().length
           ? social_security_number.trim()
           : user.social_security_number,
