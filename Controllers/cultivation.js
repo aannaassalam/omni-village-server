@@ -41,8 +41,6 @@ module.exports.get_cultivation = async (req, res) => {
 
 module.exports.add_cultivation = async (req, res) => {
   const {
-    season,
-    cultivation_type,
     crop_id,
     area_allocated,
     output,
@@ -54,25 +52,17 @@ module.exports.add_cultivation = async (req, res) => {
   const { user } = res.locals;
 
   try {
-    if (parseInt(season) <= parseInt(cultivation_type)) {
-      const cultivation_doc = await Cultivation.create({
-        season,
-        cultivation_type,
-        crop_id,
-        user_id: user._id,
-        area_allocated,
-        output,
-        weight_measurement,
-        utilization,
-        important_information,
-        status,
-      });
-      res.json(cultivation_doc);
-    } else {
-      res.status(400).json({
-        message: `Season ${season} is not valid for type ${cultivation_type} cultivation`,
-      });
-    }
+    const cultivation_doc = await Cultivation.create({
+      crop_id,
+      user_id: user._id,
+      area_allocated,
+      output,
+      weight_measurement,
+      utilization,
+      important_information,
+      status,
+    });
+    res.json(cultivation_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }

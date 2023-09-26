@@ -11,16 +11,16 @@ const fisherySchema = new mongoose.Schema({
     required: [true, "Fishery type is required!"],
     enum: ["pond", "river"],
   },
-  pond_name: {
-    type: mongoose.Schema.Types.String,
-    required: [
-      function () {
-        return this.fishery_type === "pond";
-      },
-      "Pond name is required!",
-    ],
-    default: "",
-  },
+  // pond_name: {
+  //   type: mongoose.Schema.Types.String,
+  //   required: [
+  //     function () {
+  //       return this.fishery_type === "pond";
+  //     },
+  //     "Pond name is required!",
+  //   ],
+  //   default: "",
+  // },
   fishery_crop_id: {
     type: mongoose.Schema.Types.ObjectId,
     default: "",

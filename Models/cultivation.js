@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 
 const cultivationSchema = new mongoose.Schema({
-  season: {
-    type: mongoose.Schema.Types.Number,
-    required: [true, "Season is required while adding cultivation data!"],
-  },
-  cultivation_type: {
-    type: mongoose.Schema.Types.Number,
-    required: [true, "Cultivation type is required!"],
-  },
+  // season: {
+  //   type: mongoose.Schema.Types.Number,
+  //   required: [true, "Season is required while adding cultivation data!"],
+  // },
+  // cultivation_type: {
+  //   type: mongoose.Schema.Types.Number,
+  //   required: [true, "Cultivation type is required!"],
+  // },
   crop_id: {
     type: mongoose.Schema.Types.ObjectId,
     default: "",
