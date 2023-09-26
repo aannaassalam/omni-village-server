@@ -35,13 +35,6 @@ const treeSchema = new mongoose.Schema(
         },
         "Average age of trees is required",
       ],
-      enum: [
-        "",
-        "less than a year",
-        "1 to 2 years",
-        "2 to 3 years",
-        "3 to 5 years",
-      ],
       default: "",
     },
     soil_health: {
