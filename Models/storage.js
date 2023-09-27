@@ -22,7 +22,7 @@ const storageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Number,
     required: [
       function () {
-        return this.storage_method_id.toString().length > 0;
+        return this.storage_method_name.length > 0;
       },
       "Stock quantity is required!",
     ],

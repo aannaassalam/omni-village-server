@@ -22,14 +22,14 @@ module.exports.get_selling_channel = async (req, res) => {
 };
 
 module.exports.add_selling_channel = async (req, res) => {
-  const { selling_channel_methods } = req.body;
+  const { selling_channel_names } = req.body;
   const { user } = res.locals;
 
   try {
     // if (parseInt(season) <= parseInt(cultivation_type)) {
     const selling_channel_doc = await SellingChannel.create({
       user_id: user._id,
-      selling_channel_methods,
+      selling_channel_names,
     });
     res.json(selling_channel_doc);
     // } else {
@@ -43,13 +43,13 @@ module.exports.add_selling_channel = async (req, res) => {
 };
 
 module.exports.update_selling_channel = async (req, res) => {
-  const { selling_channel_id, selling_channel_methods } = req.body;
+  const { selling_channel_id, selling_channel_names } = req.body;
 
   try {
     const selling_channel_doc = await SellingChannel.findByIdAndUpdate(
       selling_channel_id,
       {
-        selling_channel_methods,
+        selling_channel_names,
       },
       { runValidators: true, new: true }
     );
