@@ -11,27 +11,25 @@ module.exports.get_storage = async (req, res) => {
   const { user } = res.locals;
   console.log(user._id);
   try {
-    const storage_doc = await Storage.aggregate([
+    const storage_doc = await Storage.find(
       {
-        $match: {
-          user_id: user._id,
-        },
-      },
-      {
-        $lookup: {
-          from: "storage_methods",
-          localField: "storage_method_id",
-          foreignField: "_id",
-          as: "storage_method",
-        },
-      },
-      { $unwind: { path: "$storage_method" } },
+        user_id: user._id,
+      }
+      // {
+      //   $lookup: {
+      //     from: "storage_methods",
+      //     localField: "storage_method_id",
+      //     foreignField: "_id",
+      //     as: "storage_method",
+      //   },
+      // },
+      // { $unwind: { path: "$storage_method" } },
       // // { $unwind: { path: "$cultivation_crop" } },
-      {
-        $project: { __v: 0, "storage_method.__v": 0 },
-      },
-    ]);
-    // console.log(cultivation_doc);
+      // {
+      //   $project: { __v: 0, "storage_method.__v": 0 },
+      // },
+    );
+    console.log(storage_doc);
     res.json(storage_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -44,7 +42,6 @@ module.exports.add_storage = async (req, res) => {
 
   try {
     const storage_docs = [];
-    console.log(storages);
     // if (parseInt(season) <= parseInt(cultivation_type)) {
     for await (const storage of storages) {
       console.log(storage);
