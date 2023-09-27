@@ -74,7 +74,7 @@ module.exports.update_storage = async (req, res) => {
       const storage_doc = await Storage.findByIdAndUpdate(
         storage.storage_id,
         {
-          storage_method_name: storage.storage_method_id,
+          storage_method_name: storage.storage_method_name,
           stock_quantity: storage.stock_quantity,
         },
         { runValidators: true, new: true }
