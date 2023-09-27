@@ -51,7 +51,7 @@ module.exports.add_storage = async (req, res) => {
       const storage_doc = await Storage.create({
         user_id: user._id,
         stock_name: storage.stock_name,
-        storage_method_id: storage.storage_method_id,
+        storage_method_name: storage.storage_method_name,
         stock_quantity: storage.stock_quantity,
       });
       storage_docs.push(storage_doc);
@@ -77,7 +77,7 @@ module.exports.update_storage = async (req, res) => {
       const storage_doc = await Storage.findByIdAndUpdate(
         storage.storage_id,
         {
-          storage_method_id: storage.storage_method_id,
+          storage_method_name: storage.storage_method_id,
           stock_quantity: storage.stock_quantity,
         },
         { runValidators: true, new: true }
