@@ -17,12 +17,13 @@ const storageSchema = new mongoose.Schema({
   storage_method_name: {
     type: mongoose.Schema.Types.String,
     default: "",
+    required: [true, "Storage method name is required!"]
   },
   stock_quantity: {
     type: mongoose.Schema.Types.Number,
     required: [
       function () {
-        return this.storage_method_name.length > 0;
+        return this.storage_method_name?.length > 0;
       },
       "Stock quantity is required!",
     ],
