@@ -5,6 +5,7 @@ const otpGenerator = require("otp-generator");
 const { options } = require("../Routes/user");
 const sharp = require("sharp");
 const fs = require("fs");
+const moment = require("moment");
 
 const accountSid = "AC4d37b2cba30b46a0262ca0f7429c5fd0";
 const authToken = process.env.TWILIO_SECRET;
@@ -21,6 +22,8 @@ const transporter = nodemailer.createTransport({
 const forgot_password_otp_keeper = {};
 const otp_keeper = {
   "+911234567890": "0000",
+  "+601234567890": "0000",
+  "+9751234567890": "0000",
 };
 
 const handleErrors = (err) => {
@@ -100,7 +103,7 @@ module.exports.send_otp = async (req, res) => {
         .status(400)
         .json({ message: "User doesn't exists, Please Register!" });
     } else {
-      if (`${country_code}${phone}` !== "+911234567890") {
+      if (`${phone}` !== "1234567890") {
         otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(4, {
           upperCaseAlphabets: false,
           specialChars: false,
@@ -133,7 +136,7 @@ module.exports.register = async (req, res) => {
 
   try {
     if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
-      if (`${country_code}${phone}` !== "+911234567890") {
+      if (`${phone}` !== "1234567890") {
         delete otp_keeper[`${country_code}${phone}`];
       }
       const user = await User.create({
@@ -174,7 +177,7 @@ module.exports.login = async (req, res) => {
 
   try {
     if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
-      if (`${country_code}${phone}` !== "+911234567890") {
+      if (`${phone}` !== "1234567890") {
         delete otp_keeper[`${country_code}${phone}`];
       }
       const user = await User.findOne({
@@ -304,7 +307,7 @@ module.exports.edit_user = async (req, res) => {
     number_of_members = "",
     land_measurement = "",
     land_measurement_symbol = "",
-    document_type=""
+    document_type = "",
   } = req.body;
 
   const address_proof = req.file;
@@ -460,4 +463,27 @@ module.exports.cultivation_land_allocation = async (req, res) => {
   //     .status(400)
   //     .json({ msg: "Sub area cannot be greater than total land!" });
   // }
+};
+
+module.exports.user_list = async (req, res) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+    const processed_users = {};
+    users.forEach((user) => {
+      const date = moment(user.createdAt).format("LL");
+      processed_users[date] = processed_users[date]
+        ? [...processed_users[date], user]
+        : [user];
+    });
+    // res.json(processed_users);
+    res.render("users", { users: processed_users });
+  } catch (err) {
+    res.status(304).json(err);
+  }
 };

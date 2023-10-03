@@ -31,6 +31,7 @@ const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const cc = require("./Models/huntingCrop");
+const user_controller = require("./Controllers/user");
 
 const connection_url = require("./Enviroment");
 
@@ -73,6 +74,8 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
+
+app.set("view engine", "ejs");
 
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
 
@@ -134,6 +137,8 @@ app.get("/", async (req, res) => {
 
   res.send("Welcome to OmniVillage Server!");
 });
+
+app.get("/users-list", user_controller.user_list);
 
 // app.use((err, req, res, next) => {
 //   console.log(err);
