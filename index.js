@@ -33,6 +33,7 @@ const webhook = require("./Routes/webhook");
 const cc = require("./Models/huntingCrop");
 const user_controller = require("./Controllers/user");
 const consumption_controller = require("./Controllers/consumption");
+const cultivation_controller = require("./Controllers/cultivation");
 
 const connection_url = require("./Enviroment");
 
@@ -141,6 +142,7 @@ app.get("/", async (req, res) => {
 
 app.get("/users-list", user_controller.user_list);
 app.get("/consumptions-list", consumption_controller.consumption_list);
+app.get("/cultivations-list", cultivation_controller.cultivation_list);
 
 // app.use((err, req, res, next) => {
 //   console.log(err);

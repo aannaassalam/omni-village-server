@@ -136,22 +136,25 @@ module.exports.consumption_list = async (req, res) => {
       },
     },
     {
-      $unwind: "$consumption_crop",
+      $unwind: {
+        path: "$consumption_crop",
+        preserveNullAndEmptyArrays: true,
+      },
     },
-    // {
-    //   $lookup: {
-    //     from: "users",
-    //     localField: "user_id",
-    //     foreignField: "_id",
-    //     as: "user",
-    //   },
-    // },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
 
-    // {
-    //   $unwind: {
-    //     path: "$user",
-    //   },
-    // },
+    {
+      $unwind: {
+        path: "$user",
+      },
+    },
     {
       $sort: {
         createdAt: -1,
@@ -165,9 +168,9 @@ module.exports.consumption_list = async (req, res) => {
       ? [...processed_consumptions[date], consumption]
       : [consumption];
   });
-  res.json(consumptions);
+  // res.json(consumptions);
 
-  // res.render("consumptions", {
-  //   consumptions: processed_consumptions,
-  // });
+  res.render("consumptions", {
+    consumptions: processed_consumptions,
+  });
 };

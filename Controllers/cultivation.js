@@ -1,5 +1,6 @@
 const Cultivation = require("../Models/cultivation");
 const Crop = require("../Models/crop");
+const moment = require("moment");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -109,4 +110,54 @@ module.exports.delete_cultivation = async (req, res) => {
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
+};
+
+module.exports.cultivation_list = async (req, res) => {
+  const cultivations = await Cultivation.aggregate([
+    {
+      $lookup: {
+        from: "crops",
+        localField: "crop_id",
+        foreignField: "_id",
+        as: "crop",
+      },
+    },
+    {
+      $unwind: {
+        path: "$crop",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$user",
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+  const processed_cultivations = {};
+  cultivations.forEach((cultivation) => {
+    const date = moment(cultivation.createdAt).format("LL");
+    processed_cultivations[date] = processed_cultivations[date]
+      ? [...processed_cultivations[date], cultivation]
+      : [cultivation];
+  });
+  // res.json(processed_cultivation);
+
+  res.render("cultivations", {
+    cultivations: processed_cultivations,
+  });
 };

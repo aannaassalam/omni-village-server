@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>OmniVillage Consumptions List</title>
+    <title>OmniVillage Cultivations List</title>
     <style>
       body {
         padding: 2rem;
@@ -45,23 +45,22 @@
     </style>
   </head>
   <body>
-    <h2>OmniVillage Consumptions List</h2>
+    <h2>OmniVillage Cultivations List</h2>
     <h3>Sorted by latest to oldest</h3>
     <div>
-      <% Object.keys(consumptions).forEach((item)=>{%>
+      <% Object.keys(cultivations).forEach((item)=>{%>
       <div>
         <h4><%=item %></h4>
-        <% consumptions[item].forEach((consumption)=>{%>
+        <% cultivations[item].forEach((cultivation)=>{%>
         <div>
           <strong
-            ><%=consumption.user.first_name%>
-            <%=consumption.user.last_name%></strong
+            ><%=cultivation.user.first_name%>
+            <%=cultivation.user.last_name%></strong
           >
-          <p><%=consumption.user.country_code%> <%=consumption.user.phone%></p>
-          <p>Consumption Type: <%=consumption.consumption_type_name%></p>
+          <p><%=cultivation.user.country_code%> <%=cultivation.user.phone%></p>
           <p>
-            Consumption Crop: <%=consumption?.consumption_crop ?
-            consumption?.consumption_crop?.name : "CROP DELETED" %>
+            Cultivation Crop: <%=cultivation?.crop ? cultivation?.crop?.name :
+            "CROP DELETED" %>
           </p>
         </div>
         <%});%>
