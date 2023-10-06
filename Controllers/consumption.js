@@ -1,6 +1,7 @@
 const Consumption = require("../Models/consumption");
 // const HuntingCrop = require("../Models/huntingCrop");
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -124,7 +125,7 @@ module.exports.delete_consumption = async (req, res) => {
   }
 };
 
-module.exports.consumption_list = async(req,res) => {
+module.exports.consumption_list = async (req, res) => {
   const consumptions = await Consumption.aggregate([
     {
       $lookup: {
@@ -135,29 +136,38 @@ module.exports.consumption_list = async(req,res) => {
       },
     },
     {
-      $lookup: {
-        from: "users",
-        localField: "user_id",
-        foreignField: "_id",
-        as: "user",
+      $unwind: "$consumption_crop",
+    },
+    // {
+    //   $lookup: {
+    //     from: "users",
+    //     localField: "user_id",
+    //     foreignField: "_id",
+    //     as: "user",
+    //   },
+    // },
+
+    // {
+    //   $unwind: {
+    //     path: "$user",
+    //   },
+    // },
+    {
+      $sort: {
+        createdAt: -1,
       },
     },
-    {
-        $sort: {
-          createdAt: -1,
-        },
-    }
   ]);
   const processed_consumptions = {};
-    consumptions.forEach((consumption) => {
-      const date = moment(consumption.createdAt).format("LL");
-      processed_consumptions[date] = processed_consumptions[date]
-        ? [...processed_consumptions[date], consumption]
-        : [consumption];
-    });
-    res.json(processed_consumptions)
+  consumptions.forEach((consumption) => {
+    const date = moment(consumption.createdAt).format("LL");
+    processed_consumptions[date] = processed_consumptions[date]
+      ? [...processed_consumptions[date], consumption]
+      : [consumption];
+  });
+  res.json(consumptions);
 
-    // res.render("consumptions", {
-    //   consumptions: processed_consumptions
-    // })
-}
+  // res.render("consumptions", {
+  //   consumptions: processed_consumptions,
+  // });
+};
