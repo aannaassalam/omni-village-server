@@ -128,16 +128,14 @@ module.exports.delete_consumption = async (req, res) => {
 module.exports.consumption_list = async (req, res) => {
   const consumptions = await Consumption.aggregate([
     {
-      $lookup: {
-        from: "consumption_crops",
-        localField: "consumption_crop_id",
-        foreignField: "_id",
-        as: "consumption_crop",
+        $lookup: {
+          from: "consumption_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "consumption_crop",
+        },
       },
-    },
-    {
-      $unwind: "$consumption_crop",
-    },
+      { $unwind: { path: "$consumption_crop" } },
     // {
     //   $lookup: {
     //     from: "users",
@@ -152,11 +150,11 @@ module.exports.consumption_list = async (req, res) => {
     //     path: "$user",
     //   },
     // },
-    {
-      $sort: {
-        createdAt: -1,
-      },
-    },
+    // {
+    //   $sort: {
+    //     createdAt: -1,
+    //   },
+    // },
   ]);
   const processed_consumptions = {};
   consumptions.forEach((consumption) => {
