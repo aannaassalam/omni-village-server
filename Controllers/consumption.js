@@ -123,3 +123,41 @@ module.exports.delete_consumption = async (req, res) => {
     res.status(400).json(handleErrors(err));
   }
 };
+
+module.exports.consumption_list = async(req,res) => {
+  const consumptions = await Consumption.aggregate([
+    {
+      $lookup: {
+        from: "consumption_crops",
+        localField: "consumption_crop_id",
+        foreignField: "_id",
+        as: "consumption_crop",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+        $sort: {
+          createdAt: -1,
+        },
+    }
+  ]);
+  const processed_consumptions = {};
+    consumptions.forEach((consumption) => {
+      const date = moment(consumption.createdAt).format("LL");
+      processed_consumptions[date] = processed_consumptions[date]
+        ? [...processed_consumptions[date], consumption]
+        : [consumption];
+    });
+    res.json(processed_consumptions)
+
+    // res.render("consumptions", {
+    //   consumptions: processed_consumptions
+    // })
+}

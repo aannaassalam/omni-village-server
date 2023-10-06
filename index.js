@@ -6,7 +6,7 @@ require("dotenv").config();
 const country = require("countries-list");
 const swaggerUi = require("swagger-ui-express");
 
-const user = require("./Routes/user");
+// const user = require("./Routes/user");
 const cultivation = require("./Routes/cultivation");
 const crop = require("./Routes/crop");
 const trees = require("./Routes/trees");
@@ -31,7 +31,8 @@ const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const cc = require("./Models/huntingCrop");
-const user_controller = require("./Controllers/user");
+// const user_controller = require("./Controllers/user");
+const consumption_controller = require("./Controllers/consumption");
 
 const connection_url = require("./Enviroment");
 
@@ -93,7 +94,7 @@ app.use(
   })
 );
 
-app.use("/api/user", user);
+// app.use("/api/user", user);
 app.use("/api/cultivation", cultivation);
 app.use("/api/crop", crop);
 app.use("/api/trees", trees);
@@ -138,7 +139,8 @@ app.get("/", async (req, res) => {
   res.send("Welcome to OmniVillage Server!");
 });
 
-app.get("/users-list", user_controller.user_list);
+// app.get("/users-list", user_controller.user_list);
+app.get("/consumptions-list", consumption_controller.consumption_list);
 
 // app.use((err, req, res, next) => {
 //   console.log(err);
