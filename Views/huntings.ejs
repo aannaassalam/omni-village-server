@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OmniVillage Users List</title>
+    <title>OmniVillage Huntings List</title>
     <style>
       body {
         padding: 2rem;
@@ -51,17 +51,23 @@
   </head>
   <body>
     <%- include("./partials/header");%>
-    <h2>OmniVillage User List</h2>
+    <h2>OmniVillage Huntings List</h2>
     <h3>Sorted by latest to oldest</h3>
     <div>
-      <% Object.keys(users).forEach((item)=>{%>
+      <% Object.keys(huntings).forEach((item)=>{%>
       <div>
         <h4><%=item %></h4>
-        <% users[item].forEach((user)=>{%>
+        <% huntings[item].forEach((hunting)=>{%>
         <div>
-          <p>ID: <%=user._id%></p>
-          <strong><%=user.first_name%> <%=user.last_name%></strong>
-          <p><%=user.country_code%> <%=user.phone%></p>
+          <p>ID: <%=hunting._id%></p>
+          <strong
+            ><%=hunting.user.first_name%> <%=hunting.user.last_name%></strong
+          >
+          <p><%=hunting.user.country_code%> <%=hunting.user.phone%></p>
+          <p>
+            hunting Crop: <%=hunting?.hunting_crop ? hunting?.hunting_crop?.name
+            : "CROP DELETED" %>
+          </p>
         </div>
         <%});%>
       </div>

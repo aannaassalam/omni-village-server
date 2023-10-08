@@ -34,6 +34,11 @@ const cc = require("./Models/huntingCrop");
 const user_controller = require("./Controllers/user");
 const consumption_controller = require("./Controllers/consumption");
 const cultivation_controller = require("./Controllers/cultivation");
+const fishery_controller = require("./Controllers/fishery");
+const hunting_controller = require("./Controllers/hunting");
+const poultry_controller = require("./Controllers/poultry");
+const trees_controller = require("./Controllers/trees");
+const selling_channel_controller = require("./Controllers/sellingChannel");
 
 const connection_url = require("./Enviroment");
 
@@ -143,6 +148,14 @@ app.get("/", async (req, res) => {
 app.get("/users-list", user_controller.user_list);
 app.get("/consumptions-list", consumption_controller.consumption_list);
 app.get("/cultivations-list", cultivation_controller.cultivation_list);
+app.get("/fisheries-list", fishery_controller.fishery_list);
+app.get("/huntings-list", hunting_controller.hunting_list);
+app.get("/poultries-list", poultry_controller.poultry_list);
+app.get("/trees-list", trees_controller.tree_list);
+app.get(
+  "/selling-channels-list",
+  selling_channel_controller.selling_channels_list
+);
 
 // app.use((err, req, res, next) => {
 //   console.log(err);

@@ -3,6 +3,7 @@ const TreeProducts = require("../Models/treeProducts");
 const TreeCrop = require("../Models/treeCrop");
 const mongoose = require("mongoose");
 const Logger = require("../Logger");
+const moment = require("moment");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -197,4 +198,54 @@ module.exports.delete_tree = async (req, res) => {
     console.log(err, "err");
     res.status(400).json(err);
   }
+};
+
+module.exports.tree_list = async (req, res) => {
+  const trees = await Trees.aggregate([
+    {
+      $lookup: {
+        from: "tree_crops",
+        localField: "tree_crop_id",
+        foreignField: "_id",
+        as: "tree_crop",
+      },
+    },
+    {
+      $unwind: {
+        path: "$tree_crop",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$user",
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+  const processed_trees = {};
+  trees.forEach((tree) => {
+    const date = moment(tree.createdAt).format("LL");
+    processed_trees[date] = processed_trees[date]
+      ? [...processed_trees[date], tree]
+      : [tree];
+  });
+  // res.json(processed_trees);
+
+  res.render("trees", {
+    trees: processed_trees,
+  });
 };

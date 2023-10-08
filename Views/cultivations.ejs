@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OmniVillage Cultivations List</title>
     <style>
       body {
@@ -14,6 +15,10 @@
       h2,
       h3 {
         text-align: center;
+      }
+
+      body small {
+        display: block;
       }
 
       body > div {
@@ -45,6 +50,7 @@
     </style>
   </head>
   <body>
+    <%- include("./partials/header");%>
     <h2>OmniVillage Cultivations List</h2>
     <h3>Sorted by latest to oldest</h3>
     <div>
@@ -53,6 +59,7 @@
         <h4><%=item %></h4>
         <% cultivations[item].forEach((cultivation)=>{%>
         <div>
+          <p>ID: <%=cultivation._id%></p>
           <strong
             ><%=cultivation.user.first_name%>
             <%=cultivation.user.last_name%></strong

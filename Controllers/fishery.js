@@ -1,6 +1,7 @@
 const Fishery = require("../Models/fishery");
 const FisheryCrop = require("../Models/fisheryCrop");
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -181,4 +182,54 @@ module.exports.delete_fishery = async (req, res) => {
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
+};
+
+module.exports.fishery_list = async (req, res) => {
+  const fisheries = await Fishery.aggregate([
+    {
+      $lookup: {
+        from: "fishery_crop",
+        localField: "fishery_crop_id",
+        foreignField: "_id",
+        as: "fishery_crop",
+      },
+    },
+    {
+      $unwind: {
+        path: "$fishery_crop",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$user",
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+  const processed_fisheries = {};
+  fisheries.forEach((fishery) => {
+    const date = moment(fishery.createdAt).format("LL");
+    processed_fisheries[date] = processed_fisheries[date]
+      ? [...processed_fisheries[date], fishery]
+      : [fishery];
+  });
+  // res.json(processed_fisheries);
+
+  res.render("fishery", {
+    fisheries: processed_fisheries,
+  });
 };

@@ -1,6 +1,7 @@
 const Hunting = require("../Models/hunting");
 const HuntingCrop = require("../Models/huntingCrop");
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -148,4 +149,54 @@ module.exports.delete_hunting = async (req, res) => {
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
+};
+
+module.exports.hunting_list = async (req, res) => {
+  const huntings = await Hunting.aggregate([
+    {
+      $lookup: {
+        from: "hunting_crop",
+        localField: "hunting_crop_id",
+        foreignField: "_id",
+        as: "hunting_crop",
+      },
+    },
+    {
+      $unwind: {
+        path: "$hunting_crop",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$user",
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+  const processed_huntings = {};
+  huntings.forEach((hunting) => {
+    const date = moment(hunting.createdAt).format("LL");
+    processed_huntings[date] = processed_huntings[date]
+      ? [...processed_huntings[date], hunting]
+      : [hunting];
+  });
+  // res.json(processed_huntings);
+
+  res.render("huntings", {
+    huntings: processed_huntings,
+  });
 };

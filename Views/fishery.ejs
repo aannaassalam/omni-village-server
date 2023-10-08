@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OmniVillage Users List</title>
+    <title>OmniVillage Fisheries List</title>
     <style>
       body {
         padding: 2rem;
@@ -51,17 +51,24 @@
   </head>
   <body>
     <%- include("./partials/header");%>
-    <h2>OmniVillage User List</h2>
+    <h2>OmniVillage Fisheries List</h2>
     <h3>Sorted by latest to oldest</h3>
     <div>
-      <% Object.keys(users).forEach((item)=>{%>
+      <% Object.keys(fisheries).forEach((item)=>{%>
       <div>
         <h4><%=item %></h4>
-        <% users[item].forEach((user)=>{%>
+        <% fisheries[item].forEach((fishery)=>{%>
         <div>
-          <p>ID: <%=user._id%></p>
-          <strong><%=user.first_name%> <%=user.last_name%></strong>
-          <p><%=user.country_code%> <%=user.phone%></p>
+          <small>ID: <%=fishery._id%></small>
+          <strong
+            ><%=fishery.user.first_name%> <%=fishery.user.last_name%></strong
+          >
+          <p><%=fishery.user.country_code%> <%=fishery.user.phone%></p>
+          <p>fishery Type: <%=fishery.fishery_type%></p>
+          <p>
+            fishery Crop: <%=fishery?.fishery_crop ? fishery?.fishery_crop?.name
+            : "CROP DELETED" %>
+          </p>
         </div>
         <%});%>
       </div>

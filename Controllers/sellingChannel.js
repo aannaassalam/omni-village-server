@@ -1,6 +1,7 @@
 const SellingChannel = require("../Models/sellingChannel");
 const SellinChannelMethod = require("../Models/sellingChannelMethod");
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -72,4 +73,54 @@ module.exports.delete_selling_channel = async (req, res) => {
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
+};
+
+module.exports.selling_channels_list = async (req, res) => {
+  const selling_channels = await SellingChannel.aggregate([
+    // {
+    //   $lookup: {
+    //     from: "selling_channel_methods",
+    //     localField: "tree_crop_id",
+    //     foreignField: "_id",
+    //     as: "tree_crop",
+    //   },
+    // },
+    // {
+    //   $unwind: {
+    //     path: "$tree_crop",
+    //     preserveNullAndEmptyArrays: true,
+    //   },
+    // },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+
+    {
+      $unwind: {
+        path: "$user",
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
+  const processed_selling_channels = {};
+  selling_channels.forEach((selling_channel) => {
+    const date = moment(selling_channel.createdAt).format("LL");
+    processed_selling_channels[date] = processed_selling_channels[date]
+      ? [...processed_selling_channels[date], selling_channel]
+      : [selling_channel];
+  });
+  // res.json(processed_selling_channels);
+
+  res.render("sellingChannels", {
+    selling_channels: processed_selling_channels,
+  });
 };
