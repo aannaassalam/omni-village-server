@@ -142,7 +142,7 @@ const userSchema = new mongoose.Schema(
     street_address: {
       type: mongoose.Schema.Types.String,
       default: "",
-      required: true,
+      required: [true, "Street Address is required!"],
     },
   },
   {

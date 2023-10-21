@@ -162,6 +162,7 @@ module.exports.register = async (req, res) => {
         land_measurement_symbol: "-",
         currency,
         country,
+        street_address: "-",
       });
       const refreshToken = jwt.sign(
         {
