@@ -123,11 +123,18 @@ module.exports.send_otp = async (req, res) => {
           to: `${country_code}${phone}`,
           statusCallback: "https://omnivillage.azurewebsites.net/api/webhook/",
         })
-        .then((message) => res.send(message));
+        .then((message) => res.send(message))
+        .catch(
+          (err) =>
+            err.code === 21211 &&
+            res
+              .status(400)
+              .json({ message: "Please enter a valid phone number!" })
+        );
     }
   } catch (err) {
     console.log(err);
-    res.send(400).json({ message: "Bad request" });
+    res.status(400).json({ message: "Bad request" });
   }
 };
 
