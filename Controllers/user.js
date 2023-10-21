@@ -206,6 +206,7 @@ module.exports.login = async (req, res) => {
 
 module.exports.get_current_user = (req, res) => {
   const { user } = res.locals;
+  console.log(user);
   res.json(user);
 };
 
@@ -341,7 +342,7 @@ module.exports.edit_user = async (req, res) => {
           ? social_security_number.trim()
           : user.social_security_number,
         address: address?.trim().length ? address.trim() : user.address,
-        address_proof: address_proof.filename.length
+        address_proof: address_proof?.filename?.length
           ? address_proof.path
           : user.address_proof,
         land_measurement: land_measurement.trim().length
@@ -356,7 +357,7 @@ module.exports.edit_user = async (req, res) => {
     res.json({ msg: "User updated successfully!" });
   } catch (err) {
     console.log(err);
-    fs.unlinkSync("./" + req.file.path);
+    !req.body.edit && fs.unlinkSync("./" + req.file.path);
     if (user._id) {
       res.status(400).json({ error: err });
     } else {

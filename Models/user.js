@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.String,
           required: [true, "Please provide member gender!"],
           set: (val) => val.toLowerCase(),
-          enum: ["male", "female"],
+          enum: ["male", "female", "other"],
         },
       },
     ],
