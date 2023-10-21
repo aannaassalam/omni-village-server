@@ -309,6 +309,7 @@ module.exports.edit_user = async (req, res) => {
     land_measurement = "",
     land_measurement_symbol = "",
     document_type = "",
+    street_address = "",
   } = req.body;
 
   const address_proof = req.file;
@@ -351,6 +352,9 @@ module.exports.edit_user = async (req, res) => {
         land_measurement_symbol: land_measurement_symbol.trim().length
           ? land_measurement_symbol.trim()
           : user.land_measurement_symbol,
+        street_address: street_address.trim().length
+          ? street_address.trim()
+          : user.street_address,
       },
       { runValidators: true, new: true }
     );

@@ -139,6 +139,11 @@ const userSchema = new mongoose.Schema(
         default: 0,
       },
     },
+    street_address: {
+      type: mongoose.Schema.Types.String,
+      default: "",
+      required: true,
+    },
   },
   {
     timestamps: true,
