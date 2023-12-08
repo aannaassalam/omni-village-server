@@ -5,6 +5,7 @@ const swaggerJSDoc = require("swagger-jsdoc");
 require("dotenv").config();
 const country = require("countries-list");
 const swaggerUi = require("swagger-ui-express");
+const path = require('path')
 
 const user = require("./Routes/user");
 const cultivation = require("./Routes/cultivation");
@@ -81,7 +82,7 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-
+app.set("views", path.join(__dirname, 'Views'))
 app.set("view engine", "ejs");
 
 app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
