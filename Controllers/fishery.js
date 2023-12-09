@@ -220,16 +220,16 @@ module.exports.fishery_list = async (req, res) => {
       },
     },
   ]);
-  const processed_fisheries = {};
-  fisheries.forEach((fishery) => {
-    const date = moment(fishery.createdAt).format("LL");
-    processed_fisheries[date] = processed_fisheries[date]
-      ? [...processed_fisheries[date], fishery]
-      : [fishery];
-  });
-  // res.json(processed_fisheries);
+  // const processed_fisheries = {};
+  // fisheries.forEach((fishery) => {
+  //   const date = moment(fishery.createdAt).format("LL");
+  //   processed_fisheries[date] = processed_fisheries[date]
+  //     ? [...processed_fisheries[date], fishery]
+  //     : [fishery];
+  // });
+  res.json(fisheries);
 
-  res.render("fishery", {
-    fisheries: processed_fisheries,
-  });
+  // res.render("fishery", {
+  //   fisheries: processed_fisheries,
+  // });
 };

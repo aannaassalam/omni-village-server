@@ -256,4 +256,35 @@ router.delete(
   tree_controller.delete_tree
 );
 
+/**
+ * @swagger
+ * /trees/list-all:
+ *    get:
+ *      tags:
+ *        - Trees, Grass & Shrubs
+ *      summary: Get All Trees, Grass & Shrubs
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all trees, grass & shrubs.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+router.get("/list-all", tree_controller.tree_list);
+
 module.exports = router;

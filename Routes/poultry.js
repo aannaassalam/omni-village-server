@@ -302,4 +302,35 @@ router.delete(
   poultry_controller.delete_poultry
 );
 
+/**
+ * @swagger
+ * /poultry/list-all:
+ *    get:
+ *      tags:
+ *        - Poultry
+ *      summary: Get All Poultries
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all poultries.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+router.get("/list-all", poultry_controller.poultry_list);
+
 module.exports = router;

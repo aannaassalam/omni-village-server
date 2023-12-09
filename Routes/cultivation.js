@@ -27,5 +27,6 @@ router.post(
   checkUser,
   cultivation_controller.delete_cultivation
 );
+router.get("/list-all", cultivation_controller.cultivation_list);
 
 module.exports = router;

@@ -240,16 +240,16 @@ module.exports.poultry_list = async (req, res) => {
       },
     },
   ]);
-  const processed_poultries = {};
-  poultries.forEach((poultry) => {
-    const date = moment(poultry.createdAt).format("LL");
-    processed_poultries[date] = processed_poultries[date]
-      ? [...processed_poultries[date], poultry]
-      : [poultry];
-  });
-  // res.json(processed_poultries);
+  // const processed_poultries = {};
+  // poultries.forEach((poultry) => {
+  //   const date = moment(poultry.createdAt).format("LL");
+  //   processed_poultries[date] = processed_poultries[date]
+  //     ? [...processed_poultries[date], poultry]
+  //     : [poultry];
+  // });
+  res.json(poultries);
 
-  res.render("poultries", {
-    poultries: processed_poultries,
-  });
+  // res.render("poultries", {
+  //   poultries: processed_poultries,
+  // });
 };

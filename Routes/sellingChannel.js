@@ -146,4 +146,35 @@ router.delete(
   selling_channel_controller.delete_selling_channel
 );
 
+/**
+ * @swagger
+ * /selling_channel/list-all:
+ *    get:
+ *      tags:
+ *        - Selling Channels
+ *      summary: Get All Selling Channels
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all selling channels.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+router.get("/list-all", selling_channel_controller.selling_channels_list);
+
 module.exports = router;

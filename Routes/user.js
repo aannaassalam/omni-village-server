@@ -26,6 +26,37 @@ const upload = multer({ storage });
 
 /**
  * @swagger
+ * /user/list-all:
+ *    get:
+ *      tags:
+ *        - User
+ *      summary: Get All User
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all users.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+router.get("/list-all", user_controller.list_all);
+
+/**
+ * @swagger
  * /user/register:
  *    post:
  *      tags:

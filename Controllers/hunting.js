@@ -187,16 +187,16 @@ module.exports.hunting_list = async (req, res) => {
       },
     },
   ]);
-  const processed_huntings = {};
-  huntings.forEach((hunting) => {
-    const date = moment(hunting.createdAt).format("LL");
-    processed_huntings[date] = processed_huntings[date]
-      ? [...processed_huntings[date], hunting]
-      : [hunting];
-  });
-  // res.json(processed_huntings);
+  // const processed_huntings = {};
+  // huntings.forEach((hunting) => {
+  //   const date = moment(hunting.createdAt).format("LL");
+  //   processed_huntings[date] = processed_huntings[date]
+  //     ? [...processed_huntings[date], hunting]
+  //     : [hunting];
+  // });
+  res.json(huntings);
 
-  res.render("huntings", {
-    huntings: processed_huntings,
-  });
+  // res.render("huntings", {
+  //   huntings: processed_huntings,
+  // });
 };

@@ -111,16 +111,16 @@ module.exports.selling_channels_list = async (req, res) => {
       },
     },
   ]);
-  const processed_selling_channels = {};
-  selling_channels.forEach((selling_channel) => {
-    const date = moment(selling_channel.createdAt).format("LL");
-    processed_selling_channels[date] = processed_selling_channels[date]
-      ? [...processed_selling_channels[date], selling_channel]
-      : [selling_channel];
-  });
-  // res.json(processed_selling_channels);
+  // const processed_selling_channels = {};
+  // selling_channels.forEach((selling_channel) => {
+  //   const date = moment(selling_channel.createdAt).format("LL");
+  //   processed_selling_channels[date] = processed_selling_channels[date]
+  //     ? [...processed_selling_channels[date], selling_channel]
+  //     : [selling_channel];
+  // });
+  res.json(selling_channels);
 
-  res.render("sellingChannels", {
-    selling_channels: processed_selling_channels,
-  });
+  // res.render("sellingChannels", {
+  //   selling_channels: processed_selling_channels,
+  // });
 };

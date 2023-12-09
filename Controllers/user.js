@@ -72,6 +72,41 @@ const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET_KEY);
 };
 
+// module.exports.list_all = async (req, res) => {
+//   try {
+//     // const { limit = 10, page = 1 } = req.query;
+//     // if (parseInt(page) < 1) {
+//     //   res.status(400).json({ message: "Pages start from 1." });
+//     // } else if (parseInt(limit) < 1) {
+//     //   res.status(400).json({ message: "Limits must be greater than 0." });
+//     // } else {
+//       const users = await User.aggregate([
+//         {
+//           $project: {
+//             sub_area: 0,
+//           },
+//         },
+//       ])
+//         .limit(parseInt(limit))
+//         .skip(parseInt(limit) * (parseInt(page) - 1));
+//       res.json(users);
+//     // }
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ message: "Internal Server Error!" });
+//   }
+// };
+
+module.exports.list_all = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.json(users);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error!" });
+  }
+};
+
 module.exports.generate_token = async (req, res) => {
   const { phone, country_code } = req.body;
   try {

@@ -3,8 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const swaggerJSDoc = require("swagger-jsdoc");
 require("dotenv").config();
-const country = require("countries-list");
 const swaggerUi = require("swagger-ui-express");
+const csvtojson = require("csvtojson");
 
 const user = require("./Routes/user");
 const cultivation = require("./Routes/cultivation");
@@ -27,18 +27,10 @@ const weight_measurement = require("./Routes/weightMeasurement");
 const fish_feed = require("./Routes/fishFeed");
 const feed = require("./Routes/feed");
 const consumptionType = require("./Routes/consumptionType");
-const consumptionCrop = require("./Routes/consumptionCrop");
+// const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
-const cc = require("./Models/huntingCrop");
-const user_controller = require("./Controllers/user");
-const consumption_controller = require("./Controllers/consumption");
-const cultivation_controller = require("./Controllers/cultivation");
-const fishery_controller = require("./Controllers/fishery");
-const hunting_controller = require("./Controllers/hunting");
-const poultry_controller = require("./Controllers/poultry");
-const trees_controller = require("./Controllers/trees");
-const selling_channel_controller = require("./Controllers/sellingChannel");
+const Crop = require("./Models/treeCrop");
 
 const connection_url = require("./Enviroment");
 
@@ -121,41 +113,13 @@ app.use("/api/weight_measurements", weight_measurement);
 app.use("/api/fish_feeds", fish_feed);
 app.use("/api/feeds", feed);
 app.use("/api/consumption_type", consumptionType);
-app.use("/api/consumption_crop", consumptionCrop);
+// app.use("/api/consumption_crop", consumptionCrop);
 app.use("/api/consumption", consumption);
 app.use("/api/webhook", webhook);
 
 app.get("/", async (req, res) => {
-  // const {} = req.body;
-  // const data = [];
-  // try {
-  //   for await (const item of json_data) {
-  //     const res = await cc.create({
-  //       name: item.name,
-  //     });
-  //     console.log(data);
-  //     data.push(res);
-  //   }
-  //   res.json(data);
-  // } catch (err) {
-  //   console.log(err);
-  //   res.status(400).json(err);
-  // }
-
   res.send("Welcome to OmniVillage Server!");
 });
-
-app.get("/users-list", user_controller.user_list);
-app.get("/consumptions-list", consumption_controller.consumption_list);
-app.get("/cultivations-list", cultivation_controller.cultivation_list);
-app.get("/fisheries-list", fishery_controller.fishery_list);
-app.get("/huntings-list", hunting_controller.hunting_list);
-app.get("/poultries-list", poultry_controller.poultry_list);
-app.get("/trees-list", trees_controller.tree_list);
-app.get(
-  "/selling-channels-list",
-  selling_channel_controller.selling_channels_list
-);
 
 // app.use((err, req, res, next) => {
 //   console.log(err);

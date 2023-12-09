@@ -218,4 +218,35 @@ router.delete(
   hunting_controller.delete_hunting
 );
 
+/**
+ * @swagger
+ * /hunting/list-all:
+ *    get:
+ *      tags:
+ *        - Hunting
+ *      summary: Get All Huntings
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all huntings.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+router.get("/list-all", hunting_controller.hunting_list);
+
 module.exports = router;

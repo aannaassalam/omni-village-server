@@ -4,8 +4,8 @@ const treeSchema = new mongoose.Schema(
   {
     tree_crop_id: {
       type: mongoose.Schema.Types.ObjectId,
-      // required: [true, "Tree Crop id is required!"],
-      // ref: "tree_crop",
+      required: [true, "Tree Crop id is required!"],
+      ref: "tree_crop",
       default: "",
     },
     tree_crop_name: {

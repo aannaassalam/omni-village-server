@@ -148,16 +148,16 @@ module.exports.cultivation_list = async (req, res) => {
       },
     },
   ]);
-  const processed_cultivations = {};
-  cultivations.forEach((cultivation) => {
-    const date = moment(cultivation.createdAt).format("LL");
-    processed_cultivations[date] = processed_cultivations[date]
-      ? [...processed_cultivations[date], cultivation]
-      : [cultivation];
-  });
-  // res.json(processed_cultivation);
+  // const processed_cultivations = {};
+  // cultivations.forEach((cultivation) => {
+  //   const date = moment(cultivation.createdAt).format("LL");
+  //   processed_cultivations[date] = processed_cultivations[date]
+  //     ? [...processed_cultivations[date], cultivation]
+  //     : [cultivation];
+  // });
+  res.json(cultivations);
 
-  res.render("cultivations", {
-    cultivations: processed_cultivations,
-  });
+  // res.render("cultivations", {
+  //   cultivations: processed_cultivations,
+  // });
 };

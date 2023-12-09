@@ -65,6 +65,9 @@ router.get(
  *             consumption_type_id:
  *               type: string
  *               example: 64ee46ad2f3332cd78c7e7e2
+ *             status:
+ *               type: number
+ *               example: 0 - from user & 1 - from admin or approved
  *
  *      responses:
  *        200:

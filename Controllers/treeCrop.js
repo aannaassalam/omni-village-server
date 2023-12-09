@@ -10,8 +10,26 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_tree_crop = async (req, res) => {
+  const { language, country } = req.body;
   try {
-    const crops = await TreeCrop.find();
+    const tree_crops = await TreeCrop.find(
+      { country: country.toLowerCase() },
+      {
+        name: `$name.${language}`,
+        country: 1,
+        status: 1,
+        label: 1,
+      }
+    );
+    res.json(tree_crops);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
+module.exports.get_all_tree_crop = async (req, res) => {
+  try {
+    const crops = await TreeCrop.find({});
     res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -19,10 +37,16 @@ module.exports.get_tree_crop = async (req, res) => {
 };
 
 module.exports.add_tree_crop = async (req, res) => {
-  const { name } = req.body;
+  const { name, country, status, label } = req.body;
   try {
     const crop_doc = await TreeCrop.create({
-      name,
+      name: {
+        en: name.en,
+        ms: name.ms || name.en,
+      },
+      country,
+      label,
+      status,
     });
     res.json(crop_doc);
   } catch (err) {
@@ -31,12 +55,18 @@ module.exports.add_tree_crop = async (req, res) => {
 };
 
 module.exports.edit_tree_crop = async (req, res) => {
-  const { name, tree_crop_id } = req.body;
+  const { name, country, status, label, tree_crop_id } = req.body;
   try {
     const crop_doc = await TreeCrop.findByIdAndUpdate(
       tree_crop_id,
       {
-        name,
+        name: {
+          en: name.en,
+          ms: name.ms || name.en,
+        },
+        label,
+        country,
+        status,
       },
       { new: true, runValidators: true }
     );

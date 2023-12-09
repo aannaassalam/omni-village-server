@@ -236,16 +236,16 @@ module.exports.tree_list = async (req, res) => {
       },
     },
   ]);
-  const processed_trees = {};
-  trees.forEach((tree) => {
-    const date = moment(tree.createdAt).format("LL");
-    processed_trees[date] = processed_trees[date]
-      ? [...processed_trees[date], tree]
-      : [tree];
-  });
-  // res.json(processed_trees);
+  // const processed_trees = {};
+  // trees.forEach((tree) => {
+  //   const date = moment(tree.createdAt).format("LL");
+  //   processed_trees[date] = processed_trees[date]
+  //     ? [...processed_trees[date], tree]
+  //     : [tree];
+  // });
+  res.json(trees);
 
-  res.render("trees", {
-    trees: processed_trees,
-  });
+  // res.render("trees", {
+  //   trees: processed_trees,
+  // });
 };

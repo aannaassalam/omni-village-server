@@ -10,33 +10,45 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_crop = async (req, res) => {
+  const { language, country } = req.body;
   try {
-    const { categoryId } = req.body;
-    const crops = await Crop.find(
-      categoryId ? { categoryId } : { category: false }
-    );
+    const crops = await Crop.aggregate([
+      { $match: { country: country.toLowerCase() } },
+      {
+        $project: {
+          name: `$name.${language}`,
+          country: 1,
+          status: 1,
+          label: 1,
+        },
+      },
+    ]);
     res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
 };
 
-module.exports.get_crop_categoies = async (req, res) => {
+module.exports.get_all = async (req, res) => {
   try {
-    const crop_categories = await Crop.find({ category: true });
-    res.json(crop_categories);
+    const crops = await Crop.find({});
+    res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.add_crop = async (req, res) => {
-  const { name, categoryId, category = false } = req.body;
+  const { name, country, status, label } = req.body;
   try {
     const crop_doc = await Crop.create({
-      name,
-      category,
-      categoryId,
+      name: {
+        en: name.en,
+        ms: name.ms || name.en,
+      },
+      country,
+      label,
+      status,
     });
     res.json(crop_doc);
   } catch (err) {
@@ -45,12 +57,18 @@ module.exports.add_crop = async (req, res) => {
 };
 
 module.exports.edit_crop = async (req, res) => {
-  const { name, crop_id } = req.body;
+  const { name, crop_id, country, status, label } = req.body;
   try {
     const crop_doc = await Crop.findByIdAndUpdate(
       crop_id,
       {
-        name,
+        name: {
+          en: name.en,
+          ms: name.ms || name.en,
+        },
+        label,
+        country,
+        status,
       },
       { new: true, runValidators: true }
     );

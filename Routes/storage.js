@@ -156,4 +156,35 @@ router.delete(
   storage_controller.delete_storage
 );
 
+/**
+ * @swagger
+ * /storage/list-all:
+ *    get:
+ *      tags:
+ *        - Storage
+ *      summary: Get All Storages
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all storages.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+// router.get("/list-all", storage_controller.);
+
 module.exports = router;

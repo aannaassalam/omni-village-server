@@ -223,11 +223,11 @@ const cultivationSchema = new mongoose.Schema(
         ],
         default: "",
       },
-      status: {
-        type: mongoose.Schema.Types.Number,
-        default: 1,
-        enum: [0, 1],
-      },
+    },
+    status: {
+      type: mongoose.Schema.Types.Number,
+      default: 1,
+      enum: [0, 1],
     },
   },
   { timestamps: true }

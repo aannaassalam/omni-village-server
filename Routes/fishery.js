@@ -260,4 +260,35 @@ router.delete(
   fishery_controller.delete_fishery
 );
 
+/**
+ * @swagger
+ * /fishery/list-all:
+ *    get:
+ *      tags:
+ *        - Fishery
+ *      summary: Get All Fishery
+ *      description: Currently Pagination is not working.
+ *      produces:
+ *        - application/json
+ *      parameters:
+ *        - in: query
+ *          name: limit
+ *          schema:
+ *            type: integer
+ *
+ *        - in: query
+ *          name: page
+ *          schema:
+ *            type: integer
+ *
+ *      responses:
+ *        200:
+ *          description: Successfully fetched all fisheries.
+ *        400:
+ *          description: Bad request
+ *        500:
+ *          description: Internal Server Error
+ */
+router.get("/list-all", fishery_controller.fishery_list);
+
 module.exports = router;

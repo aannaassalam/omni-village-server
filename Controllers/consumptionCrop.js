@@ -1,4 +1,4 @@
-const ConsumptionCrop = require("../Models/consumptionCrop");
+// const ConsumptionCrop = require("../Models/consumptionCrop");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -12,23 +12,24 @@ const handleErrors = (err) => {
 module.exports.get_consumption_crop = async (req, res) => {
   const { consumption_type_id } = req.params;
   try {
-    const consumption_crops = await ConsumptionCrop.find({
-      consumption_type_id,
-    });
-    res.json(consumption_crops);
+    // const consumption_crops = await ConsumptionCrop.find({
+    //   consumption_type_id,
+    // });
+    // res.json(consumption_crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.add_consumption_crop = async (req, res) => {
-  const { name, consumption_type_id } = req.body;
+  const { name, consumption_type_id, status = 0 } = req.body;
   try {
-    const consumption_crop_doc = await ConsumptionCrop.create({
-      name,
-      consumption_type_id,
-    });
-    res.json(consumption_crop_doc);
+    // const consumption_crop_doc = await ConsumptionCrop.create({
+    //   name,
+    //   consumption_type_id,
+    //   status,
+    // });
+    // res.json(consumption_crop_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
@@ -37,14 +38,14 @@ module.exports.add_consumption_crop = async (req, res) => {
 module.exports.edit_consumption_crop = async (req, res) => {
   const { name, consumption_crop_id } = req.body;
   try {
-    const consumption_crop_doc = await ConsumptionCrop.findByIdAndUpdate(
-      consumption_crop_id,
-      {
-        name,
-      },
-      { new: true, runValidators: true }
-    );
-    res.json(consumption_crop_doc);
+    // const consumption_crop_doc = await ConsumptionCrop.findByIdAndUpdate(
+    //   consumption_crop_id,
+    //   {
+    //     name,
+    //   },
+    //   { new: true, runValidators: true }
+    // );
+    // res.json(consumption_crop_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
@@ -53,8 +54,8 @@ module.exports.edit_consumption_crop = async (req, res) => {
 module.exports.delete_consumption_crop = async (req, res) => {
   const { id } = req.params;
   try {
-    const consumption_crop_doc = await Crop.findByIdAndDelete(id);
-    res.json(consumption_crop_doc);
+    // const consumption_crop_doc = await Crop.findByIdAndDelete(id);
+    // res.json(consumption_crop_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }

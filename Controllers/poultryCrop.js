@@ -10,8 +10,19 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_poultry_crop = async (req, res) => {
+  const { language, country } = req.body;
   try {
-    const poultry = await PoultryCrop.find();
+    const poultry = await PoultryCrop.aggregate([
+      { $match: { country: country.toLowerCase() } },
+      {
+        $project: {
+          name: `$name.${language}`,
+          country: 1,
+          status: 1,
+          label: 1,
+        },
+      },
+    ]);
     res.json(poultry);
   } catch (err) {
     res.status(400).json(handleErrors(err));

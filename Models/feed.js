@@ -3,10 +3,35 @@ const mongoose = require("mongoose");
 const feedSchema = new mongoose.Schema(
   {
     name: {
-      type: mongoose.Schema.Types.String,
-      required: [true, "Feed name is required!"],
-      unique: true,
-      set: (value) => value.toLowerCase(),
+      en: {
+        type: mongoose.Schema.Types.String,
+        required: [true, "Please Enter a Feed name!"],
+        unique: true,
+        set: (value) => value.toLowerCase(),
+      },
+
+      ms: {
+        type: mongoose.Schema.Types.String,
+        default: "",
+        // unique: true,
+        set: (value) => value.toLowerCase(),
+      },
+    },
+    country: [
+      {
+        type: mongoose.Schema.Types.String,
+        default: "India",
+        required: [true, "Country of Crop origin is required!"],
+        set: (value) => value.toLowerCase(),
+      },
+    ],
+    status: {
+      type: mongoose.Schema.Types.Number,
+      default: 0,
+      required: [
+        true,
+        "Status is required!(0 - from user & 1 - from admin or approved)",
+      ],
     },
   },
   { timestamps: true }
