@@ -8,7 +8,7 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_cultivation = async (req, res) => {
-  const { season, crop_id, cultivation_type } = req.body;
+  const { language } = req.body;
   const { user } = res.locals;
 
   try {
@@ -28,7 +28,11 @@ module.exports.get_cultivation = async (req, res) => {
       },
       { $unwind: { path: "$cultivation_crop" } },
       {
-        $project: { __v: 0, "cultivation_crop.__v": 0 },
+        $project: {
+          __v: 0,
+          "cultivation_crop.__v": 0,
+          "cultivation_crop.name": `$cultivation_crop.${language}`,
+        },
       },
     ]);
     // console.log(cultivation_doc);
