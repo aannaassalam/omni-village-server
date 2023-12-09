@@ -8,7 +8,7 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_cultivation = async (req, res) => {
-  const { language } = req.body;
+  const { language } = req.query;
   const { user } = res.locals;
 
   try {
@@ -31,13 +31,27 @@ module.exports.get_cultivation = async (req, res) => {
         $project: {
           __v: 0,
           "cultivation_crop.__v": 0,
-          "cultivation_crop.name": `$cultivation_crop.${language}`,
         },
       },
+      {
+        $addFields: {
+          "cultivation_crop.name": `$cultivation_crop.name.${language}`,
+        },
+      },
+      // {
+      //   $project: {
+      //     "cultivation_crop.name": `$cultivation_crop.name.${language}`,
+      //     "cultivation_crop._id": 1,
+      //     "cultivation_crop.country": 1,
+      //     "cultivation_crop.label": 1,
+      //     root: 1,
+      //   },
+      // },
     ]);
-    // console.log(cultivation_doc);
+    console.log(cultivation_doc);
     res.json(cultivation_doc);
   } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };
