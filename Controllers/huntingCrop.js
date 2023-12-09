@@ -10,7 +10,7 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_hunting_crop = async (req, res) => {
-  const { language, country } = req.body;
+  const { language, country } = req.query;
   try {
     const hunting = await HuntingCrop.aggregate([
       { $match: { country: country.toLowerCase() } },

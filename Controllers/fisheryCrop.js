@@ -10,8 +10,19 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_fishery_crop = async (req, res) => {
+  const { language, country } = req.query;
   try {
-    const fishery = await FisheryCrop.find();
+    const fishery = await FisheryCrop.aggregate([
+      { $match: { country: country.toLowerCase() } },
+      {
+        $project: {
+          name: `$name.${language}`,
+          country: 1,
+          status: 1,
+          label: 1,
+        },
+      },
+    ]);
     res.json(fishery);
   } catch (err) {
     res.status(400).json(handleErrors(err));
