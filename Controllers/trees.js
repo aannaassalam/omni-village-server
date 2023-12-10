@@ -11,6 +11,7 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_trees = async (req, res) => {
+  const { language } = req.query;
   const { user } = res.locals;
 
   try {
@@ -40,6 +41,11 @@ module.exports.get_trees = async (req, res) => {
       // { $unwind: { path: "$cultivation_crop" } },
       {
         $project: { __v: 0, "tree_crop.__v": 0, "products.__v": 0 },
+      },
+      {
+        $addFields: {
+          "tree_crop.name": `$tree_crop.name.${language}`,
+        },
       },
     ]);
     // console.log(cultivation_doc);

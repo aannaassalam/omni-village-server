@@ -76,6 +76,7 @@ const handleErrors = (err) => {
 
 module.exports.get_fishery = async (req, res) => {
   const { fishery_type } = req.params;
+  const { language } = req.query;
   const { user } = res.locals;
 
   try {
@@ -97,6 +98,11 @@ module.exports.get_fishery = async (req, res) => {
       { $unwind: { path: "$fishery_crop" } },
       {
         $project: { __v: 0, "fishery_crop.__v": 0 },
+      },
+      {
+        $addFields: {
+          "fishery_crop.name": `$fishery_crop.name.${language}`,
+        },
       },
     ]);
     res.json(fishery_doc);

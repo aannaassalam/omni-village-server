@@ -11,6 +11,7 @@ const handleErrors = (err) => {
 
 module.exports.get_poultries = async (req, res) => {
   const { user } = res.locals;
+  const { language } = req.query;
 
   try {
     const poultries_doc = await Poultry.aggregate([
@@ -38,7 +39,12 @@ module.exports.get_poultries = async (req, res) => {
       },
       // { $unwind: { path: "$cultivation_crop" } },
       {
-        $project: { __v: 0, "product_crop.__v": 0, "products.__v": 0 },
+        $project: { __v: 0, "poultry_crop.__v": 0, "products.__v": 0 },
+      },
+      {
+        $addFields: {
+          "poultry_crop.name": `$poultry_crop.name.${language}`,
+        },
       },
     ]);
     // console.log(cultivation_doc);

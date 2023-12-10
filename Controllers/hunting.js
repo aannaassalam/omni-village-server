@@ -9,6 +9,7 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_hunting = async (req, res) => {
+  const { language } = req.query;
   const { user } = res.locals;
 
   try {
@@ -30,6 +31,11 @@ module.exports.get_hunting = async (req, res) => {
       // { $unwind: { path: "$cultivation_crop" } },
       {
         $project: { __v: 0, "hunting_crop.__v": 0 },
+      },
+      {
+        $addFields: {
+          "hunting_crop.name": `$hunting_crop.name.${language}`,
+        },
       },
     ]);
     // console.log(cultivation_doc);
