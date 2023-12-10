@@ -58,7 +58,7 @@ router.get("/get_all", fishery_crop_controller.get_all_fishery_crop);
  */
 router.post(
   "/add_fishery_crop",
-  verifyToken,
+  // verifyToken,
   fishery_crop_controller.add_fishery_crop
 );
 
@@ -98,7 +98,7 @@ router.post(
  */
 router.post(
   "/edit_fishery_crop",
-  verifyToken,
+  // verifyToken,
   fishery_crop_controller.edit_fishery_crop
 );
 

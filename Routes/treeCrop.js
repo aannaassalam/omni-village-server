@@ -56,7 +56,11 @@ router.get("/get_all", tree_crop_controller.get_all_tree_crop);
  *        500:
  *          description: Internal Server Error
  */
-router.post("/add_tree_crop", verifyToken, tree_crop_controller.add_tree_crop);
+router.post(
+  "/add_tree_crop",
+  // verifyToken,
+  tree_crop_controller.add_tree_crop
+);
 
 /**
  * @swagger
@@ -94,7 +98,7 @@ router.post("/add_tree_crop", verifyToken, tree_crop_controller.add_tree_crop);
  */
 router.post(
   "/edit_tree_crop",
-  verifyToken,
+  // verifyToken,
   tree_crop_controller.edit_tree_crop
 );
 

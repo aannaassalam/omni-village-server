@@ -58,7 +58,7 @@ router.get("/get_all", hunting_crop_controller.get_all_hunting_crop);
  */
 router.post(
   "/add_hunting_crop",
-  verifyToken,
+  // verifyToken,
   hunting_crop_controller.add_hunting_crop
 );
 
@@ -98,7 +98,7 @@ router.post(
  */
 router.post(
   "/edit_hunting_crop",
-  verifyToken,
+  // verifyToken,
   hunting_crop_controller.edit_hunting_crop
 );
 

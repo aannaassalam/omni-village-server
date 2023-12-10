@@ -58,7 +58,7 @@ router.get("/get_all", poultry_crop_controller.get_all_poultry_crop);
  */
 router.post(
   "/add_poultry_crop",
-  verifyToken,
+  // verifyToken,
   poultry_crop_controller.add_poultry_crop
 );
 
@@ -98,7 +98,7 @@ router.post(
  */
 router.post(
   "/edit_poultry_crop",
-  verifyToken,
+  // verifyToken,
   poultry_crop_controller.edit_poultry_crop
 );
 
