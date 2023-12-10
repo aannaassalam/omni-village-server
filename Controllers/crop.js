@@ -51,7 +51,7 @@ module.exports.add_crop = async (req, res) => {
       label,
       status,
     });
-    res.json({ ...crop_doc, name: crop_doc.name[language] });
+    res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
@@ -74,7 +74,7 @@ module.exports.edit_crop = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-    res.json({ ...crop_doc, name: crop_doc.name[language] });
+    res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }

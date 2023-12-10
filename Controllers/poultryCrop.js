@@ -42,7 +42,7 @@ module.exports.add_poultry_crop = async (req, res) => {
       label,
       status,
     });
-    res.json({ ...poultry_doc, name: poultry_doc.name[language] });
+    res.json({ ...poultry_doc_doc, name: poultry_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
@@ -65,7 +65,7 @@ module.exports.edit_poultry_crop = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-    res.json({ ...poultry_doc, name: poultry_doc.name[language] });
+    res.json({ ...poultry_doc, _doc, name: poultry_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }

@@ -42,7 +42,7 @@ module.exports.add_fishery_crop = async (req, res) => {
       label,
       status,
     });
-    res.json({ ...fishery_doc, name: fishery_doc.name[language] });
+    res.json({ ...fishery_doc._doc, name: fishery_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
@@ -65,7 +65,7 @@ module.exports.edit_fishery_crop = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-    res.json({ ...fishery_doc, name: fishery_doc.name[language] });
+    res.json({ ...fishery_doc._doc, name: fishery_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
