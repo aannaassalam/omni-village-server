@@ -59,7 +59,7 @@ module.exports.edit_hunting_crop = async (req, res) => {
           en: name.en,
           ms: name.ms || name.en,
         },
-        country,
+        country: typeof country === "string" ? [country] : country,
         label,
         status,
       },

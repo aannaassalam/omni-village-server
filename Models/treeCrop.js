@@ -40,8 +40,8 @@ const treeCropSchema = new mongoose.Schema(
     country: [
       {
         type: mongoose.Schema.Types.String,
-        default: "India",
         required: [true, "Country of Crop origin is required!"],
+        default: "India",
         set: (value) => value.toLowerCase(),
       },
     ],
