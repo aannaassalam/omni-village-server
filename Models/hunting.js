@@ -4,8 +4,8 @@ const huntingSchema = new mongoose.Schema(
   {
     hunting_crop_id: {
       type: mongoose.Schema.Types.ObjectId,
-      // required: [true, "Tree Crop id is required!"],
-      // ref: "hunting_crop",
+      required: [true, "Hunting Crop id is required!"],
+      ref: "hunting_crop",
       default: "",
     },
     hunting_crop_name: {

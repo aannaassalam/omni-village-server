@@ -12,8 +12,8 @@ const poultryProductSchema = new mongoose.Schema(
     },
     poultry_crop_id: {
       type: mongoose.Schema.Types.ObjectId,
-      // required: [true, "Tree Crop id is required!"],
-      // ref: "tree_crop",
+      required: [true, "Poultry Crop id is required!"],
+      ref: "tree_crop",
       default: "",
     },
     poultry_crop_name: {

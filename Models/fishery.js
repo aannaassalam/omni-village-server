@@ -25,8 +25,8 @@ const fisherySchema = new mongoose.Schema(
     fishery_crop_id: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      // ref: "fish_crop",
-      // required: [true, "Fish Crop is required!"],
+      ref: "fish_crop",
+      required: [true, "Fish Crop is required!"],
     },
     fishery_crop_name: {
       type: mongoose.Schema.Types.String,

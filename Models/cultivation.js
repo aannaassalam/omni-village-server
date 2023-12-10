@@ -13,8 +13,8 @@ const cultivationSchema = new mongoose.Schema(
     crop_id: {
       type: mongoose.Schema.Types.ObjectId,
       default: "",
-      // required: [true, "Crop id is required!"],
-      // ref: "Crop",
+      required: [true, "Crop id is required!"],
+      ref: "Crop",
     },
     crop_name: {
       type: mongoose.Schema.Types.String,
