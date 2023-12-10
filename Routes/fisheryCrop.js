@@ -23,6 +23,8 @@ const { verifyToken } = require("../Middlewares/user");
  */
 router.get("/", fishery_crop_controller.get_fishery_crop);
 
+router.get("/get_all", fishery_crop_controller.get_all_fishery_crop);
+
 /**
  * @swagger
  * /fishery_crop/add_fishery_crop:

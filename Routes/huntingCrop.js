@@ -23,6 +23,8 @@ const { verifyToken } = require("../Middlewares/user");
  */
 router.get("/", hunting_crop_controller.get_hunting_crop);
 
+router.get("/get_all", hunting_crop_controller.get_all_hunting_crop);
+
 /**
  * @swagger
  * /hunting_crop/add_hunting_crop:

@@ -23,6 +23,8 @@ const { verifyToken } = require("../Middlewares/user");
  */
 router.get("/", tree_crop_controller.get_tree_crop);
 
+router.get("/get_all", tree_crop_controller.get_all_tree_crop);
+
 /**
  * @swagger
  * /tree_crop/add_tree_crop:

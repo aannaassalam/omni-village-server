@@ -29,6 +29,15 @@ module.exports.get_hunting_crop = async (req, res) => {
   }
 };
 
+module.exports.get_all_hunting_crop = async (req, res) => {
+  try {
+    const hunting = await HuntingCrop.find({});
+    res.json(hunting);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.add_hunting_crop = async (req, res) => {
   const { name, country, status, label } = req.body;
   const { language } = req.query;
