@@ -10,7 +10,7 @@ const handleErrors = (err) => {
 };
 
 module.exports.get_fish_feed = async (req, res) => {
-  const { language, country } = req.body;
+  const { language, country } = req.query;
   try {
     const feed = await FishFeed.aggregate([
       { $match: { country: country.toLowerCase() } },

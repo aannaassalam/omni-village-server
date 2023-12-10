@@ -30,28 +30,42 @@ module.exports.get_fishery_crop = async (req, res) => {
 };
 
 module.exports.add_fishery_crop = async (req, res) => {
-  const { name } = req.body;
+  const { name, country, status, label } = req.body;
+  const { language } = req.query;
   try {
     const fishery_doc = await FisheryCrop.create({
-      name,
+      name: {
+        en: name.en,
+        ms: name.ms || name.en,
+      },
+      country,
+      label,
+      status,
     });
-    res.json(fishery_doc);
+    res.json({ ...fishery_doc, name: fishery_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.edit_fishery_crop = async (req, res) => {
-  const { name, fishery_crop_id } = req.body;
+  const { name, country, status, label, fishery_crop_id } = req.body;
+  const { language } = req.query;
   try {
     const fishery_doc = await FisheryCrop.findByIdAndUpdate(
       fishery_crop_id,
       {
-        name,
+        name: {
+          en: name.en,
+          ms: name.ms || name.en,
+        },
+        country,
+        label,
+        status,
       },
       { new: true, runValidators: true }
     );
-    res.json(fishery_doc);
+    res.json({ ...fishery_doc, name: fishery_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }

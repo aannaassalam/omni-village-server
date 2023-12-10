@@ -40,6 +40,7 @@ module.exports.get_all = async (req, res) => {
 
 module.exports.add_crop = async (req, res) => {
   const { name, country, status, label } = req.body;
+  const { language } = req.query;
   try {
     const crop_doc = await Crop.create({
       name: {
@@ -50,7 +51,7 @@ module.exports.add_crop = async (req, res) => {
       label,
       status,
     });
-    res.json(crop_doc);
+    res.json({ ...crop_doc, name: crop_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
@@ -58,6 +59,7 @@ module.exports.add_crop = async (req, res) => {
 
 module.exports.edit_crop = async (req, res) => {
   const { name, crop_id, country, status, label } = req.body;
+  const { language } = req.query;
   try {
     const crop_doc = await Crop.findByIdAndUpdate(
       crop_id,
@@ -72,7 +74,7 @@ module.exports.edit_crop = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-    res.json(crop_doc);
+    res.json({ ...crop_doc, name: crop_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }

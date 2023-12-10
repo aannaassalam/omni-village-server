@@ -30,28 +30,42 @@ module.exports.get_poultry_crop = async (req, res) => {
 };
 
 module.exports.add_poultry_crop = async (req, res) => {
-  const { name } = req.body;
+  const { name, country, status, label } = req.body;
+  const { language } = req.query;
   try {
     const poultry_doc = await PoultryCrop.create({
-      name,
+      name: {
+        en: name.en,
+        ms: name.ms || name.en,
+      },
+      country,
+      label,
+      status,
     });
-    res.json(poultry_doc);
+    res.json({ ...poultry_doc, name: poultry_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.edit_poultry_crop = async (req, res) => {
-  const { name, poultry_crop_id } = req.body;
+  const { name, country, status, label, poultry_crop_id } = req.body;
+  const { language } = req.query;
   try {
     const poultry_doc = await PoultryCrop.findByIdAndUpdate(
       poultry_crop_id,
       {
-        name,
+        name: {
+          en: name.en,
+          ms: name.ms || name.en,
+        },
+        country,
+        label,
+        status,
       },
       { new: true, runValidators: true }
     );
-    res.json(poultry_doc);
+    res.json({ ...poultry_doc, name: poultry_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
   }
