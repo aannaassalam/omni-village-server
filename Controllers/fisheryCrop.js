@@ -38,7 +38,7 @@ module.exports.add_fishery_crop = async (req, res) => {
         en: name.en,
         ms: name.ms || name.en,
       },
-      country: typeof country === "string" ? [country] : country,
+      country,
       label,
       status,
     });
