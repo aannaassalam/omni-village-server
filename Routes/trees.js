@@ -24,6 +24,12 @@ const router = require("express").Router();
  */
 router.get("/", verifyToken, checkUser, tree_controller.get_trees);
 
+router.get(
+  "/get_all",
+  // verifyToken, checkUser,
+  tree_controller.get_all_trees
+);
+
 /**
  * @swagger
  * /trees/add_tree:
@@ -251,8 +257,8 @@ router.post("/edit_tree", verifyToken, checkUser, tree_controller.update_trees);
  */
 router.delete(
   "/delete_tree/:id",
-  verifyToken,
-  checkUser,
+  // verifyToken,
+  // checkUser,
   tree_controller.delete_tree
 );
 

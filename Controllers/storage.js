@@ -9,7 +9,7 @@ const handleErrors = (err) => {
 
 module.exports.get_storage = async (req, res) => {
   const { user } = res.locals;
-  console.log(user._id);
+  // console.log(user._id);
   try {
     const storage_doc = await Storage.find(
       {
@@ -29,7 +29,7 @@ module.exports.get_storage = async (req, res) => {
       //   $project: { __v: 0, "storage_method.__v": 0 },
       // },
     );
-    console.log(storage_doc);
+    // console.log(storage_doc);
     res.json(storage_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -44,7 +44,7 @@ module.exports.add_storage = async (req, res) => {
     const storage_docs = [];
     // if (parseInt(season) <= parseInt(cultivation_type)) {
     for await (const storage of storages) {
-      console.log(storage);
+      // console.log(storage);
       const storage_doc = await Storage.create({
         user_id: user._id,
         stock_name: storage.stock_name,

@@ -28,7 +28,7 @@ const weight_measurement = require("./Routes/weightMeasurement");
 const fish_feed = require("./Routes/fishFeed");
 const feed = require("./Routes/feed");
 const consumptionType = require("./Routes/consumptionType");
-// const consumptionCrop = require("./Routes/consumptionCrop");
+const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const Crop = require("./Models/treeCrop");
@@ -114,7 +114,7 @@ app.use("/api/weight_measurements", weight_measurement);
 app.use("/api/fish_feeds", fish_feed);
 app.use("/api/feeds", feed);
 app.use("/api/consumption_type", consumptionType);
-// app.use("/api/consumption_crop", consumptionCrop);
+app.use("/api/consumption_crop", consumptionCrop);
 app.use("/api/consumption", consumption);
 app.use("/api/webhook", webhook);
 

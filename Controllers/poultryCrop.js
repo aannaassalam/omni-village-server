@@ -15,6 +15,15 @@ module.exports.get_poultry_crop = async (req, res) => {
     const poultry = await PoultryCrop.aggregate([
       { $match: { country: country.toLowerCase() } },
       {
+        $lookup: {
+          from: "consumption_type",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      { $unwind: { path: "$label", preserveNullAndEmptyArrays: true } },
+      {
         $project: {
           name: `$name.${language}`,
           country: 1,
@@ -31,7 +40,22 @@ module.exports.get_poultry_crop = async (req, res) => {
 
 module.exports.get_all_poultry_crop = async (req, res) => {
   try {
-    const crops = await PoultryCrop.find({});
+    const crops = await PoultryCrop.aggregate([
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$label",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
     res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -58,11 +82,11 @@ module.exports.add_poultry_crop = async (req, res) => {
 };
 
 module.exports.edit_poultry_crop = async (req, res) => {
-  const { name, country, status, label, poultry_crop_id } = req.body;
+  const { name, country, status, label, crop_id } = req.body;
   const { language } = req.query;
   try {
     const poultry_doc = await PoultryCrop.findByIdAndUpdate(
-      poultry_crop_id,
+      crop_id,
       {
         name: {
           en: name.en,

@@ -24,6 +24,12 @@ const router = require("express").Router();
  */
 router.get("/", verifyToken, checkUser, poultry_controller.get_poultries);
 
+router.get(
+  "/get_all",
+  // verifyToken, checkUser,
+  poultry_controller.get_all_poultry
+);
+
 /**
  * @swagger
  * /poultry/add_poultry:
@@ -297,8 +303,8 @@ router.post(
  */
 router.delete(
   "/delete_poultry/:id",
-  verifyToken,
-  checkUser,
+  // verifyToken,
+  // checkUser,
   poultry_controller.delete_poultry
 );
 

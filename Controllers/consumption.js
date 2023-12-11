@@ -11,6 +11,7 @@ const handleErrors = (err) => {
 module.exports.get_consumption = async (req, res) => {
   const { user } = res.locals;
   const { consumption_type_name } = req.params;
+  const { language } = req.query;
 
   try {
     const consumption_doc = await Consumption.aggregate([
@@ -22,21 +23,103 @@ module.exports.get_consumption = async (req, res) => {
       },
       {
         $lookup: {
-          from: "consumption_crops",
+          from: "crops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "consumption_crop",
         },
       },
-      { $unwind: { path: "$consumption_crop" } },
-      // { $unwind: { path: "$cultivation_crop" } },
+      {
+        $unwind: {
+          path: "$consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "tree_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$tree_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "poultry_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$poultry_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "fishery_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "fishery_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$fishery_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "hunting_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "hunting_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$hunting_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
       {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
+      {
+        $addFields: {
+          "consumption_crop.name": `$consumption_crop.name.${language}`,
+          "tree_consumption_crop.name": `$tree_consumption_crop.name.${language}`,
+          "poultry_consumption_crop.name": `$poultry_consumption_crop.name.${language}`,
+          "hunting_consumption_crop.name": `$hunting_consumption_crop.name.${language}`,
+          "fishery_consumption_crop.name": `$fishery_consumption_crop.name.${language}`,
+        },
+      },
     ]);
-    // console.log(cultivation_doc);
-    res.json(consumption_doc);
+    const new_consumption_docs = consumption_doc.map((_consumption) => {
+      if (_consumption.consumption_crop._id) return _consumption;
+      else if (_consumption.tree_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.tree_consumption_crop;
+      } else if (_consumption.poultry_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.poultry_consumption_crop;
+      } else if (_consumption.hunting_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.hunting_consumption_crop;
+      } else if (_consumption.fishery_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      }
+      return _consumption;
+    });
+    res.json(new_consumption_docs);
   } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };

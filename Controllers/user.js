@@ -125,7 +125,7 @@ module.exports.generate_token = async (req, res) => {
 
 module.exports.send_otp = async (req, res) => {
   try {
-    console.log(authToken);
+    // console.log(authToken);
     const { country_code, phone, type = "login" } = req.body;
     const user = await User.findOne({
       phone: phone,
@@ -249,7 +249,7 @@ module.exports.login = async (req, res) => {
 
 module.exports.get_current_user = (req, res) => {
   const { user } = res.locals;
-  console.log(user);
+  // console.log(user);
   res.json(user);
 };
 

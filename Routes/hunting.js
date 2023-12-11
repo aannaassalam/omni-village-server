@@ -24,6 +24,12 @@ const router = require("express").Router();
  */
 router.get("/", verifyToken, checkUser, hunting_controller.get_hunting);
 
+router.get(
+  "/get_all",
+  // verifyToken, checkUser,
+  hunting_controller.get_all_hunting
+);
+
 /**
  * @swagger
  * /hunting/add_hunting:
@@ -213,8 +219,8 @@ router.post(
  */
 router.delete(
   "/delete_hunting/:id",
-  verifyToken,
-  checkUser,
+  // verifyToken,
+  // checkUser,
   hunting_controller.delete_hunting
 );
 

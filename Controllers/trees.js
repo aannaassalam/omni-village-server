@@ -47,10 +47,50 @@ module.exports.get_trees = async (req, res) => {
           "tree_crop.name": `$tree_crop.name.${language}`,
         },
       },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
     ]);
     // console.log(cultivation_doc);
     res.json(trees_doc);
   } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
+module.exports.get_all_trees = async (req, res) => {
+  try {
+    const tree_doc = await Trees.aggregate([
+      {
+        $lookup: {
+          from: "tree_crops",
+          localField: "crop_id",
+          foreignField: "_id",
+          as: "crop",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$crop" } },
+      { $unwind: { path: "$user" } },
+      {
+        $project: {
+          __v: 0,
+          "crop.__v": 0,
+        },
+      },
+    ]);
+    res.json(tree_doc);
+  } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };
@@ -194,7 +234,7 @@ module.exports.delete_tree = async (req, res) => {
         await TreeProducts.findByIdAndDelete(product);
       }
     }
-    console.log(doc, "doc");
+    // console.log(doc, "doc");
     if (doc) {
       res.json({ message: "Trees deleted!" });
     } else {

@@ -9,6 +9,12 @@ router.post(
   checkUser,
   cultivation_controller.get_cultivation
 );
+router.get(
+  "/get_all",
+  // verifyToken,
+  // checkUser,
+  cultivation_controller.get_all_cultivations
+);
 router.post(
   "/add_cultivation",
   verifyToken,
@@ -21,10 +27,10 @@ router.post(
   checkUser,
   cultivation_controller.update_cultivation
 );
-router.post(
-  "/delete_cultivation",
-  verifyToken,
-  checkUser,
+router.delete(
+  "/delete_cultivation/:id",
+  // verifyToken,
+  // checkUser,
   cultivation_controller.delete_cultivation
 );
 router.get("/list-all", cultivation_controller.cultivation_list);

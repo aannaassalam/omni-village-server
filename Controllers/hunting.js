@@ -45,6 +45,46 @@ module.exports.get_hunting = async (req, res) => {
   }
 };
 
+module.exports.get_all_hunting = async (req, res) => {
+  try {
+    const hunting_doc = await Hunting.aggregate([
+      {
+        $lookup: {
+          from: "hunting_crops",
+          localField: "crop_id",
+          foreignField: "_id",
+          as: "crop",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$crop" } },
+      { $unwind: { path: "$user" } },
+      {
+        $project: {
+          __v: 0,
+          "crop.__v": 0,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+    res.json(hunting_doc);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.add_hunting = async (req, res) => {
   const {
     hunting_crop_id,

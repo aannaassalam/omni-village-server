@@ -15,6 +15,15 @@ module.exports.get_fishery_crop = async (req, res) => {
     const fishery = await FisheryCrop.aggregate([
       { $match: { country: country.toLowerCase() } },
       {
+        $lookup: {
+          from: "consumption_type",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      { $unwind: { path: "$label", preserveNullAndEmptyArrays: true } },
+      {
         $project: {
           name: `$name.${language}`,
           country: 1,
@@ -31,7 +40,22 @@ module.exports.get_fishery_crop = async (req, res) => {
 
 module.exports.get_all_fishery_crop = async (req, res) => {
   try {
-    const fishery = await FisheryCrop.find({});
+    const fishery = await FisheryCrop.aggregate([
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$label",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
     res.json(fishery);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -58,11 +82,11 @@ module.exports.add_fishery_crop = async (req, res) => {
 };
 
 module.exports.edit_fishery_crop = async (req, res) => {
-  const { name, country, status, label, fishery_crop_id } = req.body;
+  const { name, country, status, label, crop_id } = req.body;
   const { language } = req.query;
   try {
     const fishery_doc = await FisheryCrop.findByIdAndUpdate(
-      fishery_crop_id,
+      crop_id,
       {
         name: {
           en: name.en,

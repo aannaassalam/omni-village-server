@@ -54,6 +54,46 @@ module.exports.get_poultries = async (req, res) => {
   }
 };
 
+module.exports.get_all_poultry = async (req, res) => {
+  try {
+    const poultry_doc = await Poultry.aggregate([
+      {
+        $lookup: {
+          from: "poultry_crops",
+          localField: "crop_id",
+          foreignField: "_id",
+          as: "crop",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$crop" } },
+      { $unwind: { path: "$user" } },
+      {
+        $project: {
+          __v: 0,
+          "crop.__v": 0,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+    res.json(poultry_doc);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.add_poultries = async (req, res) => {
   const {
     poultry_crop_id,

@@ -112,6 +112,46 @@ module.exports.get_fishery = async (req, res) => {
   }
 };
 
+module.exports.get_all_fishery = async (req, res) => {
+  try {
+    const fishery_doc = await Fishery.aggregate([
+      {
+        $lookup: {
+          from: "fishery_crops",
+          localField: "crop_id",
+          foreignField: "_id",
+          as: "crop",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: { path: "$crop" } },
+      { $unwind: { path: "$user" } },
+      {
+        $project: {
+          __v: 0,
+          "crop.__v": 0,
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+    res.json(fishery_doc);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.add_fishery = async (req, res) => {
   const {
     fishery_crop_id,

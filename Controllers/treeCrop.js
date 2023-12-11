@@ -12,15 +12,26 @@ const handleErrors = (err) => {
 module.exports.get_tree_crop = async (req, res) => {
   const { language, country } = req.query;
   try {
-    const tree_crops = await TreeCrop.find(
-      { country: country.toLowerCase() },
+    const tree_crops = await TreeCrop.aggregate([
+      { $match: { country: country.toLowerCase() } },
       {
-        name: `$name.${language}`,
-        country: 1,
-        status: 1,
-        label: 1,
-      }
-    );
+        $lookup: {
+          from: "consumption_type",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      { $unwind: { path: "$label", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          name: `$name.${language}`,
+          country: 1,
+          status: 1,
+          label: 1,
+        },
+      },
+    ]);
     res.json(tree_crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -29,7 +40,22 @@ module.exports.get_tree_crop = async (req, res) => {
 
 module.exports.get_all_tree_crop = async (req, res) => {
   try {
-    const crops = await TreeCrop.find({});
+    const crops = await TreeCrop.aggregate([
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$label",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
     res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -51,16 +77,17 @@ module.exports.add_tree_crop = async (req, res) => {
     });
     res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
   } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.edit_tree_crop = async (req, res) => {
-  const { name, country, status, label, tree_crop_id } = req.body;
+  const { name, country, status, label, crop_id } = req.body;
   const { language } = req.query;
   try {
     const crop_doc = await TreeCrop.findByIdAndUpdate(
-      tree_crop_id,
+      crop_id,
       {
         name: {
           en: name.en,

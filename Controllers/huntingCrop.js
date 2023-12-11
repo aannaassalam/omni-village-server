@@ -15,6 +15,15 @@ module.exports.get_hunting_crop = async (req, res) => {
     const hunting = await HuntingCrop.aggregate([
       { $match: { country: country.toLowerCase() } },
       {
+        $lookup: {
+          from: "consumption_type",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      { $unwind: { path: "$label", preserveNullAndEmptyArrays: true } },
+      {
         $project: {
           name: `$name.${language}`,
           country: 1,
@@ -31,7 +40,22 @@ module.exports.get_hunting_crop = async (req, res) => {
 
 module.exports.get_all_hunting_crop = async (req, res) => {
   try {
-    const hunting = await HuntingCrop.find({});
+    const hunting = await HuntingCrop.aggregate([
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$label",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
     res.json(hunting);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -58,11 +82,11 @@ module.exports.add_hunting_crop = async (req, res) => {
 };
 
 module.exports.edit_hunting_crop = async (req, res) => {
-  const { name, country, status, label, hunting_crop_id } = req.body;
+  const { name, country, status, label, crop_id } = req.body;
   const { language } = req.query;
   try {
     const hunting_doc = await HuntingCrop.findByIdAndUpdate(
-      hunting_crop_id,
+      crop_id,
       {
         name: {
           en: name.en,

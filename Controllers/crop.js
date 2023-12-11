@@ -1,3 +1,4 @@
+const { CountryContextImpl } = require("twilio/lib/rest/pricing/v2/country");
 const Crop = require("../Models/crop");
 
 const handleErrors = (err) => {
@@ -11,9 +12,19 @@ const handleErrors = (err) => {
 
 module.exports.get_crop = async (req, res) => {
   const { language, country } = req.query;
+  console.log(language, CountryContextImpl);
   try {
     const crops = await Crop.aggregate([
       { $match: { country: country.toLowerCase() } },
+      {
+        $lookup: {
+          from: "consumption_type",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      { $unwind: { path: "$label", preserveNullAndEmptyArrays: true } },
       {
         $project: {
           name: `$name.${language}`,
@@ -25,13 +36,29 @@ module.exports.get_crop = async (req, res) => {
     ]);
     res.json(crops);
   } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };
 
 module.exports.get_all = async (req, res) => {
   try {
-    const crops = await Crop.find({});
+    const crops = await Crop.aggregate([
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$label",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
     res.json(crops);
   } catch (err) {
     res.status(400).json(handleErrors(err));
@@ -76,6 +103,7 @@ module.exports.edit_crop = async (req, res) => {
     );
     res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
   } catch (err) {
+    console.log(err);
     res.status(400).json(handleErrors(err));
   }
 };

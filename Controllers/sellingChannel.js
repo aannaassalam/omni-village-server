@@ -15,7 +15,7 @@ module.exports.get_selling_channel = async (req, res) => {
     const selling_channel_doc = await SellingChannel.findOne({
       user_id: user._id,
     });
-    console.log(selling_channel_doc);
+    // console.log(selling_channel_doc);
     res.json(selling_channel_doc);
   } catch (err) {
     res.status(400).json(handleErrors(err));

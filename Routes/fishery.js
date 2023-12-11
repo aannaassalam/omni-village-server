@@ -3,6 +3,13 @@ const fishery_controller = require("../Controllers/fishery");
 
 const router = require("express").Router();
 
+router.get(
+  "/get_all",
+  // verifyToken,
+  // checkUser,
+  fishery_controller.get_all_fishery
+);
+
 /**
  * @swagger
  * /fishery/{fishery_type}:
@@ -255,8 +262,8 @@ router.post(
  */
 router.delete(
   "/delete_fishery/:id",
-  verifyToken,
-  checkUser,
+  // verifyToken,
+  // checkUser,
   fishery_controller.delete_fishery
 );
 
