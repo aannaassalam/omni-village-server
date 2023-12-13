@@ -49,7 +49,8 @@ const landMeaurementConverter = (value, unit) => {
     case "point":
       return value / 8035000000000;
     case "jemba":
-
+      return;
     default:
+      return value;
   }
 };
