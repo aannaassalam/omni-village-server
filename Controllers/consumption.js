@@ -134,6 +134,7 @@ module.exports.add_consumption = async (req, res) => {
     self_grown,
     consumption_type_name,
     status = 1,
+    consumption_type_id,
   } = req.body;
   const { user } = res.locals;
 
@@ -142,6 +143,7 @@ module.exports.add_consumption = async (req, res) => {
     const consumption_doc = await Consumption.create({
       user_id: user._id,
       consumption_crop_id,
+      consumption_type_id,
       total_quantity,
       consumption_type_name,
       purchased_from_market,
@@ -209,13 +211,13 @@ module.exports.delete_consumption = async (req, res) => {
 };
 
 module.exports.consumption_list = async (req, res) => {
-  const { consumption_type_name } = req.query;
+  const { consumption_type_id } = req.query;
 
   try {
     const consumption_docs = await Consumption.aggregate([
       {
         $match: {
-          consumption_type_name: consumption_type_name.toLowerCase(),
+          consumption_type_id: consumption_type_id,
         },
       },
       {
