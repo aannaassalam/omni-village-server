@@ -31,6 +31,7 @@ const consumptionType = require("./Routes/consumptionType");
 const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
+const dashboard = require("./Routes/dashboard");
 const Crop = require("./Models/treeCrop");
 
 const connection_url = require("./Enviroment");
@@ -117,6 +118,7 @@ app.use("/api/consumption_type", consumptionType);
 app.use("/api/consumption_crop", consumptionCrop);
 app.use("/api/consumption", consumption);
 app.use("/api/webhook", webhook);
+app.use("/api/dashboard", dashboard);
 
 app.get("/", async (req, res) => {
   res.send("Welcome to OmniVillage Server!");

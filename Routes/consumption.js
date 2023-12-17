@@ -37,6 +37,8 @@ router.get(
   consumption_controller.get_consumption
 );
 
+router.get("/get_all", consumption_controller.consumption_list);
+
 /**
  * @swagger
  * /consumption/add_consumption:

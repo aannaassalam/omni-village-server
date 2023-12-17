@@ -1,4 +1,4 @@
-const landMeaurementConverter = (value, unit) => {
+module.exports.landMeaurementConverter = (value, unit) => {
   switch (unit.toLowerCase()) {
     case "square meter":
       return value / 1000000;
