@@ -222,6 +222,20 @@ module.exports.consumption_list = async (req, res) => {
       },
       {
         $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
           from: "crops",
           localField: "consumption_crop_id",
           foreignField: "_id",
