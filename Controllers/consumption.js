@@ -217,7 +217,7 @@ module.exports.consumption_list = async (req, res) => {
     const consumption_docs = await Consumption.aggregate([
       {
         $match: {
-          consumption_type_id: consumption_type_id,
+          consumption_type_id: new mongoose.Types.ObjectId(consumption_type_id),
         },
       },
       {
@@ -323,6 +323,7 @@ module.exports.consumption_list = async (req, res) => {
     });
     res.json(new_consumption_docs);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };

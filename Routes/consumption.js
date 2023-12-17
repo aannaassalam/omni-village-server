@@ -3,6 +3,8 @@ const consumption_controller = require("../Controllers/consumption");
 
 const router = require("express").Router();
 
+router.get("/get_all", consumption_controller.consumption_list);
+
 /**
  * @swagger
  * /consumption:
@@ -36,8 +38,6 @@ router.get(
   checkUser,
   consumption_controller.get_consumption
 );
-
-router.get("/get_all", consumption_controller.consumption_list);
 
 /**
  * @swagger
