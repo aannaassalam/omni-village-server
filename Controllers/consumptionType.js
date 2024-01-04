@@ -12,10 +12,13 @@ const handleErrors = (err) => {
 module.exports.get_consumption_type = async (req, res) => {
   const { language = "en" } = req.query;
   try {
-    const consumption_type = await ConsumptionType.find(
-      {},
-      { name: `$name.${language}` }
-    );
+    const consumption_type = await ConsumptionType.aggregate([
+      {
+        $addFields: {
+          name: `$name.${language}`,
+        },
+      },
+    ]);
     res.json(consumption_type);
   } catch (err) {
     res.status(400).json(handleErrors(err));
