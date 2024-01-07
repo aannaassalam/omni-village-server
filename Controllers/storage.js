@@ -11,10 +11,17 @@ module.exports.get_storage = async (req, res) => {
   const { user } = res.locals;
   // console.log(user._id);
   try {
-    const storage_doc = await Storage.find(
-      {
-        user_id: user._id,
-      }
+    const storage_doc = await Storage.aggregate(
+      [
+        {
+          $match: { user_id: user._id },
+        },
+        {
+          $addFields: {
+            stock_quantity: { $toString: "$stock_quantity" },
+          },
+        },
+      ]
       // {
       //   $lookup: {
       //     from: "storage_methods",
@@ -44,12 +51,12 @@ module.exports.add_storage = async (req, res) => {
     const storage_docs = [];
     // if (parseInt(season) <= parseInt(cultivation_type)) {
     for await (const storage of storages) {
-      // console.log(storage);
       const storage_doc = await Storage.create({
         user_id: user._id,
         stock_name: storage.stock_name,
         storage_method_name: storage.storage_method_name,
         stock_quantity: storage.stock_quantity,
+        storage_method_id: storage.storage_method_id,
       });
       storage_docs.push(storage_doc);
     }
@@ -76,6 +83,7 @@ module.exports.update_storage = async (req, res) => {
         {
           storage_method_name: storage.storage_method_name,
           stock_quantity: storage.stock_quantity,
+          storage_method_id: storage.storage_method_id,
         },
         { runValidators: true, new: true }
       );
