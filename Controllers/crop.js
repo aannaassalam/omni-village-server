@@ -65,9 +65,7 @@ module.exports.get_all = async (req, res) => {
           name: 1,
           country: 1,
           status: 1,
-          // label: 1,
-          "label.name": "$label.name.en",
-          "label._id": "$label._id",
+          label: 1,
         },
       },
     ]);
