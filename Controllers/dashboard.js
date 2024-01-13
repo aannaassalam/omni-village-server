@@ -163,6 +163,141 @@ module.exports.land_used_category_data = async (req, res) => {
   }
 };
 
+// module.exports.land_used_tags_data = async (req, res) => {
+//   try {
+//     const cultivation_data = await Cultivation.aggregate([
+//       {
+//         $lookup: {
+//           from: "users",
+//           foreignField: "_id",
+//           localField: "user_id",
+//           as: "user",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$user",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "crops",
+//           foreignField: "_id",
+//           localField: "crop_id",
+//           as: "crop",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$crop",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "consumption_types",
+//           foreignField: "_id",
+//           localField: "crop.label",
+//           as: "crop.label",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$crop.label",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $project: {
+//           area_allocated: 1,
+//           label: "$crop.label.name.en",
+//           land_measurement: "$user.land_measurement",
+//         },
+//       },
+//     ]);
+//     const fishery_data = await Fishery.aggregate([
+//       {
+//         $lookup: {
+//           from: "users",
+//           foreignField: "_id",
+//           localField: "user_id",
+//           as: "user",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$user",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "fishery_crops",
+//           foreignField: "_id",
+//           localField: "fishery_crop_id",
+//           as: "crop",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$crop",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $lookup: {
+//           from: "consumption_types",
+//           foreignField: "_id",
+//           localField: "crop.label",
+//           as: "crop.label",
+//         },
+//       },
+//       {
+//         $unwind: {
+//           path: "$crop.label",
+//           preserveNullAndEmptyArrays: true,
+//         },
+//       },
+//       {
+//         $project: {
+//           area_allocated: 1,
+//           label: "$crop.label.name.en",
+//           land_measurement: "$user.land_measurement",
+//         },
+//       },
+//     ]);
+//     // const poultry_data = await Users.aggregate([
+//     //   {
+//     //     $project: {
+//     //       area_allocated: "$sub_area.poultry",
+//     //       land_measurement: "$land_measurement",
+//     //     },
+//     //   },
+//     // ]);
+//     // const tree_data = await Users.aggregate([
+//     //   {
+//     //     $project: {
+//     //       area_allocated: "$sub_area.trees",
+//     //       land_measurement: "$land_measurement",
+//     //     },
+//     //   },
+//     // ]);
+//     // const storage_data = await Users.aggregate([
+//     //   {
+//     //     $project: {
+//     //       area_allocated: "$sub_area.storage",
+//     //       land_measurement: "$land_measurement",
+//     //     },
+//     //   },
+//     // ]);
+
+//     res.json(fishery_data);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// };
+
 module.exports.selling_channel_data = async (req, res) => {
   const aggregated_data = {
     local_market: 0,
@@ -195,38 +330,125 @@ module.exports.selling_channel_data = async (req, res) => {
 module.exports.storage_data = async (req, res) => {
   const grouped_data = await storage.aggregate([
     {
-      $group: {
-        _id: "$storage_method_name",
-        doc: { $push: "$$ROOT" },
+      $lookup: {
+        from: "users",
+        foreignField: "_id",
+        localField: "user_id",
+        as: "user",
       },
     },
     {
-      $set: {
-        dynamicKey: [
-          {
-            k: "$_id",
-            v: "$doc",
-          },
-        ],
+      $addFields: {
+        land_measurement: "$user.land_measurement",
       },
     },
     {
-      $replaceRoot: {
-        newRoot: {
-          $mergeObjects: { $arrayToObject: "$dynamicKey" },
-        },
+      $unwind: {
+        path: "$land_measurement",
       },
     },
     {
-      $unset: "dynamicKey",
+      $project: {
+        land_measurement: 1,
+        stock_name: 1,
+        stock_quantity: { $toString: "$stock_quantity" },
+        storage_method_name: 1,
+      },
     },
+    // {
+    //   $group: {
+    //     _id: "$stock_name",
+    //     doc: { $push: "$$ROOT" },
+    //   },
+    // },
+    // {
+    //   $set: {
+    //     dynamicKey: [
+    //       {
+    //         k: "$_id",
+    //         v: "$doc",
+    //       },
+    //     ],
+    //   },
+    // },
+    // {
+    //   $replaceRoot: {
+    //     newRoot: {
+    //       $mergeObjects: { $arrayToObject: "$dynamicKey" },
+    //     },
+    //   },
+    // },
+    // {
+    //   $unset: "dynamicKey",
+    // },
   ]);
 
-  const processed_grouped_data = grouped_data.reduce((prev, current) => {
-    const item = Object.entries(current)[0];
-    prev[item[0]] = item[1];
-    return prev;
-  }, {});
+  // const processed_grouped_data = grouped_data.reduce((prev, current) => {
+  //   const item = Object.entries(current)[0];
+  //   prev[item[0]] = item[1];
+  //   return prev;
+  // }, {});
 
-  res.json(processed_grouped_data);
+  const aggregated_data = {
+    grain: {},
+    poultry: {},
+    meat: {},
+    fruits: {},
+  };
+
+  grouped_data.forEach((_data) => {
+    if (_data.stock_name.includes("grain")) {
+      aggregated_data.grain[_data.storage_method_name] = aggregated_data.grain[
+        _data.storage_method_name
+      ]
+        ? aggregated_data.grain[_data.storage_method_name] +
+          landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          )
+        : landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          );
+    } else if (_data.stock_name.includes("poultry")) {
+      aggregated_data.poultry[_data.storage_method_name] = aggregated_data
+        .poultry[_data.storage_method_name]
+        ? aggregated_data.poultry[_data.storage_method_name] +
+          landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          )
+        : landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          );
+    } else if (_data.stock_name.includes("meat")) {
+      aggregated_data.meat[_data.storage_method_name] = aggregated_data.meat[
+        _data.storage_method_name
+      ]
+        ? aggregated_data.meat[_data.storage_method_name] +
+          landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          )
+        : landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          );
+    } else {
+      aggregated_data.fruits[_data.storage_method_name] = aggregated_data
+        .fruits[_data.storage_method_name]
+        ? aggregated_data.fruits[_data.storage_method_name] +
+          landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          )
+        : landMeaurementConverter(
+            parseFloat(_data.stock_quantity),
+            _data.land_measurement
+          );
+    }
+  });
+
+  res.json(aggregated_data);
 };

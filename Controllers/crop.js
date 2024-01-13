@@ -31,6 +31,7 @@ module.exports.get_crop = async (req, res) => {
           country: 1,
           status: 1,
           label: 1,
+          "label.name": "$label.name.en",
         },
       },
     ]);
