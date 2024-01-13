@@ -59,6 +59,15 @@ module.exports.get_all = async (req, res) => {
           preserveNullAndEmptyArrays: true,
         },
       },
+      {
+        $project: {
+          name: `$name.${language}`,
+          country: 1,
+          status: 1,
+          label: 1,
+          "label.name": "$label.name.en",
+        },
+      },
     ]);
     res.json(crops);
   } catch (err) {
