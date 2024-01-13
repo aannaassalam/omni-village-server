@@ -62,7 +62,7 @@ module.exports.get_all = async (req, res) => {
       },
       {
         $project: {
-          name: `$name.en`,
+          name: 1,
           country: 1,
           status: 1,
           // label: 1,
