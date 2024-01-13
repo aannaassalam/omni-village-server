@@ -43,6 +43,7 @@ module.exports.get_crop = async (req, res) => {
 };
 
 module.exports.get_all = async (req, res) => {
+  const { language } = req.query;
   try {
     const crops = await Crop.aggregate([
       {
@@ -61,10 +62,10 @@ module.exports.get_all = async (req, res) => {
       },
       {
         $project: {
-          name: `$name.${language}`,
+          name: `$name.en`,
           country: 1,
           status: 1,
-          label: 1,
+          // label: 1,
           "label.name": "$label.name.en",
         },
       },
