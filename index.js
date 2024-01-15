@@ -32,7 +32,7 @@ const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const dashboard = require("./Routes/dashboard");
-const Crop = require("./Models/treeCrop");
+const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
 
@@ -121,6 +121,11 @@ app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 
 app.get("/", async (req, res) => {
+  // const ress = await Crop.updateMany(
+  //   {},
+  //   { $set: { ideal_consumption_per_person: 20 } }
+  // );
+  // console.log(ress);
   res.send("Welcome to OmniVillage Server!");
 });
 

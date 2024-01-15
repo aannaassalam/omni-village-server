@@ -16,4 +16,6 @@ router.get(
 router.get("/selling_channel_data", dashboard_controller.selling_channel_data);
 router.get("/storage_data", dashboard_controller.storage_data);
 
+router.get("/food-balance", dashboard_controller.food_balance);
+
 module.exports = router;

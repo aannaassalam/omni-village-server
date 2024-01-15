@@ -73,6 +73,11 @@ const cropSchema = new mongoose.Schema(
         "Status is required!(0 - from user & 1 - from admin or approved)",
       ],
     },
+    ideal_consumption_per_person: {
+      type: mongoose.Schema.Types.Number,
+      default: 0,
+      required: [true, "Ideal Consumption Per Person is required"],
+    },
   },
   { timestamps: true }
 );

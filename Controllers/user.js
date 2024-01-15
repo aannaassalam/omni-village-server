@@ -2,7 +2,6 @@ const User = require("../Models/user");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
-const { options } = require("../Routes/user");
 const sharp = require("sharp");
 const fs = require("fs");
 const moment = require("moment");
