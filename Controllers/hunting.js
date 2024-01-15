@@ -51,7 +51,7 @@ module.exports.get_all_hunting = async (req, res) => {
       {
         $lookup: {
           from: "hunting_crops",
-          localField: "crop_id",
+          localField: "hunting_crop_id",
           foreignField: "_id",
           as: "crop",
         },

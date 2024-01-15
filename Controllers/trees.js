@@ -66,7 +66,7 @@ module.exports.get_all_trees = async (req, res) => {
       {
         $lookup: {
           from: "tree_crops",
-          localField: "crop_id",
+          localField: "tree_crop_id",
           foreignField: "_id",
           as: "crop",
         },

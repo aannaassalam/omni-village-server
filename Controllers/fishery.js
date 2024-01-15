@@ -118,7 +118,7 @@ module.exports.get_all_fishery = async (req, res) => {
       {
         $lookup: {
           from: "fishery_crops",
-          localField: "crop_id",
+          localField: "fishery_crop_id",
           foreignField: "_id",
           as: "crop",
         },
