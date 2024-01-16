@@ -2,13 +2,24 @@ const Cultivation = require("../Models/cultivation");
 const Fishery = require("../Models/fishery");
 const Poultry = require("../Models/poultry");
 const Tree = require("../Models/trees");
+const PoultryProduct = require("../Models/poultryProduct");
+const TreeProduct = require("../Models/treeProducts");
 const storage = require("../Models/storage");
 const Hunting = require("../Models/hunting");
 const Users = require("../Models/user");
 const SellingChannel = require("../Models/sellingChannel");
+const Consumption = require("../Models/consumption");
+
+const Crop = require("../Models/crop");
+const FisheryCrop = require("../Models/fisheryCrop");
+const PoultryCrop = require("../Models/poultryCrop");
+const TreeCrop = require("../Models/treeCrop");
+const HuntingCrop = require("../Models/huntingCrop");
+
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const { landMeaurementConverter } = require("../utils/landConverter");
+const { weightConverter } = require("../utils/weightConverter");
 
 var groupBy = function (xs, key) {
   return xs.reduce(function (rv, x) {
@@ -172,141 +183,6 @@ module.exports.land_used_category_data = async (req, res) => {
   }
 };
 
-// module.exports.land_used_tags_data = async (req, res) => {
-//   try {
-//     const cultivation_data = await Cultivation.aggregate([
-//       {
-//         $lookup: {
-//           from: "users",
-//           foreignField: "_id",
-//           localField: "user_id",
-//           as: "user",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$user",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "crops",
-//           foreignField: "_id",
-//           localField: "crop_id",
-//           as: "crop",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$crop",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "consumption_types",
-//           foreignField: "_id",
-//           localField: "crop.label",
-//           as: "crop.label",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$crop.label",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $project: {
-//           area_allocated: 1,
-//           label: "$crop.label.name.en",
-//           land_measurement: "$user.land_measurement",
-//         },
-//       },
-//     ]);
-//     const fishery_data = await Fishery.aggregate([
-//       {
-//         $lookup: {
-//           from: "users",
-//           foreignField: "_id",
-//           localField: "user_id",
-//           as: "user",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$user",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "fishery_crops",
-//           foreignField: "_id",
-//           localField: "fishery_crop_id",
-//           as: "crop",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$crop",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $lookup: {
-//           from: "consumption_types",
-//           foreignField: "_id",
-//           localField: "crop.label",
-//           as: "crop.label",
-//         },
-//       },
-//       {
-//         $unwind: {
-//           path: "$crop.label",
-//           preserveNullAndEmptyArrays: true,
-//         },
-//       },
-//       {
-//         $project: {
-//           area_allocated: 1,
-//           label: "$crop.label.name.en",
-//           land_measurement: "$user.land_measurement",
-//         },
-//       },
-//     ]);
-//     // const poultry_data = await Users.aggregate([
-//     //   {
-//     //     $project: {
-//     //       area_allocated: "$sub_area.poultry",
-//     //       land_measurement: "$land_measurement",
-//     //     },
-//     //   },
-//     // ]);
-//     // const tree_data = await Users.aggregate([
-//     //   {
-//     //     $project: {
-//     //       area_allocated: "$sub_area.trees",
-//     //       land_measurement: "$land_measurement",
-//     //     },
-//     //   },
-//     // ]);
-//     // const storage_data = await Users.aggregate([
-//     //   {
-//     //     $project: {
-//     //       area_allocated: "$sub_area.storage",
-//     //       land_measurement: "$land_measurement",
-//     //     },
-//     //   },
-//     // ]);
-
-//     res.json(fishery_data);
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// };
-
 module.exports.selling_channel_data = async (req, res) => {
   const aggregated_data = {
     local_market: 0,
@@ -460,6 +336,827 @@ module.exports.storage_data = async (req, res) => {
   });
 
   res.json(aggregated_data);
+};
+
+module.exports.self_grown_consumption_data = async (req, res) => {
+  const { type_id } = req.query;
+  try {
+    const cultivation_data = await Cultivation.aggregate([
+      {
+        $lookup: {
+          from: "crops",
+          foreignField: "_id",
+          localField: "crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+        },
+      },
+      {
+        $match: {
+          "crop.label": new ObjectId(type_id),
+        },
+      },
+      {
+        $group: {
+          _id: { crop_id: "$crop._id", label: "$crop.label" },
+          output: { $sum: "$output" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$doc", { aggregated_output: "$output" }],
+          },
+        },
+      },
+      {
+        $project: {
+          output: "$aggregated_output",
+          crop_name: "$crop.name.en",
+        },
+      },
+    ]);
+    const fishery_data = await Fishery.aggregate([
+      {
+        $lookup: {
+          from: "fishery_crops",
+          foreignField: "_id",
+          localField: "fishery_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+        },
+      },
+      {
+        $match: {
+          "crop.label": new ObjectId(type_id),
+        },
+      },
+      {
+        $group: {
+          _id: { crop_id: "$crop._id", label: "$crop.label" },
+          output: { $sum: "$production_information.production_output" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$doc", { aggregated_output: "$output" }],
+          },
+        },
+      },
+      {
+        $project: {
+          output: "$aggregated_output",
+          crop_name: "$crop.name.en",
+        },
+      },
+    ]);
+    const hunting_data = await Hunting.aggregate([
+      {
+        $lookup: {
+          from: "hunting_crops",
+          foreignField: "_id",
+          localField: "hunting_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+        },
+      },
+      {
+        $match: {
+          "crop.label": new ObjectId(type_id),
+        },
+      },
+      {
+        $group: {
+          _id: { crop_id: "$crop._id", label: "$crop.label" },
+          output: { $sum: "$meat" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$doc", { aggregated_output: "$output" }],
+          },
+        },
+      },
+      {
+        $project: {
+          output: "$aggregated_output",
+          crop_name: "$crop.name.en",
+        },
+      },
+    ]);
+    const poultry_data = await PoultryProduct.aggregate([
+      {
+        $lookup: {
+          from: "poultry_crops",
+          foreignField: "_id",
+          localField: "poultry_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+        },
+      },
+      {
+        $match: {
+          "crop.label": new ObjectId(type_id),
+        },
+      },
+      {
+        $group: {
+          _id: { crop_id: "$crop._id", label: "$crop.label" },
+          output: { $sum: "$production_output" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$doc", { aggregated_output: "$output" }],
+          },
+        },
+      },
+      {
+        $project: {
+          output: "$aggregated_output",
+          crop_name: "$crop.name.en",
+        },
+      },
+    ]);
+    const tree_data = await TreeProduct.aggregate([
+      {
+        $lookup: {
+          from: "tree_crops",
+          foreignField: "_id",
+          localField: "tree_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+        },
+      },
+      {
+        $match: {
+          "crop.label": new ObjectId(type_id),
+        },
+      },
+      {
+        $group: {
+          _id: { crop_id: "$crop._id", label: "$crop.label" },
+          output: { $sum: "$production_output" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: ["$doc", { aggregated_output: "$output" }],
+          },
+        },
+      },
+      {
+        $project: {
+          output: "$aggregated_output",
+          crop_name: "$crop.name.en",
+        },
+      },
+    ]);
+
+    // console.log(cultivation_data);
+    // console.log(fishery_data);
+    // console.log(hunting_data);
+    // console.log(poultry_data);
+    // console.log(tree_data);
+    res.json([
+      ...cultivation_data,
+      ...fishery_data,
+      ...hunting_data,
+      ...poultry_data,
+      ...tree_data,
+    ]);
+    // res.json(fishery_data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports.self_consumed_data = async (req, res) => {
+  const { type_id } = req.query;
+  try {
+    const consumption_docs = await Consumption.aggregate([
+      {
+        $match: {
+          consumption_type_id: new ObjectId(type_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "tree_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$tree_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "poultry_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$poultry_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "fishery_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "fishery_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$fishery_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "hunting_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "hunting_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$hunting_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: { __v: 0, "consumption_crop.__v": 0 },
+      },
+      {
+        $addFields: {
+          "consumption_crop.name": `$consumption_crop.name.en`,
+          "tree_consumption_crop.name": `$tree_consumption_crop.name.en`,
+          "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
+          "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
+          "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+        },
+      },
+    ]);
+
+    const new_consumption_docs = consumption_docs.map((_consumption) => {
+      _consumption.output = weightConverter(
+        _consumption.total_quantity,
+        _consumption.user.land_measurement
+      );
+      if (_consumption.consumption_crop._id) return _consumption;
+      else if (_consumption.tree_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.tree_consumption_crop;
+      } else if (_consumption.poultry_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.poultry_consumption_crop;
+      } else if (_consumption.hunting_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.hunting_consumption_crop;
+      } else if (_consumption.fishery_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      }
+      return _consumption;
+    });
+
+    const grouped_by_crop_data = groupBy(
+      new_consumption_docs,
+      "consumption_crop_id"
+    );
+
+    const processed_data = Object.entries(grouped_by_crop_data).map((_item) => {
+      const structured_data = {
+        _id: _item[0],
+        crop_name: _item[1]?.[0]?.consumption_crop.name,
+      };
+      const total_output = _item[1].reduce(
+        (prev, current) => (prev += current.output),
+        0
+      );
+      structured_data.output = total_output;
+      return structured_data;
+    });
+    res.json(processed_data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports.purchased_from_neighbours_consumed = async (req, res) => {
+  const { type_id } = req.query;
+  try {
+    const consumption_docs = await Consumption.aggregate([
+      {
+        $match: {
+          consumption_type_id: new ObjectId(type_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "tree_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$tree_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "poultry_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$poultry_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "fishery_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "fishery_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$fishery_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "hunting_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "hunting_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$hunting_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: { __v: 0, "consumption_crop.__v": 0 },
+      },
+      {
+        $addFields: {
+          "consumption_crop.name": `$consumption_crop.name.en`,
+          "tree_consumption_crop.name": `$tree_consumption_crop.name.en`,
+          "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
+          "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
+          "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+        },
+      },
+    ]);
+
+    const new_consumption_docs = consumption_docs.map((_consumption) => {
+      _consumption.output = weightConverter(
+        _consumption.purchased_from_neighbours,
+        _consumption.user.land_measurement
+      );
+      if (_consumption.consumption_crop._id) return _consumption;
+      else if (_consumption.tree_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.tree_consumption_crop;
+      } else if (_consumption.poultry_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.poultry_consumption_crop;
+      } else if (_consumption.hunting_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.hunting_consumption_crop;
+      } else if (_consumption.fishery_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      }
+      return _consumption;
+    });
+
+    const grouped_by_crop_data = groupBy(
+      new_consumption_docs,
+      "consumption_crop_id"
+    );
+
+    const processed_data = Object.entries(grouped_by_crop_data).map((_item) => {
+      const structured_data = {
+        _id: _item[0],
+        crop_name: _item[1]?.[0]?.consumption_crop.name,
+      };
+      const total_output = _item[1].reduce(
+        (prev, current) => (prev += current.output),
+        0
+      );
+      structured_data.output = total_output;
+      return structured_data;
+    });
+    res.json(processed_data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports.purchased_from_market_consumed = async (req, res) => {
+  const { type_id } = req.query;
+  try {
+    const consumption_docs = await Consumption.aggregate([
+      {
+        $match: {
+          consumption_type_id: new ObjectId(type_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "tree_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$tree_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "poultry_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$poultry_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "fishery_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "fishery_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$fishery_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "hunting_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "hunting_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$hunting_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: { __v: 0, "consumption_crop.__v": 0 },
+      },
+      {
+        $addFields: {
+          "consumption_crop.name": `$consumption_crop.name.en`,
+          "tree_consumption_crop.name": `$tree_consumption_crop.name.en`,
+          "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
+          "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
+          "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+        },
+      },
+    ]);
+
+    const new_consumption_docs = consumption_docs.map((_consumption) => {
+      _consumption.output = weightConverter(
+        _consumption.purchased_from_market,
+        _consumption.user.land_measurement
+      );
+      if (_consumption.consumption_crop._id) return _consumption;
+      else if (_consumption.tree_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.tree_consumption_crop;
+      } else if (_consumption.poultry_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.poultry_consumption_crop;
+      } else if (_consumption.hunting_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.hunting_consumption_crop;
+      } else if (_consumption.fishery_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      }
+      return _consumption;
+    });
+
+    const grouped_by_crop_data = groupBy(
+      new_consumption_docs,
+      "consumption_crop_id"
+    );
+
+    const processed_data = Object.entries(grouped_by_crop_data).map((_item) => {
+      const structured_data = {
+        _id: _item[0],
+        crop_name: _item[1]?.[0]?.consumption_crop.name,
+      };
+      const total_output = _item[1].reduce(
+        (prev, current) => (prev += current.output),
+        0
+      );
+      structured_data.output = total_output;
+      return structured_data;
+    });
+    res.json(processed_data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports.ideal_consumption_expected = async (req, res) => {
+  const { type_id } = req.query;
+  try {
+    const consumption_docs = await Consumption.aggregate([
+      {
+        $match: {
+          consumption_type_id: new ObjectId(type_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "tree_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$tree_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "poultry_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$poultry_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "fishery_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "fishery_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$fishery_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "hunting_crops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "hunting_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$hunting_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: { __v: 0, "consumption_crop.__v": 0 },
+      },
+      {
+        $addFields: {
+          "consumption_crop.name": `$consumption_crop.name.en`,
+          "tree_consumption_crop.name": `$tree_consumption_crop.name.en`,
+          "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
+          "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
+          "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+        },
+      },
+    ]);
+
+    const new_consumption_docs = consumption_docs.map((_consumption) => {
+      _consumption.output = weightConverter(
+        _consumption.total_quantity,
+        _consumption.user.land_measurement
+      );
+      if (_consumption.consumption_crop._id) return _consumption;
+      else if (_consumption.tree_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.tree_consumption_crop;
+      } else if (_consumption.poultry_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.poultry_consumption_crop;
+      } else if (_consumption.hunting_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.hunting_consumption_crop;
+      } else if (_consumption.fishery_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      }
+      return _consumption;
+    });
+
+    const grouped_by_crop_data = groupBy(
+      new_consumption_docs,
+      "consumption_crop_id"
+    );
+
+    const processed_data = Object.entries(grouped_by_crop_data).map((_item) => {
+      const structured_data = {
+        _id: _item[0],
+        crop_name: _item[1]?.[0]?.consumption_crop.name,
+      };
+      const total_consumed = _item[1].reduce(
+        (prev, current) => (prev += current.output),
+        0
+      );
+      const total_ideal_consumption = _item[1].reduce(
+        (prev, current) =>
+          (prev += current.consumption_crop.ideal_consumption_per_person),
+        0
+      );
+      structured_data.total_consumed = total_consumed;
+      structured_data.ideal_consumption = total_ideal_consumption;
+      return structured_data;
+    });
+
+    res.json(processed_data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
 module.exports.food_balance = async (req, res) => {
