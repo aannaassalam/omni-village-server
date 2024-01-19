@@ -734,7 +734,480 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       []
     );
 
-    res.json(processed_grouped_data);
+    const land_allocated = [];
+    const fed_to_livestock = [];
+    const output = [];
+    const self_consumed = [];
+    const sold_to_neighbour = [];
+    const sold_to_market = [];
+    const wastage = [];
+    const income = [];
+    const expenditure = [];
+    const soil_health_stable = [];
+    const soil_health_decreasing_yeild = [];
+    const fertilizer_used_organic_purchased = [];
+    const fertilizer_used_organic_self_made = [];
+    const fertilizer_used_chemical_based = [];
+    const fertilizer_used_none = [];
+    const pesticide_used_organic_purchased = [];
+    const pesticide_used_organic_self_made = [];
+    const pesticide_used_chemical_based = [];
+    const pesticide_used_none = [];
+
+    processed_grouped_data.forEach((_data) => {
+      if (_data.land_allocated) {
+        land_allocated.push({
+          crop_name: _data.crop_name,
+          land_allocated: _data.land_allocated,
+        });
+      }
+      if (_data.fed_to_livestock) {
+        fed_to_livestock.push({
+          crop_name: _data.crop_name,
+          fed_to_livestock: _data.fed_to_livestock,
+        });
+      }
+      console.log(_data.soil_health);
+      if (_data.soil_health.stable || _data.soil_health.decreasing_yeild) {
+        soil_health_stable.push({
+          crop_name: _data.crop_name,
+          count: _data.soil_health.stable,
+        });
+        soil_health_decreasing_yeild.push({
+          crop_name: _data.crop_name,
+          count: _data.soil_health.decreasing_yeild,
+        });
+      }
+      if (
+        _data.pesticide_used.organic_purchased ||
+        _data.pesticide_used.organic_self_made ||
+        _data.pesticide_used.chemical_based ||
+        _data.pesticide_used.none
+      ) {
+        pesticide_used_organic_self_made.push({
+          crop_name: _data.crop_name,
+          count: _data.pesticide_used.organic_self_made,
+        });
+        pesticide_used_organic_purchased.push({
+          crop_name: _data.crop_name,
+          count: _data.pesticide_used.organic_purchased,
+        });
+        pesticide_used_chemical_based.push({
+          crop_name: _data.crop_name,
+          count: _data.pesticide_used.chemical_based,
+        });
+        pesticide_used_none.push({
+          crop_name: _data.crop_name,
+          count: _data.pesticide_used.none,
+        });
+      }
+      if (
+        _data.fertilizer_used.organic_purchased ||
+        _data.fertilizer_used.organic_self_made ||
+        _data.fertilizer_used.chemical_based ||
+        _data.fertilizer_used.none
+      ) {
+        fertilizer_used_organic_self_made.push({
+          crop_name: _data.crop_name,
+          count: _data.fertilizer_used.organic_self_made,
+        });
+        fertilizer_used_organic_purchased.push({
+          crop_name: _data.crop_name,
+          count: _data.fertilizer_used.organic_purchased,
+        });
+        fertilizer_used_chemical_based.push({
+          crop_name: _data.crop_name,
+          count: _data.fertilizer_used.chemical_based,
+        });
+        fertilizer_used_none.push({
+          crop_name: _data.crop_name,
+          count: _data.fertilizer_used.none,
+        });
+      }
+      output.push({
+        crop_name: _data.crop_name,
+        output: _data.output,
+      });
+      self_consumed.push({
+        crop_name: _data.crop_name,
+        self_consumed: _data.self_consumed,
+      });
+      sold_to_neighbour.push({
+        crop_name: _data.crop_name,
+        sold_to_neighbour: _data.sold_to_neighbour,
+      });
+      sold_to_market.push({
+        crop_name: _data.crop_name,
+        sold_to_market: _data.sold_to_market,
+      });
+      wastage.push({
+        crop_name: _data.crop_name,
+        wastage: _data.wastage,
+      });
+      income.push({
+        crop_name: _data.crop_name,
+        income: _data.income,
+      });
+      expenditure.push({
+        crop_name: _data.crop_name,
+        expenditure: _data.expenditure,
+      });
+    });
+
+    const final_object = {
+      land_allocated,
+      fed_to_livestock,
+      output,
+      self_consumed,
+      sold_to_market,
+      sold_to_neighbour,
+      wastage,
+      income,
+      expenditure,
+      soil_health_decreasing_yeild,
+      soil_health_stable,
+      fertilizer_used_chemical_based,
+      fertilizer_used_none,
+      fertilizer_used_organic_purchased,
+      fertilizer_used_organic_self_made,
+      pesticide_used_chemical_based,
+      pesticide_used_none,
+      pesticide_used_organic_purchased,
+      pesticide_used_organic_self_made,
+    };
+
+    res.json(final_object);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports.bifurcated_chart_crop = async (req, res) => {
+  const { crop_id } = req.query;
+  try {
+    const cultivation_data = await Cultivation.aggregate([
+      // {
+      //   $lookup: {
+      //     from: "crops",
+      //     foreignField: "_id",
+      //     localField: "crop_id",
+      //     as: "crop",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$crop",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      {
+        $match: {
+          crop_id: new ObjectId(crop_id),
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "consumption_types",
+      //     foreignField: "_id",
+      //     localField: "crop.label",
+      //     as: "label",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$label",
+      //   },
+      // },
+      {
+        $project: {
+          self_consumed: "$utilization.self_consumed",
+          sold_to_neighbour: "$utilization.sold_to_neighbours",
+          sold_to_market: "$utilization.sold_for_industrial_use",
+          fed_to_livestock: "$utilization.fed_to_livestock",
+          wastage: "$utilization.wastage",
+        },
+      },
+    ]);
+    const fishery_data = await Fishery.aggregate([
+      {
+        $match: {
+          fishery_crop_id: new ObjectId(crop_id),
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "fishery_crops",
+      //     foreignField: "_id",
+      //     localField: "fishery_crop_id",
+      //     as: "crop",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$crop",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      // {
+      //   $lookup: {
+      //     from: "consumption_types",
+      //     foreignField: "_id",
+      //     localField: "crop.label",
+      //     as: "label",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$label",
+      //   },
+      // },
+      {
+        $project: {
+          self_consumed: "$production_information.self_consumed",
+          sold_to_neighbour: "$production_information.sold_to_neighbours",
+          sold_to_market: "$production_information.sold_for_industrial_use",
+          fed_to_livestock: null,
+          wastage: "$production_information.wastage",
+        },
+      },
+    ]);
+    const poultry_data = await Poultry.aggregate([
+      {
+        $match: {
+          poultry_crop_id: new ObjectId(crop_id),
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "poultry_crops",
+      //     foreignField: "_id",
+      //     localField: "poultry_crop_id",
+      //     as: "crop",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$crop",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      // {
+      //   $lookup: {
+      //     from: "consumption_types",
+      //     foreignField: "_id",
+      //     localField: "crop.label",
+      //     as: "label",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$label",
+      //   },
+      // },
+      {
+        $lookup: {
+          from: "poultry_products",
+          foreignField: "_id",
+          localField: "products",
+          as: "products",
+        },
+      },
+      {
+        $unwind: {
+          path: "$products",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$products.poultry_crop_id",
+          self_consumed: { $sum: "$products.self_consumed" },
+          sold_to_neighbour: { $sum: "$products.sold_to_neighbours" },
+          sold_to_market: { $sum: "$products.sold_for_industrial_use" },
+          wastage: { $sum: "$products.wastage" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              {
+                self_consumed: "$self_consumed",
+                sold_to_neighbour: "$sold_to_neighbour",
+                sold_to_market: "$sold_to_market",
+                wastage: "$wastage",
+              },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          self_consumed: "$self_consumed",
+          sold_to_neighbour: "$sold_to_neighbour",
+          sold_to_market: "$sold_to_market",
+          fed_to_livestock: null,
+          wastage: "$wastage",
+        },
+      },
+    ]);
+    const tree_data = await Tree.aggregate([
+      {
+        $match: {
+          tree_crop_id: new ObjectId(crop_id),
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "tree_crops",
+      //     foreignField: "_id",
+      //     localField: "tree_crop_id",
+      //     as: "crop",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$crop",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      // {
+      //   $lookup: {
+      //     from: "consumption_types",
+      //     foreignField: "_id",
+      //     localField: "crop.label",
+      //     as: "label",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$label",
+      //   },
+      // },
+      {
+        $lookup: {
+          from: "tree_products",
+          foreignField: "_id",
+          localField: "products",
+          as: "products",
+        },
+      },
+      {
+        $unwind: {
+          path: "$products",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $group: {
+          _id: "$products.tree_crop_id",
+          self_consumed: { $sum: "$products.self_consumed" },
+          sold_to_neighbour: { $sum: "$products.sold_to_neighbours" },
+          sold_to_market: { $sum: "$products.sold_for_industrial_use" },
+          fed_to_livestock: { $sum: "$products.fed_to_livestock" },
+          wastage: { $sum: "$products.wastage" },
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              {
+                self_consumed: "$self_consumed",
+                sold_to_neighbour: "$sold_to_neighbour",
+                sold_to_market: "$sold_to_market",
+                fed_to_livestock: "$fed_to_livestock",
+                wastage: "$wastage",
+              },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          self_consumed: "$self_consumed",
+          sold_to_neighbour: "$sold_to_neighbour",
+          sold_to_market: "$sold_to_market",
+          fed_to_livestock: "$fed_to_livestock",
+          wastage: "$wastage",
+        },
+      },
+    ]);
+    const hunting_data = await Hunting.aggregate([
+      {
+        $match: {
+          hunting_crop_id: new ObjectId(crop_id),
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "hunting_crops",
+      //     foreignField: "_id",
+      //     localField: "hunting_crop_id",
+      //     as: "crop",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$crop",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
+      // {
+      //   $lookup: {
+      //     from: "consumption_types",
+      //     foreignField: "_id",
+      //     localField: "crop.label",
+      //     as: "label",
+      //   },
+      // },
+      // {
+      //   $unwind: {
+      //     path: "$label",
+      //   },
+      // },
+      {
+        $project: {
+          self_consumed: "$self_consumed",
+          sold_to_neighbour: "$sold_to_neighbours",
+          sold_to_market: "$sold_in_consumer_market",
+          fed_to_livestock: null,
+          wastage: "$wastage",
+        },
+      },
+    ]);
+
+    const merged_arr = [
+      ...cultivation_data,
+      ...fishery_data,
+      ...poultry_data,
+      ...tree_data,
+      ...hunting_data,
+    ];
+
+    const obj = {
+      self_consumed: 0,
+      fed_to_livestock: 0,
+      sold_to_neighbour: 0,
+      sold_to_market: 0,
+      wastage: 0,
+    };
+
+    merged_arr.forEach((_item) => {
+      if (_item.fed_to_livestock) {
+        obj.fed_to_livestock += _item.fed_to_livestock;
+      }
+      obj.self_consumed += _item.self_consumed;
+      obj.sold_to_market += _item.sold_to_market;
+      obj.sold_to_neighbour += _item.sold_to_neighbour;
+      obj.wastage += _item.wastage;
+    });
+
+    res.json(obj);
   } catch (err) {
     res.status(500).json(err);
   }

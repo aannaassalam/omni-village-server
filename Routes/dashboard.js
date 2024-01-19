@@ -18,6 +18,10 @@ router.get(
   dashboard_controller.bifurcated_chart_label
 );
 router.get(
+  "/bifurcated_chart_crop",
+  dashboard_controller.bifurcated_chart_crop
+);
+router.get(
   "/utilization_chart",
   getCurrencies,
   dashboard_controller.utilization_chart
