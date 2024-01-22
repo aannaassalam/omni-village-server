@@ -46,7 +46,7 @@ module.exports.get_consumption_crop = async (req, res) => {
 };
 
 module.exports.get_consumption_crop_dashboard = async (req, res) => {
-  const { consumption_type_id } = req.params;
+  const { consumption_type_id } = req.query;
   try {
     const consumption_crops = await Promise.all([
       await crop.find(

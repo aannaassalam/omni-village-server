@@ -34,4 +34,9 @@ router.get(
   consumption_crop_controller.get_consumption_crop
 );
 
+router.get(
+  "/dashboard",
+  consumption_crop_controller.get_consumption_crop_dashboard
+);
+
 module.exports = router;
