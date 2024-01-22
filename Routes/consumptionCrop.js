@@ -2,6 +2,11 @@ const router = require("express").Router();
 const consumption_crop_controller = require("../Controllers/consumptionCrop");
 const { verifyToken } = require("../Middlewares/user");
 
+router.get(
+  "/dashboard",
+  consumption_crop_controller.get_consumption_crop_dashboard
+);
+
 /**
  * @swagger
  * /consumption_crop/{consumption_type_id}:
@@ -32,11 +37,6 @@ const { verifyToken } = require("../Middlewares/user");
 router.get(
   "/:consumption_type_id",
   consumption_crop_controller.get_consumption_crop
-);
-
-router.get(
-  "/dashboard",
-  consumption_crop_controller.get_consumption_crop_dashboard
 );
 
 module.exports = router;
