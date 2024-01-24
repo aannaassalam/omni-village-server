@@ -8,7 +8,7 @@ router.get(
 );
 
 router.get(
-  "/land_used_category_data",
+  "/`land_used_category_data`",
   dashboard_controller.land_used_category_data
 );
 

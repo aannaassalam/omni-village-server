@@ -1551,22 +1551,28 @@ module.exports.utilization_chart = async (req, res) => {
 
     Object.entries(grouped_data).forEach((_object) => {
       utilization_object.soil_health.push({
-        [_object[0]]: _object[1].soil_health,
+        label: _object[0],
+        value: _object[1].soil_health,
       });
       utilization_object.self_consumed.push({
-        [_object[0]]: _object[1].self_consumed,
+        label: _object[0],
+        value: _object[1].self_consumed,
       });
       utilization_object.sold_to_market.push({
-        [_object[0]]: _object[1].sold_to_market,
+        label: _object[0],
+        value: _object[1].sold_to_market,
       });
       utilization_object.sold_to_neighbours.push({
-        [_object[0]]: _object[1].sold_to_neighbour,
+        label: _object[0],
+        value: _object[1].sold_to_neighbour,
       });
       utilization_object.fed_to_livestock.push({
-        [_object[0]]: _object[1].fed_to_livestock,
+        label: _object[0],
+        value: _object[1].fed_to_livestock,
       });
       utilization_object.wastage.push({
-        [_object[0]]: _object[1].wastage,
+        label: _object[0],
+        value: _object[1].wastage,
       });
     });
 
