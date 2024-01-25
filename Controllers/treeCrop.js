@@ -63,7 +63,8 @@ module.exports.get_all_tree_crop = async (req, res) => {
 };
 
 module.exports.add_tree_crop = async (req, res) => {
-  const { name, country, status, label } = req.body;
+  const { name, country, status, label, ideal_consumption_per_person } =
+    req.body;
   const { language } = req.query;
   try {
     const crop_doc = await TreeCrop.create({
@@ -74,6 +75,7 @@ module.exports.add_tree_crop = async (req, res) => {
       country,
       label,
       status,
+      ideal_consumption_per_person,
     });
     res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
   } catch (err) {
@@ -83,7 +85,14 @@ module.exports.add_tree_crop = async (req, res) => {
 };
 
 module.exports.edit_tree_crop = async (req, res) => {
-  const { name, country, status, label, crop_id } = req.body;
+  const {
+    name,
+    country,
+    status,
+    label,
+    crop_id,
+    ideal_consumption_per_person,
+  } = req.body;
   const { language } = req.query;
   try {
     const crop_doc = await TreeCrop.findByIdAndUpdate(
@@ -96,6 +105,7 @@ module.exports.edit_tree_crop = async (req, res) => {
         label,
         country,
         status,
+        ideal_consumption_per_person,
       },
       { new: true, runValidators: true }
     );
