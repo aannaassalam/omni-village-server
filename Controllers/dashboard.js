@@ -269,7 +269,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       {
         $match: type_id
           ? {
-              "crop.label": new ObjectId(type_id),
+              "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
             }
           : { "user.village_name": village },
@@ -357,7 +357,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       {
         $match: type_id
           ? {
-              "crop.label": new ObjectId(type_id),
+              "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
             }
           : { "user.village_name": village },
@@ -445,7 +445,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       {
         $match: type_id
           ? {
-              "crop.label": new ObjectId(type_id),
+              "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
             }
           : { "user.village_name": village },
@@ -573,7 +573,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       {
         $match: type_id
           ? {
-              "crop.label": new ObjectId(type_id),
+              "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
             }
           : { "user.village_name": village },
@@ -703,7 +703,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       {
         $match: type_id
           ? {
-              "crop.label": new ObjectId(type_id),
+              "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
             }
           : { "user.village_name": village },
@@ -1019,6 +1019,9 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$important_information.income_from_sale",
           expenditure: "$important_information.expenditure_on_inputs",
           currency: "$user.currency",
+          yeild: "$important_information.yeild",
+          area_allocated: 1,
+          land_measurement: "$user.land_measurement",
         },
       },
     ]);
@@ -1084,6 +1087,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$production_information.income_from_sale",
           expenditure: "$production_information.expenditure_on_inputs",
           currency: "$user.currency",
+          yeild: "$production_information.yeild",
+          number: "$important_information.number_of_fishes",
         },
       },
     ]);
@@ -1190,6 +1195,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$income_from_sale",
           expenditure: "$expenditure_on_inputs",
           currency: "$user.currency",
+          yeild: { $divide: ["$output", "$number"] },
+          number: 1,
         },
       },
     ]);
@@ -1298,6 +1305,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$income_from_sale",
           expenditure: "$expenditure_on_inputs",
           currency: "$user.currency",
+          yeild: { $divide: ["$output", "$number_of_trees"] },
+          number: "$number_of_trees",
         },
       },
     ]);
@@ -1363,6 +1372,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$income_from_sale",
           expenditure: "$expenditure_on_inputs",
           currency: "$user.currency",
+          yeild: 1,
+          number: "$number_hunted",
         },
       },
     ]);
@@ -1374,6 +1385,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
       ...tree_data,
       ...hunting_data,
     ];
+
+    // res.json(merged_arr);
 
     const obj = {
       self_consumed: 0,
@@ -1399,6 +1412,9 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
       },
       income: 0,
       expenditure: 0,
+      yeild: 0,
+      area_allocated: 0,
+      avg_number: null,
     };
 
     merged_arr.forEach((_item) => {
@@ -1417,6 +1433,12 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         from: _item.currency,
         to: "USD",
       });
+      if (_item.area_allocated) {
+        obj.area_allocated += landMeaurementConverter(
+          _item.area_allocated,
+          _item.land_measurement
+        );
+      }
       if (_item.soil_health) {
         if (_item.soil_health === "stable") {
           obj.soil_health["stable"] = (obj.soil_health.stable || 0) + 1;
@@ -1463,6 +1485,18 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         }
       }
     });
+
+    const yeild_sum = merged_arr.reduce((prev, current) => {
+      return prev + current.yeild;
+    }, 0);
+
+    obj.yeild = yeild_sum / merged_arr.length;
+
+    const number_sum = merged_arr.reduce((prev, current) => {
+      return prev + current.number;
+    }, 0);
+
+    obj.avg_number = number_sum / merged_arr.length;
 
     res.json(obj);
   } catch (err) {
@@ -1935,6 +1969,8 @@ module.exports.utilization_chart = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+module.exports.processing_method = async (req, res) => {};
 
 module.exports.income_expenditure = async (req, res) => {
   const { village, type_id } = req.query;
