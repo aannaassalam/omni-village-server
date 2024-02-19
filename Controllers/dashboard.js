@@ -1022,6 +1022,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           yeild: "$important_information.yeild",
           area_allocated: 1,
           land_measurement: "$user.land_measurement",
+          type: "cultivation",
         },
       },
     ]);
@@ -1089,6 +1090,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           currency: "$user.currency",
           yeild: "$production_information.yeild",
           number: "$important_information.number_of_fishes",
+          type: "fish",
         },
       },
     ]);
@@ -1197,6 +1199,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           currency: "$user.currency",
           yeild: { $divide: ["$output", "$number"] },
           number: 1,
+          type: "poultry",
         },
       },
     ]);
@@ -1307,6 +1310,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           currency: "$user.currency",
           yeild: { $divide: ["$output", "$number_of_trees"] },
           number: "$number_of_trees",
+          type: "tree",
         },
       },
     ]);
@@ -1374,6 +1378,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           currency: "$user.currency",
           yeild: 1,
           number: "$number_hunted",
+          type: "hunting",
         },
       },
     ]);
@@ -1440,48 +1445,138 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         );
       }
       if (_item.soil_health) {
-        if (_item.soil_health === "stable") {
-          obj.soil_health["stable"] = (obj.soil_health.stable || 0) + 1;
-        }
-        if (_item.soil_health === "decreasing yield") {
-          obj.soil_health["decreasing_yeild"] =
-            (obj.soil_health.decreasing_yeild || 0) + 1;
+        if (_item.type === "cultivation") {
+          if (_item.soil_health === "stable") {
+            obj.soil_health["stable"] =
+              (obj.soil_health.stable || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.soil_health === "decreasing yield") {
+            obj.soil_health["decreasing_yeild"] =
+              (obj.soil_health.decreasing_yeild || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+        } else if (_item.type === "tree") {
+          if (_item.soil_health === "stable") {
+            obj.soil_health["stable"] =
+              (obj.soil_health.stable || 0) + _item.number;
+          }
+          if (_item.soil_health === "decreasing yield") {
+            obj.soil_health["decreasing_yeild"] =
+              (obj.soil_health.decreasing_yeild || 0) + _item.number;
+          }
         }
       }
       if (_item.fertilizer_used) {
-        if (_item.fertilizer_used === "organic self made") {
-          obj["fertilizer_used"]["organic_self_made"] =
-            (obj["fertilizer_used"]["organic_self_made"] || 0) + 1;
-        }
-        if (_item.fertilizer_used === "organic purchased") {
-          obj["fertilizer_used"]["organic_purchased"] =
-            (obj["fertilizer_used"]["organic_purchased"] || 0) + 1;
-        }
-        if (_item.fertilizer_used === "chemical based") {
-          obj["fertilizer_used"]["chemical_based"] =
-            (obj["fertilizer_used"]["chemical_based"] || 0) + 1;
-        }
-        if (_item.fertilizer_used === "none") {
-          obj["fertilizer_used"]["none"] =
-            (obj["fertilizer_used"]["none"] || 0) + 1;
+        if (_item.type === "cultivation") {
+          if (_item.fertilizer_used === "organic self made") {
+            obj["fertilizer_used"]["organic_self_made"] =
+              (obj["fertilizer_used"]["organic_self_made"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.fertilizer_used === "organic purchased") {
+            obj["fertilizer_used"]["organic_purchased"] =
+              (obj["fertilizer_used"]["organic_purchased"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.fertilizer_used === "chemical based") {
+            obj["fertilizer_used"]["chemical_based"] =
+              (obj["fertilizer_used"]["chemical_based"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.fertilizer_used === "none") {
+            obj["fertilizer_used"]["none"] =
+              (obj["fertilizer_used"]["none"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+        } else if (_item.type === "tree") {
+          if (_item.fertilizer_used === "organic self made") {
+            obj["fertilizer_used"]["organic_self_made"] =
+              (obj["fertilizer_used"]["organic_self_made"] || 0) + _item.number;
+          }
+          if (_item.fertilizer_used === "organic purchased") {
+            obj["fertilizer_used"]["organic_purchased"] =
+              (obj["fertilizer_used"]["organic_purchased"] || 0) + _item.number;
+          }
+          if (_item.fertilizer_used === "chemical based") {
+            obj["fertilizer_used"]["chemical_based"] =
+              (obj["fertilizer_used"]["chemical_based"] || 0) + _item.number;
+          }
+          if (_item.fertilizer_used === "none") {
+            obj["fertilizer_used"]["none"] =
+              (obj["fertilizer_used"]["none"] || 0) + _item.number;
+          }
         }
       }
       if (_item.pesticide_used) {
-        if (_item.pesticide_used === "organic self made") {
-          obj["pesticide_used"]["organic_self_made"] =
-            (obj["pesticide_used"]["organic_self_made"] || 0) + 1;
-        }
-        if (_item.pesticide_used === "organic purchased") {
-          obj["pesticide_used"]["organic_purchased"] =
-            (obj["pesticide_used"]["organic_purchased"] || 0) + 1;
-        }
-        if (_item.pesticide_used === "chemical based") {
-          obj["pesticide_used"]["chemical_based"] =
-            (obj["pesticide_used"]["chemical_based"] || 0) + 1;
-        }
-        if (_item.pesticide_used === "none") {
-          obj["pesticide_used"]["none"] =
-            (obj["pesticide_used"]["none"] || 0) + 1;
+        if (_item.type === "cultivation") {
+          if (_item.pesticide_used === "organic self made") {
+            obj["pesticide_used"]["organic_self_made"] =
+              (obj["pesticide_used"]["organic_self_made"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.pesticide_used === "organic purchased") {
+            obj["pesticide_used"]["organic_purchased"] =
+              (obj["pesticide_used"]["organic_purchased"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.pesticide_used === "chemical based") {
+            obj["pesticide_used"]["chemical_based"] =
+              (obj["pesticide_used"]["chemical_based"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.pesticide_used === "none") {
+            obj["pesticide_used"]["none"] =
+              (obj["pesticide_used"]["none"] || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+        } else if (_item.type === "tree") {
+          if (_item.pesticide_used === "organic self made") {
+            obj["pesticide_used"]["organic_self_made"] =
+              (obj["pesticide_used"]["organic_self_made"] || 0) + _item.number;
+          }
+          if (_item.pesticide_used === "organic purchased") {
+            obj["pesticide_used"]["organic_purchased"] =
+              (obj["pesticide_used"]["organic_purchased"] || 0) + _item.number;
+          }
+          if (_item.pesticide_used === "chemical based") {
+            obj["pesticide_used"]["chemical_based"] =
+              (obj["pesticide_used"]["chemical_based"] || 0) + _item.number;
+          }
+          if (_item.pesticide_used === "none") {
+            obj["pesticide_used"]["none"] =
+              (obj["pesticide_used"]["none"] || 0) + _item.number;
+          }
         }
       }
     });
@@ -1970,7 +2065,64 @@ module.exports.utilization_chart = async (req, res) => {
   }
 };
 
-module.exports.processing_method = async (req, res) => {};
+module.exports.processing_method = async (req, res) => {
+  const { crop_id, village } = req.query;
+  try {
+    const cultivation = await Cultivation.aggregate([
+      {
+        $match: {
+          crop_id: new ObjectId(crop_id),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          foreignField: "_id",
+          localField: "crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+        },
+      },
+      {
+        $project: {
+          processing_method: "$important_information.description",
+          user_first_name: "$user.first_name",
+          user_last_name: "$user.last_name",
+          crop_name: "$crop.name.en",
+        },
+      },
+    ]);
+    if (cultivation._id) {
+      res.json(cultivation);
+    } else {
+      res.json(null);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 
 module.exports.income_expenditure = async (req, res) => {
   const { village, type_id } = req.query;

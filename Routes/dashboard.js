@@ -46,6 +46,7 @@ router.get(
   dashboard_controller.self_grown_consumption_data
 );
 router.get("/consumption_by_crop", dashboard_controller.consumption_by_crop);
+router.get("/processing_method", dashboard_controller.processing_method);
 router.get("/self_consumed_data", dashboard_controller.self_consumed_data);
 router.get(
   "/purchased_from_neighbours_consumed",
