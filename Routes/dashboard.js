@@ -33,7 +33,10 @@ router.get(
   getCurrencies,
   dashboard_controller.income_expenditure
 );
-
+router.get(
+  "/other_information_tree_fish_poultry_charts",
+  dashboard_controller.other_information_tree_fish_poultry_charts
+);
 router.get("/selling_channel_data", dashboard_controller.selling_channel_data);
 router.get("/storage_data", dashboard_controller.storage_data);
 
