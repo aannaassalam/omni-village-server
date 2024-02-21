@@ -30,6 +30,8 @@ const { checkUser } = require("../Middlewares/user");
  */
 router.get("/:country_name", checkUser, villages_controller.get_villages);
 
+router.get("/", villages_controller.get_all_villages);
+
 /**
  * @swagger
  * /villages/add_village:

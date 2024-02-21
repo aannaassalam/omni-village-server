@@ -22,6 +22,15 @@ module.exports.get_villages = async (req, res) => {
   }
 };
 
+module.exports.get_all_villages = async (req, res) => {
+  try {
+    const villages = await Villages.find({});
+    res.json(villages);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.add_village = async (req, res) => {
   const { country, name } = req.body;
   const { user } = res.locals;
