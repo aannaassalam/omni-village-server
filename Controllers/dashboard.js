@@ -4266,6 +4266,505 @@ module.exports.ideal_consumption_expected = async (req, res) => {
 
 // Food Balance
 
+module.exports.deficiet_chart = async (req, res) => {
+  const { village } = req.query;
+  try {
+    const type_based_cultivation = await Cultivation.aggregate([
+      {
+        $match: {
+          status: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          foreignField: "_id",
+          localField: "crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $group: {
+          _id: "$crop._id",
+          doc: { $mergeObjects: "$$ROOT" },
+          self_consumed: { $sum: "$utilization.self_consumed" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              { self_consumed: "$self_consumed" },
+              {
+                count: "$count",
+              },
+            ],
+          },
+        },
+      },
+      // {
+      //   $addFields: {
+      //     self_consumed: "$utilization.self_consumed",
+      //     crop_name: "$crop.name.en",
+      //     land_measurement: "$user.land_measurement",
+      //   },
+      // },
+      {
+        $project: {
+          self_consumed: "$self_consumed",
+          label: "$crop.label.name.en",
+          type: "cultivation",
+          ideal_consumption: {
+            $multiply: ["$crop.ideal_consumption_per_person", "$count"],
+          },
+        },
+      },
+    ]);
+
+    const type_based_fishery = await Fishery.aggregate([
+      {
+        $match: {
+          status: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "fishery_crops",
+          foreignField: "_id",
+          localField: "fishery_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $group: {
+          _id: "$crop._id",
+          doc: { $mergeObjects: "$$ROOT" },
+          self_consumed: { $sum: "$production_information.self_consumed" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              { self_consumed: "$self_consumed" },
+              {
+                count: "$count",
+              },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          self_consumed: 1,
+          label: "$crop.label.name.en",
+          // count: 1,
+          ideal_consumption: {
+            $multiply: ["$crop.ideal_consumption_per_person", "$count"],
+          },
+          type: "fishery",
+        },
+      },
+    ]);
+
+    const type_based_poultry = await Poultry.aggregate([
+      {
+        $match: {
+          status: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_crops",
+          foreignField: "_id",
+          localField: "poultry_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $lookup: {
+          from: "poultry_products",
+          foreignField: "_id",
+          localField: "products",
+          as: "products",
+        },
+      },
+      {
+        $unwind: {
+          path: "$products",
+        },
+      },
+      {
+        $group: {
+          _id: "$crop._id",
+          doc: { $mergeObjects: "$$ROOT" },
+          self_consumed: { $sum: "$products.self_consumed" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              { self_consumed: "$self_consumed" },
+              { count: "$count" },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          self_consumed: 1,
+          label: "$crop.label.name.en",
+          type: "poultry",
+          ideal_consumption: {
+            $multiply: ["$crop.ideal_consumption_per_person", "$count"],
+          },
+        },
+      },
+    ]);
+
+    const type_based_tree = await Tree.aggregate([
+      {
+        $match: {
+          status: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_crops",
+          foreignField: "_id",
+          localField: "tree_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $lookup: {
+          from: "tree_products",
+          foreignField: "_id",
+          localField: "products",
+          as: "products",
+        },
+      },
+      {
+        $unwind: {
+          path: "$products",
+        },
+      },
+      {
+        $group: {
+          _id: "$crop._id",
+          doc: { $mergeObjects: "$$ROOT" },
+          self_consumed: { $sum: "$products.self_consumed" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              { self_consumed: "$self_consumed" },
+              {
+                count: "$count",
+              },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          self_consumed: 1,
+          label: "$crop.label.name.en",
+          type: "trees",
+          ideal_consumption: {
+            $multiply: ["$crop.ideal_consumption_per_person", "$count"],
+          },
+        },
+      },
+    ]);
+
+    const type_based_hunting = await Hunting.aggregate([
+      {
+        $match: {
+          status: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "hunting_crops",
+          foreignField: "_id",
+          localField: "hunting_crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $group: {
+          _id: "$crop._id",
+          doc: { $mergeObjects: "$$ROOT" },
+          self_consumed: { $sum: "$self_consumed" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              { self_consumed: "$self_consumed" },
+              { count: "$count" },
+            ],
+          },
+        },
+      },
+      {
+        $project: {
+          self_consumed: 1,
+          label: "$crop.label.name.en",
+          ideal_consumption: {
+            $multiply: ["$crop.ideal_consumption_per_person", "$count"],
+          },
+          type: "hunting",
+        },
+      },
+    ]);
+
+    const new_arr = [
+      ...type_based_cultivation,
+      ...type_based_fishery,
+      ...type_based_hunting,
+      ...type_based_poultry,
+      ...type_based_tree,
+    ];
+    const processed_cultivation_arr = {};
+
+    new_arr.forEach((_item) => {
+      processed_cultivation_arr[_item.label] = {
+        self_consumed:
+          (processed_cultivation_arr[_item.label]?.["self_consumed"] || 0) +
+          _item.self_consumed,
+        ideal_consumption:
+          (processed_cultivation_arr[_item.label]?.["ideal_consumption"] || 0) +
+          _item.ideal_consumption,
+      };
+    });
+
+    Object.entries(processed_cultivation_arr).forEach((_item) => {
+      if (_item[1].ideal_consumption - _item[1].self_consumed > 0) {
+        processed_cultivation_arr[_item[0]] =
+          _item[1].ideal_consumption - _item[1].self_consumed;
+      } else {
+        delete processed_cultivation_arr[_item[0]];
+      }
+    });
+
+    res.json(processed_cultivation_arr);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
 module.exports.food_balance = async (req, res) => {
   const { type_id, village } = req.query;
   try {
