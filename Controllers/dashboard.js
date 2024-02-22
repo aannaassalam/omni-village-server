@@ -2915,7 +2915,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       });
       return;
     }
-    res.json([]);
+    res.json({});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
