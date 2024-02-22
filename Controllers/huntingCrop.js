@@ -63,7 +63,8 @@ module.exports.get_all_hunting_crop = async (req, res) => {
 };
 
 module.exports.add_hunting_crop = async (req, res) => {
-  const { name, country, status, label } = req.body;
+  const { name, country, status, label, ideal_consumption_per_person } =
+    req.body;
   const { language } = req.query;
   try {
     const hunting_doc = await HuntingCrop.create({
@@ -74,6 +75,7 @@ module.exports.add_hunting_crop = async (req, res) => {
       country,
       label,
       status,
+      ideal_consumption_per_person,
     });
     res.json({ ...hunting_doc._doc, name: hunting_doc.name[language] });
   } catch (err) {
@@ -82,7 +84,14 @@ module.exports.add_hunting_crop = async (req, res) => {
 };
 
 module.exports.edit_hunting_crop = async (req, res) => {
-  const { name, country, status, label, crop_id } = req.body;
+  const {
+    name,
+    country,
+    status,
+    label,
+    crop_id,
+    ideal_consumption_per_person,
+  } = req.body;
   const { language } = req.query;
   try {
     const hunting_doc = await HuntingCrop.findByIdAndUpdate(
@@ -95,6 +104,7 @@ module.exports.edit_hunting_crop = async (req, res) => {
         country,
         label,
         status,
+        ideal_consumption_per_person,
       },
       { new: true, runValidators: true }
     );

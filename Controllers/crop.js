@@ -60,14 +60,6 @@ module.exports.get_all = async (req, res) => {
           preserveNullAndEmptyArrays: true,
         },
       },
-      {
-        $project: {
-          name: 1,
-          country: 1,
-          status: 1,
-          label: 1,
-        },
-      },
     ]);
     res.json(crops);
   } catch (err) {
@@ -76,7 +68,8 @@ module.exports.get_all = async (req, res) => {
 };
 
 module.exports.add_crop = async (req, res) => {
-  const { name, country, status, label } = req.body;
+  const { name, country, status, label, ideal_consumption_per_person } =
+    req.body;
   const { language } = req.query;
   try {
     const crop_doc = await Crop.create({
@@ -87,6 +80,7 @@ module.exports.add_crop = async (req, res) => {
       country,
       label,
       status,
+      ideal_consumption_per_person,
     });
     res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
   } catch (err) {
@@ -95,7 +89,14 @@ module.exports.add_crop = async (req, res) => {
 };
 
 module.exports.edit_crop = async (req, res) => {
-  const { name, crop_id, country, status, label } = req.body;
+  const {
+    name,
+    crop_id,
+    country,
+    status,
+    label,
+    ideal_consumption_per_person,
+  } = req.body;
   const { language } = req.query;
   try {
     const crop_doc = await Crop.findByIdAndUpdate(
@@ -108,6 +109,7 @@ module.exports.edit_crop = async (req, res) => {
         label,
         country,
         status,
+        ideal_consumption_per_person,
       },
       { new: true, runValidators: true }
     );

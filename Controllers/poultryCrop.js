@@ -63,7 +63,8 @@ module.exports.get_all_poultry_crop = async (req, res) => {
 };
 
 module.exports.add_poultry_crop = async (req, res) => {
-  const { name, country, status, label } = req.body;
+  const { name, country, status, label, ideal_consumption_per_person } =
+    req.body;
   const { language } = req.query;
   try {
     const poultry_doc = await PoultryCrop.create({
@@ -74,6 +75,7 @@ module.exports.add_poultry_crop = async (req, res) => {
       country,
       label,
       status,
+      ideal_consumption_per_person,
     });
     res.json({ ...poultry_doc._doc, name: poultry_doc.name[language] });
   } catch (err) {
@@ -82,7 +84,14 @@ module.exports.add_poultry_crop = async (req, res) => {
 };
 
 module.exports.edit_poultry_crop = async (req, res) => {
-  const { name, country, status, label, crop_id } = req.body;
+  const {
+    name,
+    country,
+    status,
+    label,
+    crop_id,
+    ideal_consumption_per_person,
+  } = req.body;
   const { language } = req.query;
   try {
     const poultry_doc = await PoultryCrop.findByIdAndUpdate(
@@ -95,6 +104,7 @@ module.exports.edit_poultry_crop = async (req, res) => {
         country,
         label,
         status,
+        ideal_consumption_per_person,
       },
       { new: true, runValidators: true }
     );

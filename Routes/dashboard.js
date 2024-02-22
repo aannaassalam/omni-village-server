@@ -19,6 +19,7 @@ router.get(
 );
 router.get(
   "/bifurcated_chart_crop",
+  getCurrencies,
   dashboard_controller.bifurcated_chart_crop
 );
 router.get(
@@ -32,7 +33,10 @@ router.get(
   getCurrencies,
   dashboard_controller.income_expenditure
 );
-
+router.get(
+  "/other_information_tree_fish_poultry_charts",
+  dashboard_controller.other_information_tree_fish_poultry_charts
+);
 router.get("/selling_channel_data", dashboard_controller.selling_channel_data);
 router.get("/storage_data", dashboard_controller.storage_data);
 
@@ -44,6 +48,8 @@ router.get(
   "/self_grown_by_tag",
   dashboard_controller.self_grown_consumption_data
 );
+router.get("/consumption_by_crop", dashboard_controller.consumption_by_crop);
+router.get("/processing_method", dashboard_controller.processing_method);
 router.get("/self_consumed_data", dashboard_controller.self_consumed_data);
 router.get(
   "/purchased_from_neighbours_consumed",
