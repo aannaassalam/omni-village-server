@@ -2114,11 +2114,7 @@ module.exports.processing_method = async (req, res) => {
         },
       },
     ]);
-    if (cultivation._id) {
-      res.json(cultivation);
-    } else {
-      res.json(null);
-    }
+    res.json(cultivation);
   } catch (err) {
     res.status(500).json(err);
   }
