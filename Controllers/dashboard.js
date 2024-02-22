@@ -2771,7 +2771,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (fish_from_river.length) {
-      res.json({ data: fish_from_river, crop_type: "fish" });
+      res.json({ data: fish_from_river, crop_type: "fish river" });
       return;
     }
     const fish_from_pond = await Fishery.aggregate([
@@ -2807,7 +2807,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (fish_from_pond.length) {
-      res.json({ data: fish_from_pond, crop_type: "fish" });
+      res.json({ data: fish_from_pond, crop_type: "fish pond" });
       return;
     }
     const huntings = await Hunting.aggregate([
