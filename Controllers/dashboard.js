@@ -2872,7 +2872,8 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       {
         $group: {
           _id: "$poultry_crop_id",
-          average: { $avg: "$number" },
+          count: { $sum: "$number" },
+          average: { $avg: "$avg_age_of_live_stocks" },
         },
       },
     ]);
@@ -2914,6 +2915,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       });
       return;
     }
+    res.json([]);
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
