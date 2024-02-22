@@ -2730,7 +2730,12 @@ module.exports.other_information_tree_fish_poultry_charts = async (
     ]);
 
     if (tree.length) {
-      res.json({ data: tree, products: tree_products, type: "chart" });
+      res.json({
+        data: tree,
+        products: tree_products,
+        type: "chart",
+        crop_type: "tree",
+      });
       return;
     }
     const fish_from_river = await Fishery.aggregate([
@@ -2766,7 +2771,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (fish_from_river.length) {
-      res.json({ data: fish_from_river });
+      res.json({ data: fish_from_river, crop_type: "fish" });
       return;
     }
     const fish_from_pond = await Fishery.aggregate([
@@ -2802,7 +2807,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (fish_from_pond.length) {
-      res.json({ data: fish_from_pond });
+      res.json({ data: fish_from_pond, crop_type: "fish" });
       return;
     }
     const huntings = await Hunting.aggregate([
@@ -2837,7 +2842,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (huntings.length) {
-      res.json({ data: huntings });
+      res.json({ data: huntings, crop_type: "hunting" });
       return;
     }
     const poultry = await Poultry.aggregate([
@@ -2902,7 +2907,11 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       // },
     ]);
     if (poultry.length) {
-      res.json({ data: poultry, products: poultry_products });
+      res.json({
+        data: poultry,
+        products: poultry_products,
+        crpo_type: "poultry",
+      });
       return;
     }
   } catch (err) {
