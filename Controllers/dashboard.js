@@ -2697,6 +2697,10 @@ module.exports.other_information_tree_fish_poultry_charts = async (
         },
       },
     ]);
+    const obj = {};
+    const objected_tree = tree.forEach((_tree) => {
+      obj[_tree._id] = _tree.count;
+    });
 
     const tree_products = await TreeProduct.aggregate([
       {
@@ -2731,7 +2735,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
 
     if (tree.length) {
       res.json({
-        data: tree,
+        data: objected_tree,
         products: tree_products,
         type: "chart",
         crop_type: "tree",
