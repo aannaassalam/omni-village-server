@@ -2114,11 +2114,7 @@ module.exports.processing_method = async (req, res) => {
         },
       },
     ]);
-    if (cultivation._id) {
-      res.json(cultivation);
-    } else {
-      res.json(null);
-    }
+    res.json(cultivation);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -2697,6 +2693,10 @@ module.exports.other_information_tree_fish_poultry_charts = async (
         },
       },
     ]);
+    const obj = {};
+    tree.forEach((_tree) => {
+      obj[_tree._id] = _tree.count;
+    });
 
     const tree_products = await TreeProduct.aggregate([
       {
@@ -2730,7 +2730,12 @@ module.exports.other_information_tree_fish_poultry_charts = async (
     ]);
 
     if (tree.length) {
-      res.json({ data: tree, products: tree_products, type: "chart" });
+      res.json({
+        data: obj,
+        products: tree_products,
+        type: "chart",
+        crop_type: "tree",
+      });
       return;
     }
     const fish_from_river = await Fishery.aggregate([
@@ -2766,7 +2771,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (fish_from_river.length) {
-      res.json({ data: fish_from_river });
+      res.json({ data: fish_from_river, crop_type: "fish river" });
       return;
     }
     const fish_from_pond = await Fishery.aggregate([
@@ -2802,7 +2807,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (fish_from_pond.length) {
-      res.json({ data: fish_from_pond });
+      res.json({ data: fish_from_pond, crop_type: "fish pond" });
       return;
     }
     const huntings = await Hunting.aggregate([
@@ -2837,7 +2842,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       },
     ]);
     if (huntings.length) {
-      res.json({ data: huntings });
+      res.json({ data: huntings, crop_type: "hunting" });
       return;
     }
     const poultry = await Poultry.aggregate([
@@ -2867,7 +2872,8 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       {
         $group: {
           _id: "$poultry_crop_id",
-          average: { $avg: "$number" },
+          count: { $sum: "$number" },
+          average: { $avg: "$avg_age_of_live_stocks" },
         },
       },
     ]);
@@ -2902,9 +2908,14 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       // },
     ]);
     if (poultry.length) {
-      res.json({ data: poultry, products: poultry_products });
+      res.json({
+        data: poultry,
+        products: poultry_products,
+        crop_type: "poultry",
+      });
       return;
     }
+    res.json({});
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
