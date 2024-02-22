@@ -2911,7 +2911,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       res.json({
         data: poultry,
         products: poultry_products,
-        crpo_type: "poultry",
+        crop_type: "poultry",
       });
       return;
     }
