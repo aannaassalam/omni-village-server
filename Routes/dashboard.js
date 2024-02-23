@@ -22,6 +22,7 @@ router.get(
   getCurrencies,
   dashboard_controller.bifurcated_chart_crop
 );
+router.get("/soil_health", dashboard_controller.soil_health);
 router.get(
   "/utilization_chart",
   getCurrencies,

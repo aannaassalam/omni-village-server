@@ -1599,6 +1599,211 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
   }
 };
 
+module.exports.soil_health = async (req, res) => {
+  const { crop_id, village } = req.query;
+  try {
+    const cultivation_data = await Cultivation.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          crop_id: new ObjectId(crop_id),
+          "user.village_name": village,
+        },
+      },
+      {
+        $project: {
+          soil_health: "$important_information.soil_health",
+          type: "cultivation",
+        },
+      },
+    ]);
+
+    const fishery_data = await Fishery.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          fishery_crop_id: new ObjectId(crop_id),
+          "user.village_name": village,
+        },
+      },
+      {
+        $project: {
+          soil_health: null,
+          type: "fish",
+        },
+      },
+    ]);
+
+    const poultry_data = await Poultry.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          poultry_crop_id: new ObjectId(crop_id),
+          "user.village_name": village,
+        },
+      },
+      {
+        $project: {
+          soil_health: null,
+          type: "poultry",
+        },
+      },
+    ]);
+
+    const tree_data = await Tree.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          tree_crop_id: new ObjectId(crop_id),
+          "user.village_name": village,
+        },
+      },
+      {
+        $project: {
+          soil_health: "$soil_health",
+          type: "tree",
+        },
+      },
+    ]);
+
+    const hunting_data = await Hunting.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          hunting_crop_id: new ObjectId(crop_id),
+          "user.village_name": village,
+        },
+      },
+      {
+        $project: {
+          soil_health: null,
+          type: "hunting",
+        },
+      },
+    ]);
+
+    const merged_arr = [
+      ...cultivation_data,
+      ...fishery_data,
+      ...poultry_data,
+      ...tree_data,
+      ...hunting_data,
+    ];
+
+    // res.json(merged_arr);
+
+    const obj = {
+      soil_health: {
+        stable: 0,
+        decreasing_yeild: 0,
+      },
+    };
+
+    merged_arr.forEach((_item) => {
+      if (_item.soil_health) {
+        if (_item.type === "cultivation") {
+          if (_item.soil_health === "stable") {
+            obj.soil_health["stable"] =
+              (obj.soil_health.stable || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          if (_item.soil_health === "decreasing yield") {
+            obj.soil_health["decreasing_yeild"] =
+              (obj.soil_health.decreasing_yeild || 0) +
+              landMeaurementConverter(
+                _item.area_allocated,
+                _item.land_measurement
+              );
+          }
+          obj.type = "cultivation";
+        } else if (_item.type === "tree") {
+          if (_item.soil_health === "stable") {
+            obj.soil_health["stable"] =
+              (obj.soil_health.stable || 0) + _item.number;
+          }
+          if (_item.soil_health === "decreasing yield") {
+            obj.soil_health["decreasing_yeild"] =
+              (obj.soil_health.decreasing_yeild || 0) + _item.number;
+          }
+          obj.type = "tree";
+        }
+      }
+    });
+
+    res.json(obj);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 module.exports.utilization_chart = async (req, res) => {
   const { village } = req.query;
   try {
