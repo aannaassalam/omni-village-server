@@ -111,6 +111,7 @@ module.exports.land_used_category_data = async (req, res) => {
       {
         $match: {
           "user.village_name": village,
+          status: 1,
         },
       },
       {
@@ -271,8 +272,9 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           ? {
               "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
-          : { "user.village_name": village },
+          : { "user.village_name": village, status: 1 },
       },
       // {
       //   $lookup: {
@@ -359,8 +361,9 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           ? {
               "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
-          : { "user.village_name": village },
+          : { "user.village_name": village, status: 1 },
       },
       // {
       //   $lookup: {
@@ -447,8 +450,9 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           ? {
               "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
-          : { "user.village_name": village },
+          : { "user.village_name": village, status: 1 },
       },
       // {
       //   $lookup: {
@@ -575,8 +579,9 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           ? {
               "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
-          : { "user.village_name": village },
+          : { "user.village_name": village, status: 1 },
       },
       // {
       //   $lookup: {
@@ -705,8 +710,9 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           ? {
               "crop.label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
-          : { "user.village_name": village },
+          : { "user.village_name": village, status: 1 },
       },
       // {
       //   $lookup: {
@@ -990,6 +996,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         $match: {
           crop_id: new ObjectId(crop_id),
           "user.village_name": village,
+          status: 1,
         },
       },
       // {
@@ -1045,6 +1052,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         $match: {
           fishery_crop_id: new ObjectId(crop_id),
           "user.village_name": village,
+          status: 1,
         },
       },
       // {
@@ -1113,6 +1121,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         $match: {
           poultry_crop_id: new ObjectId(crop_id),
           "user.village_name": village,
+          status: 1,
         },
       },
       // {
@@ -1222,6 +1231,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         $match: {
           tree_crop_id: new ObjectId(crop_id),
           "user.village_name": village,
+          status: 1,
         },
       },
       // {
@@ -1333,6 +1343,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
         $match: {
           hunting_crop_id: new ObjectId(crop_id),
           "user.village_name": village,
+          status: 1,
         },
       },
       // {
@@ -2277,6 +2288,7 @@ module.exports.processing_method = async (req, res) => {
       {
         $match: {
           crop_id: new ObjectId(crop_id),
+          status: 1,
         },
       },
       {
@@ -2376,9 +2388,11 @@ module.exports.income_expenditure = async (req, res) => {
           ? {
               "label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
           : {
               "user.village_name": village,
+              status: 1,
             },
       },
       {
@@ -2438,9 +2452,11 @@ module.exports.income_expenditure = async (req, res) => {
           ? {
               "label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
           : {
               "user.village_name": village,
+              status: 1,
             },
       },
       {
@@ -2500,9 +2516,11 @@ module.exports.income_expenditure = async (req, res) => {
           ? {
               "label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
           : {
               "user.village_name": village,
+              status: 1,
             },
       },
       {
@@ -2562,9 +2580,11 @@ module.exports.income_expenditure = async (req, res) => {
           ? {
               "label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
           : {
               "user.village_name": village,
+              status: 1,
             },
       },
       {
@@ -2624,9 +2644,11 @@ module.exports.income_expenditure = async (req, res) => {
           ? {
               "label._id": new ObjectId(type_id),
               "user.village_name": village,
+              status: 1,
             }
           : {
               "user.village_name": village,
+              status: 1,
             },
       },
       {
@@ -2871,6 +2893,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       {
         $match: {
           tree_crop_id: new ObjectId(crop_id),
+          status: 1,
         },
       },
       {
@@ -2948,6 +2971,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
         $match: {
           fishery_crop_id: new ObjectId(crop_id),
           fishery_type: "river",
+          status: 1,
         },
       },
       {
@@ -2984,6 +3008,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
         $match: {
           fishery_crop_id: new ObjectId(crop_id),
           fishery_type: "pond",
+          status: 1,
         },
       },
       {
@@ -3019,6 +3044,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       {
         $match: {
           hunting_crop_id: new ObjectId(crop_id),
+          status: 1,
         },
       },
       {
@@ -3054,6 +3080,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       {
         $match: {
           poultry_crop_id: new ObjectId(crop_id),
+          status: 1,
         },
       },
       {
@@ -3143,6 +3170,7 @@ module.exports.consumption_from_production = async (req, res) => {
         $match: {
           consumption_type_id: new ObjectId(type_id),
           consumption_crop_id: new ObjectId(crop_id),
+          status: 1,
         },
       },
       {
@@ -3288,8 +3316,9 @@ module.exports.self_grown_consumption_data = async (req, res) => {
         $match: type_id
           ? {
               consumption_type_id: new ObjectId(type_id),
+              status: 1,
             }
-          : {},
+          : { status: 1 },
       },
       {
         $lookup: {
@@ -3458,8 +3487,9 @@ module.exports.self_consumed_data = async (req, res) => {
         $match: type_id
           ? {
               consumption_type_id: new ObjectId(type_id),
+              status: 1,
             }
-          : {},
+          : { status: 1 },
       },
       {
         $lookup: {
@@ -3628,8 +3658,9 @@ module.exports.purchased_from_neighbours_consumed = async (req, res) => {
         $match: type_id
           ? {
               consumption_type_id: new ObjectId(type_id),
+              status: 1,
             }
-          : {},
+          : { status: 1 },
       },
       {
         $lookup: {
@@ -3798,8 +3829,9 @@ module.exports.purchased_from_market_consumed = async (req, res) => {
         $match: type_id
           ? {
               consumption_type_id: new ObjectId(type_id),
+              status: 1,
             }
-          : {},
+          : { status: 1 },
       },
       {
         $lookup: {
@@ -3967,6 +3999,7 @@ module.exports.consumption_by_crop = async (req, res) => {
       {
         $match: {
           consumption_crop_id: new ObjectId(crop_id),
+          status: 1,
         },
       },
       {
