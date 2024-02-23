@@ -69,6 +69,8 @@ router.get(
   dashboard_controller.ideal_consumption_expected
 );
 
+router.get("/deficiet_chart", dashboard_controller.deficiet_chart);
+
 router.get("/food-balance", dashboard_controller.food_balance);
 
 module.exports = router;

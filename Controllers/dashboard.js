@@ -4299,11 +4299,24 @@ module.exports.ideal_consumption_expected = async (req, res) => {
 
 // Food Balance
 
+<<<<<<< HEAD
 module.exports.deficient_chart = async (req, res) => {
   const { type_id, village } = req.query;
   try {
     const type_based_cultivation = await Cultivation.aggregate([
       {
+=======
+module.exports.deficiet_chart = async (req, res) => {
+  const { village } = req.query;
+  try {
+    const type_based_cultivation = await Cultivation.aggregate([
+      {
+        $match: {
+          status: 1,
+        },
+      },
+      {
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         $lookup: {
           from: "crops",
           foreignField: "_id",
@@ -4318,8 +4331,22 @@ module.exports.deficient_chart = async (req, res) => {
         },
       },
       {
+<<<<<<< HEAD
         $match: {
           status: 1,
+=======
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         },
       },
       {
@@ -4341,6 +4368,30 @@ module.exports.deficient_chart = async (req, res) => {
           "user.village_name": village,
         },
       },
+<<<<<<< HEAD
+=======
+      {
+        $group: {
+          _id: "$crop._id",
+          doc: { $mergeObjects: "$$ROOT" },
+          self_consumed: { $sum: "$utilization.self_consumed" },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              "$doc",
+              { self_consumed: "$self_consumed" },
+              {
+                count: "$count",
+              },
+            ],
+          },
+        },
+      },
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
       // {
       //   $addFields: {
       //     self_consumed: "$utilization.self_consumed",
@@ -4350,6 +4401,7 @@ module.exports.deficient_chart = async (req, res) => {
       // },
       {
         $project: {
+<<<<<<< HEAD
           self_consumed: "$utilization.self_consumed",
           output: 1,
           area_allocated: 1,
@@ -4358,12 +4410,28 @@ module.exports.deficient_chart = async (req, res) => {
           crop_id: "$crop._id",
           type: "cultivation",
           crop_ideal_consumption: "$crop.ideal_consumption_per_person",
+=======
+          self_consumed: "$self_consumed",
+          label: "$crop.label.name.en",
+          type: "cultivation",
+          ideal_consumption: {
+            $multiply: ["$crop.ideal_consumption_per_person", "$count"],
+          },
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         },
       },
     ]);
 
     const type_based_fishery = await Fishery.aggregate([
       {
+<<<<<<< HEAD
+=======
+        $match: {
+          status: 1,
+        },
+      },
+      {
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         $lookup: {
           from: "fishery_crops",
           foreignField: "_id",
@@ -4378,9 +4446,23 @@ module.exports.deficient_chart = async (req, res) => {
         },
       },
       {
+<<<<<<< HEAD
         $match: {
           "crop.label": new ObjectId(type_id),
           status: 1,
+=======
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         },
       },
       {
@@ -4407,8 +4489,11 @@ module.exports.deficient_chart = async (req, res) => {
           _id: "$crop._id",
           doc: { $mergeObjects: "$$ROOT" },
           self_consumed: { $sum: "$production_information.self_consumed" },
+<<<<<<< HEAD
           output: { $sum: "$production_information.production_output" },
           number: { $sum: "$important_information.number_of_fishes" },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           count: { $sum: 1 },
         },
       },
@@ -4418,8 +4503,11 @@ module.exports.deficient_chart = async (req, res) => {
             $mergeObjects: [
               "$doc",
               { self_consumed: "$self_consumed" },
+<<<<<<< HEAD
               { output: "$output" },
               { number: "$number" },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
               {
                 count: "$count",
               },
@@ -4430,6 +4518,7 @@ module.exports.deficient_chart = async (req, res) => {
       {
         $project: {
           self_consumed: 1,
+<<<<<<< HEAD
           output: 1,
           number: 1,
           land_measurement: "$user.land_measurement",
@@ -4438,6 +4527,9 @@ module.exports.deficient_chart = async (req, res) => {
           yeild: {
             $divide: [{ $toInt: "$output" }, { $toInt: "$number" }],
           },
+=======
+          label: "$crop.label.name.en",
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           // count: 1,
           ideal_consumption: {
             $multiply: ["$crop.ideal_consumption_per_person", "$count"],
@@ -4449,6 +4541,14 @@ module.exports.deficient_chart = async (req, res) => {
 
     const type_based_poultry = await Poultry.aggregate([
       {
+<<<<<<< HEAD
+=======
+        $match: {
+          status: 1,
+        },
+      },
+      {
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         $lookup: {
           from: "poultry_crops",
           foreignField: "_id",
@@ -4463,9 +4563,23 @@ module.exports.deficient_chart = async (req, res) => {
         },
       },
       {
+<<<<<<< HEAD
         $match: {
           "crop.label": new ObjectId(type_id),
           status: 1,
+=======
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         },
       },
       {
@@ -4505,8 +4619,11 @@ module.exports.deficient_chart = async (req, res) => {
           _id: "$crop._id",
           doc: { $mergeObjects: "$$ROOT" },
           self_consumed: { $sum: "$products.self_consumed" },
+<<<<<<< HEAD
           output: { $sum: "$products.production_output" },
           number: { $sum: "$number" },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           count: { $sum: 1 },
         },
       },
@@ -4516,10 +4633,13 @@ module.exports.deficient_chart = async (req, res) => {
             $mergeObjects: [
               "$doc",
               { self_consumed: "$self_consumed" },
+<<<<<<< HEAD
               { output: "$output" },
               {
                 number: "$number",
               },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
               { count: "$count" },
             ],
           },
@@ -4528,12 +4648,16 @@ module.exports.deficient_chart = async (req, res) => {
       {
         $project: {
           self_consumed: 1,
+<<<<<<< HEAD
           output: 1,
           number: 1,
           land_measurement: "$user.land_measurement",
           crop_name: "$crop.name.en",
           crop_id: "$crop._id",
           yeild: { $divide: [{ $toInt: "$output" }, { $toInt: "$number" }] },
+=======
+          label: "$crop.label.name.en",
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           type: "poultry",
           ideal_consumption: {
             $multiply: ["$crop.ideal_consumption_per_person", "$count"],
@@ -4544,6 +4668,14 @@ module.exports.deficient_chart = async (req, res) => {
 
     const type_based_tree = await Tree.aggregate([
       {
+<<<<<<< HEAD
+=======
+        $match: {
+          status: 1,
+        },
+      },
+      {
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         $lookup: {
           from: "tree_crops",
           foreignField: "_id",
@@ -4558,9 +4690,23 @@ module.exports.deficient_chart = async (req, res) => {
         },
       },
       {
+<<<<<<< HEAD
         $match: {
           "crop.label": new ObjectId(type_id),
           status: 1,
+=======
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         },
       },
       {
@@ -4600,8 +4746,11 @@ module.exports.deficient_chart = async (req, res) => {
           _id: "$crop._id",
           doc: { $mergeObjects: "$$ROOT" },
           self_consumed: { $sum: "$products.self_consumed" },
+<<<<<<< HEAD
           output: { $sum: "$products.production_output" },
           number: { $sum: "$number_of_trees" },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           count: { $sum: 1 },
         },
       },
@@ -4611,10 +4760,13 @@ module.exports.deficient_chart = async (req, res) => {
             $mergeObjects: [
               "$doc",
               { self_consumed: "$self_consumed" },
+<<<<<<< HEAD
               { output: "$output" },
               {
                 number: "$number",
               },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
               {
                 count: "$count",
               },
@@ -4625,6 +4777,7 @@ module.exports.deficient_chart = async (req, res) => {
       {
         $project: {
           self_consumed: 1,
+<<<<<<< HEAD
           output: 1,
           number: 1,
           land_measurement: "$user.land_measurement",
@@ -4633,6 +4786,9 @@ module.exports.deficient_chart = async (req, res) => {
           yeild: {
             $divide: [{ $toInt: "$output" }, { $toInt: "$number" }],
           },
+=======
+          label: "$crop.label.name.en",
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           type: "trees",
           ideal_consumption: {
             $multiply: ["$crop.ideal_consumption_per_person", "$count"],
@@ -4643,6 +4799,14 @@ module.exports.deficient_chart = async (req, res) => {
 
     const type_based_hunting = await Hunting.aggregate([
       {
+<<<<<<< HEAD
+=======
+        $match: {
+          status: 1,
+        },
+      },
+      {
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         $lookup: {
           from: "hunting_crops",
           foreignField: "_id",
@@ -4657,9 +4821,23 @@ module.exports.deficient_chart = async (req, res) => {
         },
       },
       {
+<<<<<<< HEAD
         $match: {
           "crop.label": new ObjectId(type_id),
           status: 1,
+=======
+        $lookup: {
+          from: "consumption_types",
+          foreignField: "_id",
+          localField: "crop.label",
+          as: "crop.label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop.label",
+          // preserveNullAndEmptyArrays: true,
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
         },
       },
       {
@@ -4686,8 +4864,11 @@ module.exports.deficient_chart = async (req, res) => {
           _id: "$crop._id",
           doc: { $mergeObjects: "$$ROOT" },
           self_consumed: { $sum: "$self_consumed" },
+<<<<<<< HEAD
           output: { $sum: "$meat" },
           number: { $sum: "$number_hunted" },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           count: { $sum: 1 },
         },
       },
@@ -4697,8 +4878,11 @@ module.exports.deficient_chart = async (req, res) => {
             $mergeObjects: [
               "$doc",
               { self_consumed: "$self_consumed" },
+<<<<<<< HEAD
               { output: "$output" },
               { number: "$number" },
+=======
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
               { count: "$count" },
             ],
           },
@@ -4707,12 +4891,16 @@ module.exports.deficient_chart = async (req, res) => {
       {
         $project: {
           self_consumed: 1,
+<<<<<<< HEAD
           output: 1,
           number: 1,
           land_measurement: "$user.land_measurement",
           crop_name: "$crop.name.en",
           crop_id: "$crop._id",
           yeild: { $divide: [{ $toInt: "$output" }, { $toInt: "$number" }] },
+=======
+          label: "$crop.label.name.en",
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
           ideal_consumption: {
             $multiply: ["$crop.ideal_consumption_per_person", "$count"],
           },
@@ -4721,6 +4909,7 @@ module.exports.deficient_chart = async (req, res) => {
       },
     ]);
 
+<<<<<<< HEAD
     const processed_cultivation_data = type_based_cultivation.map((_item) => {
       const area_allocated = landMeaurementConverter(
         _item.area_allocated,
@@ -4758,11 +4947,42 @@ module.exports.deficient_chart = async (req, res) => {
 
     res.json([
       ...processed_cultivation_arr,
+=======
+    const new_arr = [
+      ...type_based_cultivation,
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
       ...type_based_fishery,
       ...type_based_hunting,
       ...type_based_poultry,
       ...type_based_tree,
+<<<<<<< HEAD
     ]);
+=======
+    ];
+    const processed_cultivation_arr = {};
+
+    new_arr.forEach((_item) => {
+      processed_cultivation_arr[_item.label] = {
+        self_consumed:
+          (processed_cultivation_arr[_item.label]?.["self_consumed"] || 0) +
+          _item.self_consumed,
+        ideal_consumption:
+          (processed_cultivation_arr[_item.label]?.["ideal_consumption"] || 0) +
+          _item.ideal_consumption,
+      };
+    });
+
+    Object.entries(processed_cultivation_arr).forEach((_item) => {
+      if (_item[1].ideal_consumption - _item[1].self_consumed > 0) {
+        processed_cultivation_arr[_item[0]] =
+          _item[1].ideal_consumption - _item[1].self_consumed;
+      } else {
+        delete processed_cultivation_arr[_item[0]];
+      }
+    });
+
+    res.json(processed_cultivation_arr);
+>>>>>>> 92229093e33f5b323f5dd2b08f6fefb63407b6fc
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
