@@ -1636,7 +1636,9 @@ module.exports.soil_health = async (req, res) => {
       },
       {
         $project: {
+          area_allocated: 1,
           soil_health: "$important_information.soil_health",
+          land_measurement: "$user.land_measurement",
           type: "cultivation",
         },
       },
@@ -1716,6 +1718,7 @@ module.exports.soil_health = async (req, res) => {
 
     res.json(obj);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
