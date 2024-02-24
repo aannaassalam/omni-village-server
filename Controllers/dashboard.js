@@ -1518,6 +1518,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
                 _item.land_measurement
               );
           }
+          obj.type = "land";
         } else if (_item.type === "tree") {
           if (_item.fertilizer_used === "organic self made") {
             obj["fertilizer_used"]["organic_self_made"] =
@@ -1535,6 +1536,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
             obj["fertilizer_used"]["none"] =
               (obj["fertilizer_used"]["none"] || 0) + _item.number;
           }
+          obj.type = "number";
         }
       }
       if (_item.pesticide_used) {
@@ -1571,6 +1573,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
                 _item.land_measurement
               );
           }
+          obj.type = "land";
         } else if (_item.type === "tree") {
           if (_item.pesticide_used === "organic self made") {
             obj["pesticide_used"]["organic_self_made"] =
@@ -1588,6 +1591,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
             obj["pesticide_used"]["none"] =
               (obj["pesticide_used"]["none"] || 0) + _item.number;
           }
+          obj.type = "number";
         }
       }
     });
