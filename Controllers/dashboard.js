@@ -1671,6 +1671,7 @@ module.exports.soil_health = async (req, res) => {
       },
       {
         $project: {
+          number: "$number_of_trees",
           soil_health: "$soil_health",
           type: "tree",
         },
