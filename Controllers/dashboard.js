@@ -2830,7 +2830,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
       {
         $group: {
           _id: "$avg_age_of_trees",
-          count: { $count: {} },
+          count: { $sum: "$number_of_trees" },
         },
       },
     ]);
