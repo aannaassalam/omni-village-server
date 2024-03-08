@@ -220,6 +220,68 @@ module.exports.land_used_category_data = async (req, res) => {
   }
 };
 
+module.exports.land_used_cultivation = async (req, res) => {
+  const { village } = req.query;
+  try {
+    const cultivation_data = await Cultivation.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+          status: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "crops",
+          foreignField: "_id",
+          localField: "crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          area_allocated: 1,
+          crop: "$crop.name.en",
+          land_measurement: "$user.land_measurement",
+        },
+      },
+    ]);
+    const grouped_data = groupBy(cultivation_data, "crop");
+    const new_obj = {};
+    Object.entries(grouped_data).forEach((_data) => {
+      _data[1].forEach((_item) => {
+        new_obj[_data[0]] =
+          (new_obj[_data[0]] || 0) +
+          landMeaurementConverter(_item.area_allocated, _item.land_measurement);
+      });
+    });
+    res.json(new_obj);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
 module.exports.bifurcated_chart_label = async (req, res) => {
   const { type_id, village } = req.query;
   fx.rates = res.locals.currencies;
@@ -301,6 +363,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_market: "$utilization.sold_for_industrial_use",
           fed_to_livestock: "$utilization.fed_to_livestock",
           wastage: "$utilization.wastage",
+          other: "$utilization.other_value",
           output: "$output",
           soil_health: "$important_information.soil_health",
           fertilizer_used: "$important_information.type_of_fertilizer_used",
@@ -391,6 +454,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_market: "$production_information.sold_for_industrial_use",
           fed_to_livestock: null,
           wastage: "$production_information.wastage",
+          other_value: "$production_information.other_value",
           output: "$production_information.production_output",
           soil_health: null,
           fertilizer_used: null,
@@ -489,6 +553,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_neighbour: { $sum: "$products.sold_to_neighbours" },
           sold_to_market: { $sum: "$products.sold_for_industrial_use" },
           wastage: { $sum: "$products.wastage" },
+          other_value: { $sum: "$products.other_value" },
           doc: { $first: "$$ROOT" },
         },
       },
@@ -503,6 +568,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
                 sold_to_neighbour: "$sold_to_neighbour",
                 sold_to_market: "$sold_to_market",
                 wastage: "$wastage",
+                other_value: "$other_value",
               },
             ],
           },
@@ -520,6 +586,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_market: "$sold_to_market",
           fed_to_livestock: null,
           wastage: "$wastage",
+          other_value: "$other_value",
           output: "$output",
           soil_health: null,
           fertilizer_used: null,
@@ -619,6 +686,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_market: { $sum: "$products.sold_for_industrial_use" },
           fed_to_livestock: { $sum: "$products.fed_to_livestock" },
           wastage: { $sum: "$products.wastage" },
+          other_value: { $sum: "$products.other_value" },
           doc: { $first: "$$ROOT" },
         },
       },
@@ -633,6 +701,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
                 sold_to_neighbour: "$sold_to_neighbour",
                 sold_to_market: "$sold_to_market",
                 wastage: "$wastage",
+                other_value: "$other_value",
                 fed_to_livestock: "$fed_to_livestock",
               },
             ],
@@ -651,6 +720,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_market: "$sold_to_market",
           fed_to_livestock: "$fed_to_livestock",
           wastage: "$wastage",
+          other_value: "$other_value",
           output: "$output",
           soil_health: "$soil_health",
           fertilizer_used: "$type_of_fertilizer_used",
@@ -740,6 +810,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
           sold_to_market: "$sold_in_consumer_market",
           fed_to_livestock: null,
           wastage: "$wastage",
+          other_value: "$other_value",
           output: "$meat",
           soil_health: null,
           fertilizer_used: null,
@@ -799,6 +870,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
             (obj.sold_to_neighbour || 0) + _item.sold_to_neighbour;
           obj.sold_to_market = (obj.sold_to_market || 0) + _item.sold_to_market;
           obj.wastage = (obj.wastage || 0) + _item.wastage;
+          obj.other_value = (obj.other_value || 0) + _item.other_value;
           obj.income =
             (obj.income || 0) +
             fx.convert(_item.income, { from: _item.currency, to: "USD" });
@@ -819,6 +891,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
     const sold_to_neighbour = [];
     const sold_to_market = [];
     const wastage = [];
+    const other_value = [];
     const income = [];
     const expenditure = [];
     // const soil_health_stable = [];
@@ -921,6 +994,10 @@ module.exports.bifurcated_chart_label = async (req, res) => {
         name: _data.name,
         wastage: _data.wastage,
       });
+      other_value.push({
+        name: _data.name,
+        other_value: _data.other_value || 0,
+      });
       income.push({
         name: _data.name,
         income: _data.income,
@@ -939,6 +1016,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
       sold_to_market,
       sold_to_neighbour,
       wastage,
+      other_value,
       income,
       expenditure,
       // soil_health_decreasing_yeild,
@@ -1020,6 +1098,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: "$utilization.sold_for_industrial_use",
           fed_to_livestock: "$utilization.fed_to_livestock",
           wastage: "$utilization.wastage",
+          other_value: "$utilization.other_value",
           soil_health: "$important_information.soil_health",
           fertilizer_used: "$important_information.type_of_fertilizer_used",
           pesticide_used: "$important_information.type_of_pesticide_used",
@@ -1089,6 +1168,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: "$production_information.sold_for_industrial_use",
           fed_to_livestock: null,
           wastage: "$production_information.wastage",
+          other_value: "$production_information.other_value",
           output: "$production_information.production_output",
           soil_health: null,
           fertilizer_used: null,
@@ -1173,6 +1253,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_neighbour: { $sum: "$products.sold_to_neighbours" },
           sold_to_market: { $sum: "$products.sold_for_industrial_use" },
           wastage: { $sum: "$products.wastage" },
+          other_value: { $sum: "$products.other_value" },
           doc: { $first: "$$ROOT" },
         },
       },
@@ -1187,6 +1268,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
                 sold_to_neighbour: "$sold_to_neighbour",
                 sold_to_market: "$sold_to_market",
                 wastage: "$wastage",
+                other_value: "$other_value",
               },
             ],
           },
@@ -1199,6 +1281,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: "$sold_to_market",
           fed_to_livestock: null,
           wastage: "$wastage",
+          other_value: "$other_value",
           output: "$output",
           soil_health: null,
           fertilizer_used: null,
@@ -1284,6 +1367,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: { $sum: "$products.sold_for_industrial_use" },
           fed_to_livestock: { $sum: "$products.fed_to_livestock" },
           wastage: { $sum: "$products.wastage" },
+          other_value: { $sum: "$products.other_value" },
           doc: { $first: "$$ROOT" },
         },
       },
@@ -1299,6 +1383,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
                 sold_to_market: "$sold_to_market",
                 fed_to_livestock: "$fed_to_livestock",
                 wastage: "$wastage",
+                other_value: "$other_value",
               },
             ],
           },
@@ -1311,6 +1396,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: "$sold_to_market",
           fed_to_livestock: "$fed_to_livestock",
           wastage: "$wastage",
+          other_value: "$other_value",
           output: "$output",
           soil_health: "$soil_health",
           fertilizer_used: "$type_of_fertilizer_used",
@@ -1380,6 +1466,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: "$sold_in_consumer_market",
           fed_to_livestock: null,
           wastage: "$wastage",
+          other_value: "$other_value",
           output: "$meat",
           soil_health: null,
           fertilizer_used: null,
@@ -1410,6 +1497,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
       sold_to_neighbour: 0,
       sold_to_market: 0,
       wastage: 0,
+      other_value: 0,
       soil_health: {
         stable: 0,
         decreasing_yeild: 0,
@@ -1441,6 +1529,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
       obj.sold_to_market += _item.sold_to_market;
       obj.sold_to_neighbour += _item.sold_to_neighbour;
       obj.wastage += _item.wastage;
+      obj.other_value += _item.other_value;
       obj.income += fx.convert(_item.income, {
         from: _item.currency,
         to: "USD",
@@ -1601,6 +1690,43 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
     }, 0);
 
     obj.yeild = yeild_sum / merged_arr.length;
+
+    const sorted_yeild_arr = merged_arr.map((_item) => _item.yeild).sort();
+
+    let median;
+    const odd_div = (sorted_yeild_arr.length + 1) / 2;
+    const even_div = sorted_yeild_arr.length / 2;
+    if (sorted_yeild_arr.length % 2 === 0) {
+      median =
+        (sorted_yeild_arr[even_div - 1] + sorted_yeild_arr[odd_div - 1]) / 2;
+    } else {
+      median = sorted_yeild_arr[odd_div - 1];
+    }
+
+    obj.yeild_median = median;
+
+    var bestStreak = 1;
+    var bestElem = sorted_yeild_arr[0];
+    var currentStreak = 1;
+    var currentElem = sorted_yeild_arr[0];
+
+    for (let i = 1; i < sorted_yeild_arr.length; i++) {
+      if (sorted_yeild_arr[i - 1] !== sorted_yeild_arr[i]) {
+        if (currentStreak > bestStreak) {
+          bestStreak = currentStreak;
+          bestElem = currentElem;
+        }
+
+        currentStreak = 0;
+        currentElem = sorted_yeild_arr[i];
+      }
+
+      currentStreak++;
+    }
+
+    const mode = currentStreak > bestStreak ? currentElem : bestElem;
+
+    obj.yeild_mode = mode;
 
     const number_sum = merged_arr.reduce((prev, current) => {
       return prev + current.number;
@@ -3063,6 +3189,66 @@ module.exports.other_information_tree_fish_poultry_charts = async (
     res.json({});
   } catch (err) {
     console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+module.exports.harvested_products = async (req, res) => {
+  const { type, product_id } = req.query;
+  try {
+    if (type === "trees") {
+      const tree_product = await TreeProduct.findById(product_id);
+      res.json(tree_product);
+      return;
+    }
+    if (type === "poultry") {
+      const poultry_product = await PoultryProduct.findById(product_id);
+      res.json(poultry_product);
+      return;
+    }
+    res.json([]);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports.crop_based_product_names = async (req, res) => {
+  const { type, crop_id } = req.query;
+  try {
+    if (type === "trees") {
+      const product_names = await TreeProduct.aggregate([
+        {
+          $match: {
+            tree_crop_id: new ObjectId(crop_id),
+          },
+        },
+        {
+          $project: {
+            name: 1,
+          },
+        },
+      ]);
+      res.json(product_names);
+      return;
+    }
+    if (type === "poultry") {
+      const product_names = await PoultryProduct.aggregate([
+        {
+          $match: {
+            poultry_crop_id: new ObjectId(crop_id),
+          },
+        },
+        {
+          $project: {
+            name: 1,
+          },
+        },
+      ]);
+      res.json(product_names);
+      return;
+    }
+    res.json([]);
+  } catch (err) {
     res.status(500).json(err);
   }
 };

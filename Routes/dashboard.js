@@ -13,6 +13,11 @@ router.get(
 );
 
 router.get(
+  "/land_used_cultivation",
+  dashboard_controller.land_used_cultivation
+);
+
+router.get(
   "/bifurcated_chart_label",
   getCurrencies,
   dashboard_controller.bifurcated_chart_label
@@ -39,6 +44,14 @@ router.get(
   "/other_information_tree_fish_poultry_charts",
   dashboard_controller.other_information_tree_fish_poultry_charts
 );
+
+router.get("/harvested_products", dashboard_controller.harvested_products);
+
+router.get(
+  "/crop_based_product_names",
+  dashboard_controller.crop_based_product_names
+);
+
 router.get("/selling_channel_data", dashboard_controller.selling_channel_data);
 router.get("/storage_data", dashboard_controller.storage_data);
 
