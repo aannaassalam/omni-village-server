@@ -1741,7 +1741,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
 };
 
 module.exports.soil_health = async (req, res) => {
-  const { crop_id, village } = req.query;
+  const { village } = req.query;
   try {
     const cultivation_data = await Cultivation.aggregate([
       {
@@ -1760,7 +1760,6 @@ module.exports.soil_health = async (req, res) => {
       },
       {
         $match: {
-          crop_id: new ObjectId(crop_id),
           "user.village_name": village,
         },
       },
@@ -1768,6 +1767,121 @@ module.exports.soil_health = async (req, res) => {
         $project: {
           area_allocated: 1,
           soil_health: "$important_information.soil_health",
+          land_measurement: "$user.land_measurement",
+          type: "cultivation",
+        },
+      },
+    ]);
+
+    // const tree_data = await Tree.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "users",
+    //       foreignField: "_id",
+    //       localField: "user_id",
+    //       as: "user",
+    //     },
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: "$user",
+    //       preserveNullAndEmptyArrays: true,
+    //     },
+    //   },
+    //   {
+    //     $match: {
+    //       "user.village_name": village,
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       number: "$number_of_trees",
+    //       soil_health: "$soil_health",
+    //       type: "tree",
+    //     },
+    //   },
+    // ]);
+
+    const merged_arr = cultivation_data;
+    // const merged_arr = [...cultivation_data, ...tree_data];
+
+    // res.json(merged_arr);
+
+    const obj = {
+      soil_health: {
+        stable: 0,
+        decreasing_yeild: 0,
+      },
+    };
+
+    merged_arr.forEach((_item) => {
+      if (_item.type === "cultivation") {
+        if (_item.soil_health === "stable") {
+          obj.soil_health["stable"] =
+            (obj.soil_health.stable || 0) +
+            landMeaurementConverter(
+              _item.area_allocated,
+              _item.land_measurement
+            );
+        }
+        if (_item.soil_health === "decreasing yield") {
+          obj.soil_health["decreasing_yeild"] =
+            (obj.soil_health.decreasing_yeild || 0) +
+            landMeaurementConverter(
+              _item.area_allocated,
+              _item.land_measurement
+            );
+        }
+        obj.type = "cultivation";
+      } else if (_item.type === "tree") {
+        if (_item.soil_health === "stable") {
+          obj.soil_health["stable"] =
+            (obj.soil_health.stable || 0) + _item.number;
+        }
+        if (_item.soil_health === "decreasing yield") {
+          obj.soil_health["decreasing_yeild"] =
+            (obj.soil_health.decreasing_yeild || 0) + _item.number;
+        }
+        obj.type = "tree";
+      }
+    });
+
+    res.json(obj);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+};
+
+// to be continued after doubt
+module.exports.organic_inorganic = async (req, res) => {
+  const { village, type_id } = req.query;
+  try {
+    const cultivation_data = await Cultivation.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          foreignField: "_id",
+          localField: "user_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $match: {
+          "user.village_name": village,
+        },
+      },
+      {
+        $project: {
+          area_allocated: 1,
+          fertilizer_used: "$important_information.type_of_fertilizer_used",
+          pesticide_used: "$important_information.type_of_pesticide_used",
           land_measurement: "$user.land_measurement",
           type: "cultivation",
         },
@@ -1791,7 +1905,6 @@ module.exports.soil_health = async (req, res) => {
       },
       {
         $match: {
-          tree_crop_id: new ObjectId(crop_id),
           "user.village_name": village,
         },
       },
@@ -1804,6 +1917,7 @@ module.exports.soil_health = async (req, res) => {
       },
     ]);
 
+    // const merged_arr = cultivation_data, ...tree_data];
     const merged_arr = [...cultivation_data, ...tree_data];
 
     // res.json(merged_arr);
@@ -2321,57 +2435,231 @@ module.exports.utilization_chart = async (req, res) => {
 };
 
 module.exports.processing_method = async (req, res) => {
-  const { crop_id, village } = req.query;
+  const { category, village } = req.query;
   try {
-    const cultivation = await Cultivation.aggregate([
-      {
-        $match: {
-          crop_id: new ObjectId(crop_id),
-          status: 1,
+    if (category === "cultivation") {
+      const cultivation = await Cultivation.aggregate([
+        {
+          $match: {
+            status: 1,
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "users",
-          foreignField: "_id",
-          localField: "user_id",
-          as: "user",
+        {
+          $lookup: {
+            from: "users",
+            foreignField: "_id",
+            localField: "user_id",
+            as: "user",
+          },
         },
-      },
-      {
-        $unwind: {
-          path: "$user",
+        {
+          $unwind: {
+            path: "$user",
+          },
         },
-      },
-      {
-        $match: {
-          "user.village_name": village,
+        {
+          $match: {
+            "user.village_name": village,
+          },
         },
-      },
-      {
-        $lookup: {
-          from: "crops",
-          foreignField: "_id",
-          localField: "crop_id",
-          as: "crop",
+        {
+          $lookup: {
+            from: "crops",
+            foreignField: "_id",
+            localField: "crop_id",
+            as: "crop",
+          },
         },
-      },
-      {
-        $unwind: {
-          path: "$crop",
+        {
+          $unwind: {
+            path: "$crop",
+          },
         },
-      },
-      {
-        $project: {
-          processing_method: "$important_information.description",
-          user_first_name: "$user.first_name",
-          user_last_name: "$user.last_name",
-          crop_name: "$crop.name.en",
+        {
+          $project: {
+            processing_method: "$important_information.description",
+            user_first_name: "$user.first_name",
+            user_last_name: "$user.last_name",
+            crop_name: "$crop.name.en",
+          },
         },
-      },
-    ]);
-    res.json(cultivation);
+      ]);
+      res.json(cultivation);
+      return;
+    }
+    // if (category === "trees") {
+    //   const trees = await Tree.aggregate([
+    //     {
+    //       $match: {
+
+    //         status: 1,
+    //       },
+    //     },
+    //     {
+    //       $lookup: {
+    //         from: "users",
+    //         foreignField: "_id",
+    //         localField: "user_id",
+    //         as: "user",
+    //       },
+    //     },
+    //     {
+    //       $unwind: {
+    //         path: "$user",
+    //       },
+    //     },
+    //     {
+    //       $match: {
+    //         "user.village_name": village,
+    //       },
+    //     },
+    //     {
+    //       $lookup: {
+    //         from: "crops",
+    //         foreignField: "_id",
+    //         localField: "crop_id",
+    //         as: "crop",
+    //       },
+    //     },
+    //     {
+    //       $unwind: {
+    //         path: "$crop",
+    //       },
+    //     },
+    //     {
+    //       $group: {
+    //         _id: "$crop._id",
+    //         count:
+    //       }
+    //     },
+    //     {
+    //       $project: {
+    //         processing_method: "$important_information.description",
+    //         user_first_name: "$user.first_name",
+    //         user_last_name: "$user.last_name",
+    //         crop_name: "$crop.name.en",
+    //       },
+    //     },
+    //   ]);
+    // }
+    if (category === "hunting") {
+      const hunting = await Hunting.aggregate([
+        {
+          $match: {
+            processing_method: true,
+            status: 1,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            foreignField: "_id",
+            localField: "user_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: {
+            path: "$user",
+          },
+        },
+        {
+          $match: {
+            "user.village_name": village,
+          },
+        },
+        {
+          $lookup: {
+            from: "hunting_crops",
+            foreignField: "_id",
+            localField: "hunting_crop_id",
+            as: "crop",
+          },
+        },
+        {
+          $unwind: {
+            path: "$crop",
+          },
+        },
+        {
+          $group: {
+            _id: "$crop._id",
+            count: { $count: {} },
+            crop_name: { $mergeObjects: { name: "$crop.name.en" } },
+          },
+        },
+        // {
+        //   $project: {
+        //     processing_method: "$important_information.description",
+        //     user_first_name: "$user.first_name",
+        //     user_last_name: "$user.last_name",
+        //     crop_name: "$crop.name.en",
+        //   },
+        // },
+      ]);
+      res.json(hunting);
+      return;
+    }
+    if (category === "fishery") {
+      const fishery = await Fishery.aggregate([
+        {
+          $match: {
+            processing_method: true,
+            status: 1,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            foreignField: "_id",
+            localField: "user_id",
+            as: "user",
+          },
+        },
+        {
+          $unwind: {
+            path: "$user",
+          },
+        },
+        {
+          $match: {
+            "user.village_name": village,
+          },
+        },
+        {
+          $lookup: {
+            from: "fishery_crops",
+            foreignField: "_id",
+            localField: "fishery_crop_id",
+            as: "crop",
+          },
+        },
+        {
+          $unwind: {
+            path: "$crop",
+          },
+        },
+        {
+          $group: {
+            _id: "$crop._id",
+            count: { $count: {} },
+            crop_name: { $mergeObjects: { name: "$crop.name.en" } },
+          },
+        },
+        // {
+        //   $project: {
+        //     processing_method: "$important_information.description",
+        //     user_first_name: "$user.first_name",
+        //     user_last_name: "$user.last_name",
+        //     crop_name: "$crop.name.en",
+        //   },
+        // },
+      ]);
+      res.json(fishery);
+      return;
+    }
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
