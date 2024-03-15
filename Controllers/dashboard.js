@@ -3541,6 +3541,37 @@ module.exports.crop_based_product_names = async (req, res) => {
   }
 };
 
+module.exports.category_wise_crops = async (req, res) => {
+  const { type } = req.query;
+  try {
+    if (type === "trees") {
+      const crop_names = await TreeCrop.aggregate([
+        {
+          $project: {
+            name: "$name.en",
+          },
+        },
+      ]);
+      res.json(crop_names);
+      return;
+    }
+    if (type === "poultry") {
+      const crop_names = await PoultryCrop.aggregate([
+        {
+          $project: {
+            name: "$name.en",
+          },
+        },
+      ]);
+      res.json(crop_names);
+      return;
+    }
+    res.json([]);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
 // Consumptions
 
 module.exports.consumption_from_production = async (req, res) => {

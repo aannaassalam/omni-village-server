@@ -45,6 +45,8 @@ router.get(
   dashboard_controller.other_information_tree_fish_poultry_charts
 );
 
+router.get("/category_wise_crops", dashboard_controller.category_wise_crops);
+
 router.get("/harvested_products", dashboard_controller.harvested_products);
 
 router.get(
