@@ -2484,7 +2484,7 @@ module.exports.processing_method = async (req, res) => {
           },
         },
       ]);
-      res.json(cultivation);
+      res.json({ data: cultivation, type: "cultivation" });
       return;
     }
     // if (category === "trees") {
@@ -2597,7 +2597,7 @@ module.exports.processing_method = async (req, res) => {
         //   },
         // },
       ]);
-      res.json(hunting);
+      res.json({ data: hunting, type: "others" });
       return;
     }
     if (category === "fishery") {
@@ -2655,7 +2655,7 @@ module.exports.processing_method = async (req, res) => {
         //   },
         // },
       ]);
-      res.json(fishery);
+      res.json({ data: fishery, type: "others" });
       return;
     }
   } catch (err) {
