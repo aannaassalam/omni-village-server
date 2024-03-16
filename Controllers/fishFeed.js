@@ -9,6 +9,16 @@ const handleErrors = (err) => {
   return err;
 };
 
+module.exports.get_all_fish_feed = async (req, res) => {
+  // const { language, country } = req.query;
+  try {
+    const feed = await FishFeed.find({});
+    res.json(feed);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.get_fish_feed = async (req, res) => {
   const { language, country } = req.query;
   try {

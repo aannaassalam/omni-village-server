@@ -9,6 +9,16 @@ const handleErrors = (err) => {
   return err;
 };
 
+module.exports.get_all_feed = async (req, res) => {
+  // const { language, country } = req.query;
+  try {
+    const feed = await Feed.find({});
+    res.json(feed);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.get_feed = async (req, res) => {
   const { language, country } = req.query;
   try {
