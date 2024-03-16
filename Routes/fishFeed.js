@@ -22,8 +22,11 @@ const fish_feed_controller = require("../Controllers/fishFeed");
  */
 router.get("/", fish_feed_controller.get_fish_feed);
 router.get("/get-all", fish_feed_controller.get_all_fish_feed);
-router.get("/add-fish-feed", fish_feed_controller.add_fish_feed);
-router.get("/edit-fish-feed", fish_feed_controller.edit_fish_feed);
-router.get("/delete-fish-feed/:feed_id", fish_feed_controller.delete_fish_feed);
+router.post("/add-fish-feed", fish_feed_controller.add_fish_feed);
+router.post("/edit-fish-feed", fish_feed_controller.edit_fish_feed);
+router.delete(
+  "/delete-fish-feed/:feed_id",
+  fish_feed_controller.delete_fish_feed
+);
 
 module.exports = router;

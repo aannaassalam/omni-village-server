@@ -68,7 +68,7 @@ router.get("/", villages_controller.get_all_villages);
  */
 router.post("/add_village", checkUser, villages_controller.add_village);
 router.post("/edit_village", checkUser, villages_controller.edit_village);
-router.post(
+router.delete(
   "/delete_village/:village_id",
   checkUser,
   villages_controller.delete_village
