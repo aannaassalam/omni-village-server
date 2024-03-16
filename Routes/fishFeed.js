@@ -21,5 +21,8 @@ const fish_feed_controller = require("../Controllers/fishFeed");
  *          description: Internal Server Error
  */
 router.get("/", fish_feed_controller.get_fish_feed);
+router.get("/add-fish-feed", fish_feed_controller.add_fish_feed);
+router.get("/edit-fish-feed", fish_feed_controller.edit_fish_feed);
+router.get("/delete-fish-feed/:feed_id", fish_feed_controller.delete_fish_feed);
 
 module.exports = router;

@@ -21,5 +21,8 @@ const feed_controller = require("../Controllers/feed");
  *          description: Internal Server Error
  */
 router.get("/", feed_controller.get_feed);
+router.get("/add-feed", feed_controller.add_feed);
+router.get("/edit-feed", feed_controller.edit_feed);
+router.get("/delete-feed/:feed_id", feed_controller.delete_feed);
 
 module.exports = router;
