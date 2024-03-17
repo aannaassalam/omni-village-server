@@ -3690,7 +3690,7 @@ module.exports.other_information_tree_fish_poultry_charts_all = async (
     const tree_crop_age = {};
     tree.forEach((_tree) => {
       tree_crop_count[_tree.crop.name.en] =
-        (tree_crop_count[_tree.crop.name.en] || 0) + 1;
+        (tree_crop_count[_tree.crop.name.en] || 0) + _tree.number_of_trees;
       tree_crop_age[_tree.crop.name.en] = [
         ...(tree_crop_age[_tree.crop.name.en] || []),
         _tree.avg_age_of_trees,
