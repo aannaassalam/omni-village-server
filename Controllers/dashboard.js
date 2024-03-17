@@ -2014,7 +2014,7 @@ module.exports.organic_inorganic = async (req, res) => {
       return;
     }
 
-    if (category === "tree") {
+    if (category === "trees") {
       const tree_data = await Tree.aggregate([
         {
           $lookup: {
