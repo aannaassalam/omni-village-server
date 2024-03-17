@@ -1,6 +1,5 @@
 const User = require("../Models/user");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const sharp = require("sharp");
 const fs = require("fs");
@@ -9,14 +8,6 @@ const moment = require("moment");
 const accountSid = "AC4d37b2cba30b46a0262ca0f7429c5fd0";
 const authToken = process.env.TWILIO_SECRET;
 const client = require("twilio")(accountSid, authToken);
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "anasalam027@gmail.com",
-    pass: "yvbkuiovpwpfvtmq",
-  },
-});
 
 const forgot_password_otp_keeper = {};
 const otp_keeper = {

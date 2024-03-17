@@ -1,4 +1,3 @@
-const { CountryContextImpl } = require("twilio/lib/rest/pricing/v2/country");
 const Crop = require("../Models/crop");
 
 const handleErrors = (err) => {
@@ -12,7 +11,6 @@ const handleErrors = (err) => {
 
 module.exports.get_crop = async (req, res) => {
   const { language, country } = req.query;
-  console.log(language, CountryContextImpl);
   try {
     const crops = await Crop.aggregate([
       { $match: { country: country.toLowerCase() } },

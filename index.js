@@ -32,6 +32,7 @@ const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const dashboard = require("./Routes/dashboard");
+const admin = require("./Routes/admin");
 const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
@@ -94,6 +95,7 @@ app.use(
   })
 );
 
+app.use("/api/admin", admin);
 app.use("/api/user", user);
 app.use("/api/cultivation", cultivation);
 app.use("/api/crop", crop);
