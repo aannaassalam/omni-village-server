@@ -2,6 +2,8 @@ const router = require("express").Router();
 const dashboard_controller = require("../Controllers/dashboard");
 const { getCurrencies } = require("../Middlewares/user");
 
+router.get("/all-crops", dashboard_controller.all_crops);
+
 router.get(
   "/land_allocation_category_data",
   dashboard_controller.land_allocated_category_data
@@ -28,6 +30,7 @@ router.get(
   dashboard_controller.bifurcated_chart_crop
 );
 router.get("/soil-health", dashboard_controller.soil_health);
+router.get("/organic-inorganic", dashboard_controller.organic_inorganic);
 router.get(
   "/utilization_chart",
   getCurrencies,
@@ -43,6 +46,11 @@ router.get("/processing_method", dashboard_controller.processing_method);
 router.get(
   "/other_information_tree_fish_poultry_charts",
   dashboard_controller.other_information_tree_fish_poultry_charts
+);
+
+router.get(
+  "/other_information_tree_fish_poultry_charts_all",
+  dashboard_controller.other_information_tree_fish_poultry_charts_all
 );
 
 router.get("/category_wise_crops", dashboard_controller.category_wise_crops);
