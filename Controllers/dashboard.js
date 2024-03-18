@@ -4064,10 +4064,15 @@ module.exports.crop_based_product_names = async (req, res) => {
 };
 
 module.exports.category_wise_crops = async (req, res) => {
-  let { type } = req.query;
+  let { type, country } = req.query;
   try {
     if (type === "trees") {
       const crop_names = await TreeCrop.aggregate([
+        {
+          $match: {
+            country: country.toLowerCase(),
+          },
+        },
         {
           $project: {
             name: "$name.en",
@@ -4079,6 +4084,11 @@ module.exports.category_wise_crops = async (req, res) => {
     }
     if (type === "poultry") {
       const crop_names = await PoultryCrop.aggregate([
+        {
+          $match: {
+            country: country.toLowerCase(),
+          },
+        },
         {
           $project: {
             name: "$name.en",
