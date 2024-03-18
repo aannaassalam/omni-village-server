@@ -79,7 +79,7 @@ module.exports.all_crops = async (req, res) => {
 };
 
 module.exports.land_allocated_category_data = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
   try {
     const data = await Users.aggregate([
@@ -138,7 +138,7 @@ module.exports.land_allocated_category_data = async (req, res) => {
 };
 
 module.exports.land_used_category_data = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
   try {
     const cultivation_data = await Cultivation.aggregate([
@@ -269,7 +269,7 @@ module.exports.land_used_category_data = async (req, res) => {
 };
 
 module.exports.land_used_cultivation = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
   try {
     const cultivation_data = await Cultivation.aggregate([
@@ -332,7 +332,7 @@ module.exports.land_used_cultivation = async (req, res) => {
 };
 
 module.exports.bifurcated_chart_label = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   fx.rates = res.locals.currencies;
@@ -1089,7 +1089,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
 };
 
 module.exports.bifurcated_chart_crop = async (req, res) => {
-  const { crop_id, village } = req.query;
+  let { crop_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   fx.rates = res.locals.currencies;
@@ -1795,7 +1795,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
 };
 
 module.exports.soil_health = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -1911,7 +1911,7 @@ module.exports.soil_health = async (req, res) => {
 
 // to be continued after doubt
 module.exports.organic_inorganic = async (req, res) => {
-  const { village, category } = req.query;
+  let { village, category } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -2134,7 +2134,7 @@ module.exports.organic_inorganic = async (req, res) => {
 };
 
 module.exports.utilization_chart = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -2602,7 +2602,7 @@ module.exports.utilization_chart = async (req, res) => {
 };
 
 module.exports.processing_method = async (req, res) => {
-  const { category, village } = req.query;
+  let { category, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -2834,7 +2834,7 @@ module.exports.processing_method = async (req, res) => {
 };
 
 module.exports.income_expenditure = async (req, res) => {
-  const { village, crop_id } = req.query;
+  let { village, crop_id } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   fx.rates = res.locals.currencies;
@@ -3201,7 +3201,7 @@ module.exports.income_expenditure = async (req, res) => {
 };
 
 module.exports.selling_channel_data = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   const aggregated_data = {
@@ -3252,7 +3252,7 @@ module.exports.selling_channel_data = async (req, res) => {
 };
 
 module.exports.storage_data = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   const grouped_data = await storage.aggregate([
@@ -3389,7 +3389,7 @@ module.exports.other_information_tree_fish_poultry_charts = async (
   req,
   res
 ) => {
-  const { crop_id, village } = req.query;
+  let { crop_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -3662,7 +3662,7 @@ module.exports.other_information_tree_fish_poultry_charts_all = async (
   req,
   res
 ) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -4004,7 +4004,7 @@ module.exports.other_information_tree_fish_poultry_charts_all = async (
 };
 
 module.exports.harvested_products = async (req, res) => {
-  const { type, product_id } = req.query;
+  let { type, product_id } = req.query;
   try {
     if (type === "trees") {
       const tree_product = await TreeProduct.findById(product_id);
@@ -4023,7 +4023,7 @@ module.exports.harvested_products = async (req, res) => {
 };
 
 module.exports.crop_based_product_names = async (req, res) => {
-  const { type, crop_id } = req.query;
+  let { type, crop_id } = req.query;
   try {
     if (type === "trees") {
       const product_names = await TreeProduct.aggregate([
@@ -4064,7 +4064,7 @@ module.exports.crop_based_product_names = async (req, res) => {
 };
 
 module.exports.category_wise_crops = async (req, res) => {
-  const { type } = req.query;
+  let { type } = req.query;
   try {
     if (type === "trees") {
       const crop_names = await TreeCrop.aggregate([
@@ -4097,7 +4097,7 @@ module.exports.category_wise_crops = async (req, res) => {
 // Consumptions
 
 module.exports.consumption_from_production = async (req, res) => {
-  const { type_id, crop_id, village } = req.query;
+  let { type_id, crop_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   if (!type_id || !crop_id) {
@@ -4251,7 +4251,7 @@ module.exports.consumption_from_production = async (req, res) => {
 };
 
 module.exports.self_grown_consumption_data = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -4424,7 +4424,7 @@ module.exports.self_grown_consumption_data = async (req, res) => {
 };
 
 module.exports.self_consumed_data = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -4597,7 +4597,7 @@ module.exports.self_consumed_data = async (req, res) => {
 };
 
 module.exports.purchased_from_neighbours_consumed = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -4770,7 +4770,7 @@ module.exports.purchased_from_neighbours_consumed = async (req, res) => {
 };
 
 module.exports.purchased_from_market_consumed = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -4943,7 +4943,7 @@ module.exports.purchased_from_market_consumed = async (req, res) => {
 };
 
 module.exports.consumption_by_crop = async (req, res) => {
-  const { crop_id, village } = req.query;
+  let { crop_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -5120,7 +5120,7 @@ module.exports.consumption_by_crop = async (req, res) => {
 };
 
 module.exports.ideal_consumption_by_label = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -5297,7 +5297,7 @@ module.exports.ideal_consumption_by_label = async (req, res) => {
 };
 
 module.exports.ideal_consumption_expected = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   try {
     const consumption_docs = await Consumption.aggregate([
       {
@@ -5459,7 +5459,7 @@ module.exports.ideal_consumption_expected = async (req, res) => {
 // Food Balance
 
 module.exports.deficiet_chart = async (req, res) => {
-  const { village } = req.query;
+  let { village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
@@ -5960,7 +5960,7 @@ module.exports.deficiet_chart = async (req, res) => {
 };
 
 module.exports.food_balance = async (req, res) => {
-  const { type_id, village } = req.query;
+  let { type_id, village } = req.query;
   village = typeof village === "string" ? [village] : village;
 
   try {
