@@ -2950,7 +2950,7 @@ module.exports.income_expenditure = async (req, res) => {
         $match: crop_id
           ? {
               "crop._id": new ObjectId(crop_id),
-              "user.village_name": { $invillage },
+              "user.village_name": { $in: village },
               status: 1,
             }
           : {
@@ -3196,6 +3196,7 @@ module.exports.income_expenditure = async (req, res) => {
 
     res.json(income_expenditure_data);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
