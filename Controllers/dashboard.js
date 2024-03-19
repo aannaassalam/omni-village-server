@@ -304,7 +304,7 @@ module.exports.land_used_cultivation = async (req, res) => {
       {
         $unwind: {
           path: "$crop",
-          preserveNullAndEmptyArrays: true,
+          // preserveNullAndEmptyArrays: true,
         },
       },
       {
