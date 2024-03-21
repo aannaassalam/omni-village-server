@@ -1877,6 +1877,34 @@ module.exports.soil_health = async (req, res) => {
     // const merged_arr = [...cultivation_data, ...tree_data];
     const crop_arr = groupBy(cultivation_data, "crop_name");
 
+    const crop_data = Object.entries(crop_arr).map((_item) => {
+      const obj = {
+        crop_name: "",
+        stable: 0,
+        decreasing_yeild: 0,
+      };
+      obj.crop_name = _item[0];
+      _item[1].forEach((_data) => {
+        obj.stable =
+          _data.soil_health === "stable"
+            ? obj.stable +
+              landMeaurementConverter(
+                _data.area_allocated,
+                _data.land_measurement
+              )
+            : obj.stable;
+        obj.decreasing_yeild =
+          _data.soil_health === "decreasing yield"
+            ? obj.decreasing_yeild +
+              landMeaurementConverter(
+                _data.area_allocated,
+                _data.land_measurement
+              )
+            : obj.decreasing_yeild;
+      });
+      return obj;
+    });
+
     // res.json(merged_arr);
 
     const obj = {
@@ -1918,7 +1946,7 @@ module.exports.soil_health = async (req, res) => {
       }
     });
 
-    res.json({ aggregate: obj, crop_data: crop_arr });
+    res.json({ aggregate: obj, crop_data });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
