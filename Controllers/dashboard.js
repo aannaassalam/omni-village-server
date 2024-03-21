@@ -1820,10 +1820,25 @@ module.exports.soil_health = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "crops",
+          foreignField: "_id",
+          localField: "crop_id",
+          as: "crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: {
           area_allocated: 1,
           soil_health: "$important_information.soil_health",
           land_measurement: "$user.land_measurement",
+          crop_name: "$crop.name.en",
           type: "cultivation",
         },
       },
@@ -1860,6 +1875,7 @@ module.exports.soil_health = async (req, res) => {
 
     const merged_arr = cultivation_data;
     // const merged_arr = [...cultivation_data, ...tree_data];
+    const crop_arr = groupBy(cultivation_data, "crop_name");
 
     // res.json(merged_arr);
 
@@ -1902,7 +1918,7 @@ module.exports.soil_health = async (req, res) => {
       }
     });
 
-    res.json(obj);
+    res.json({ aggregate: obj, crop_data: crop_arr });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
