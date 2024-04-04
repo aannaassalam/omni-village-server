@@ -89,7 +89,158 @@ const createToken = (id) => {
 
 module.exports.list_all = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.aggregate([
+      {
+        $lookup: {
+          from: "cultivations",
+          foreignField: "user_id",
+          localField: "_id",
+          as: "cultivations",
+          pipeline: [
+            {
+              $match: {
+                status: 1,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                crop_name: 0,
+                crop_id: 0,
+                user_id: 0,
+                __v: 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "huntings",
+          foreignField: "user_id",
+          localField: "_id",
+          as: "huntings",
+          pipeline: [
+            {
+              $match: {
+                status: 1,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                hunting_crop_name: 0,
+                hunting_crop_id: 0,
+                user_id: 0,
+                __v: 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "fisheries",
+          foreignField: "user_id",
+          localField: "_id",
+          as: "fisheries",
+          pipeline: [
+            {
+              $match: {
+                status: 1,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                fishery_crop_name: 0,
+                fishery_crop_id: 0,
+                user_id: 0,
+                __v: 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "poultries",
+          foreignField: "user_id",
+          localField: "_id",
+          as: "poultries",
+          pipeline: [
+            {
+              $match: {
+                status: 1,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                crop_name: 0,
+                crop_id: 0,
+                user_id: 0,
+                __v: 0,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: "trees",
+          foreignField: "user_id",
+          localField: "_id",
+          as: "trees",
+          pipeline: [
+            {
+              $match: {
+                status: 1,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                tree_crop_name: 0,
+                tree_crop_id: 0,
+                user_id: 0,
+                __v: 0,
+              },
+            },
+          ],
+        },
+      },
+      // {
+      //   $lookup: {
+      //     from: "consumptions",
+      //     foreignField: "user_id",
+      //     localField: "_id",
+      //     as: "consumptions",
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           status: 1,
+      //         },
+      //       },
+      //       {
+      //         $project: {
+      //           _id: 0,
+      //           crop_name: 0,
+      //           crop_id: 0,
+      //           user_id: 0,
+      //           __v: 0,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // },
+      {
+        $project: {
+          _id: 0,
+          __v: 0,
+        },
+      },
+    ]);
     res.json(users);
   } catch (err) {
     console.log(err);
