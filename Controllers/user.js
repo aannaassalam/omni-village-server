@@ -224,7 +224,7 @@ module.exports.list_all = async (req, res) => {
               $lookup: {
                 from: "fishery_crops",
                 foreignField: "_id",
-                localField: "crop_id",
+                localField: "fishery_crop_id",
                 as: "crop",
               },
             },
@@ -274,7 +274,7 @@ module.exports.list_all = async (req, res) => {
               $lookup: {
                 from: "poultry_crops",
                 foreignField: "_id",
-                localField: "crop_id",
+                localField: "poultry_crop_id",
                 as: "crop",
               },
             },
@@ -334,7 +334,7 @@ module.exports.list_all = async (req, res) => {
               $lookup: {
                 from: "tree_crops",
                 foreignField: "_id",
-                localField: "crop_id",
+                localField: "tree_crop_id",
                 as: "crop",
               },
             },
