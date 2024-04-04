@@ -264,6 +264,24 @@ module.exports.list_all = async (req, res) => {
               },
             },
             {
+              $lookup: {
+                from: "poultry_products",
+                foreignField: "_id",
+                localField: "products",
+                as: "products",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 0,
+                      poultry_crop_id: 0,
+                      poultry_crop_name: 0,
+                      __v: 0,
+                    },
+                  },
+                ],
+              },
+            },
+            {
               $replaceRoot: {
                 newRoot: {
                   $mergeObjects: ["$personal_information", "$$ROOT"],
@@ -284,24 +302,6 @@ module.exports.list_all = async (req, res) => {
             {
               $addFields: {
                 crop_name: "$crop.name.en",
-              },
-            },
-            {
-              $lookup: {
-                from: "poultry_products",
-                foreignField: "_id",
-                localField: "products",
-                as: "products",
-                pipeline: [
-                  {
-                    $project: {
-                      _id: 0,
-                      poultry_crop_id: 0,
-                      poultry_crop_name: 0,
-                      __v: 0,
-                    },
-                  },
-                ],
               },
             },
             {
