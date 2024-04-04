@@ -114,22 +114,36 @@ module.exports.list_all = async (req, res) => {
             {
               $replaceRoot: {
                 newRoot: {
-                  $mergeObjects: ["$utilization", "$$ROOT"],
+                  $mergeObjects: [
+                    "$utilization",
+                    "$important_information",
+                    "$$ROOT",
+                  ],
                 },
               },
             },
             {
-              $replaceRoot: {
-                newRoot: {
-                  $mergeObjects: ["$important_information", "$$ROOT"],
-                },
+              $lookup: {
+                from: "crops",
+                foreignField: "_id",
+                localField: "crop_id",
+                as: "crop",
+              },
+            },
+            {
+              $unwind: "$crop",
+            },
+            {
+              $addFields: {
+                crop_name: "$crop.name.en",
               },
             },
             {
               $project: {
                 _id: 0,
-                crop_name: 0,
+                // crop_name: 0,
                 crop_id: 0,
+                crop: 0,
                 user_id: 0,
                 utilization: 0,
                 important_information: 0,
@@ -149,6 +163,22 @@ module.exports.list_all = async (req, res) => {
             {
               $match: {
                 status: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: "hunting_crops",
+                foreignField: "_id",
+                localField: "hunting_crop_id",
+                as: "crop",
+              },
+            },
+            {
+              $unwind: "$crop",
+            },
+            {
+              $addFields: {
+                crop_name: "$crop.name.en",
               },
             },
             {
@@ -190,6 +220,22 @@ module.exports.list_all = async (req, res) => {
               },
             },
             {
+              $lookup: {
+                from: "fishery_crops",
+                foreignField: "_id",
+                localField: "crop_id",
+                as: "crop",
+              },
+            },
+            {
+              $unwind: "$crop",
+            },
+            {
+              $addFields: {
+                crop_name: "$crop.name.en",
+              },
+            },
+            {
               $project: {
                 _id: 0,
                 fishery_crop_name: 0,
@@ -220,6 +266,22 @@ module.exports.list_all = async (req, res) => {
                 newRoot: {
                   $mergeObjects: ["$personal_information", "$$ROOT"],
                 },
+              },
+            },
+            {
+              $lookup: {
+                from: "poultry_crops",
+                foreignField: "_id",
+                localField: "crop_id",
+                as: "crop",
+              },
+            },
+            {
+              $unwind: "$crop",
+            },
+            {
+              $addFields: {
+                crop_name: "$crop.name.en",
               },
             },
             {
@@ -263,6 +325,22 @@ module.exports.list_all = async (req, res) => {
             {
               $match: {
                 status: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: "tree_crops",
+                foreignField: "_id",
+                localField: "crop_id",
+                as: "crop",
+              },
+            },
+            {
+              $unwind: "$crop",
+            },
+            {
+              $addFields: {
+                crop_name: "$crop.name.en",
               },
             },
             {
