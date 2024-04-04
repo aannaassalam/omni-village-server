@@ -103,11 +103,27 @@ module.exports.list_all = async (req, res) => {
               },
             },
             {
+              $replaceRoot: {
+                newRoot: {
+                  $mergeObjects: ["$utilization", "$$ROOT"],
+                },
+              },
+            },
+            {
+              $replaceRoot: {
+                newRoot: {
+                  $mergeObjects: ["$important_information", "$$ROOT"],
+                },
+              },
+            },
+            {
               $project: {
                 _id: 0,
                 crop_name: 0,
                 crop_id: 0,
                 user_id: 0,
+                utilization: 0,
+                important_information: 0,
                 __v: 0,
               },
             },
@@ -151,12 +167,28 @@ module.exports.list_all = async (req, res) => {
               },
             },
             {
+              $replaceRoot: {
+                newRoot: {
+                  $mergeObjects: ["$production_information", "$$ROOT"],
+                },
+              },
+            },
+            {
+              $replaceRoot: {
+                newRoot: {
+                  $mergeObjects: ["$important_information", "$$ROOT"],
+                },
+              },
+            },
+            {
               $project: {
                 _id: 0,
                 fishery_crop_name: 0,
                 fishery_crop_id: 0,
                 user_id: 0,
                 __v: 0,
+                production_information: 0,
+                important_information: 0,
               },
             },
           ],
@@ -175,12 +207,38 @@ module.exports.list_all = async (req, res) => {
               },
             },
             {
+              $replaceRoot: {
+                newRoot: {
+                  $mergeObjects: ["$personal_information", "$$ROOT"],
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: "poultry_products",
+                foreignField: "_id",
+                localField: "products",
+                as: "products",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 0,
+                      poultry_crop_id: 0,
+                      poultry_crop_name: 0,
+                      __v: 0,
+                    },
+                  },
+                ],
+              },
+            },
+            {
               $project: {
                 _id: 0,
-                crop_name: 0,
-                crop_id: 0,
+                poultry_crop_name: 0,
+                poultry_crop_id: 0,
                 user_id: 0,
                 __v: 0,
+                personal_information: 0,
               },
             },
           ],
@@ -191,11 +249,29 @@ module.exports.list_all = async (req, res) => {
           from: "trees",
           foreignField: "user_id",
           localField: "_id",
-          as: "trees",
+          as: "tree",
           pipeline: [
             {
               $match: {
                 status: 1,
+              },
+            },
+            {
+              $lookup: {
+                from: "tree_products",
+                foreignField: "_id",
+                localField: "products",
+                as: "products",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 0,
+                      tree_crop_id: 0,
+                      tree_crop_name: 0,
+                      __v: 0,
+                    },
+                  },
+                ],
               },
             },
             {
@@ -234,10 +310,24 @@ module.exports.list_all = async (req, res) => {
       //     ],
       //   },
       // },
+      // {
+      //   $unwind: "$sub_area",
+      // },
+      {
+        $addFields: {
+          cultivation: "$sub_area.cultivation.land",
+          trees: "$sub_area.trees",
+          poultry: "$sub_area.poultry",
+          fishery: "$sub_area.fishery",
+          storage: "$sub_area.storage",
+        },
+      },
       {
         $project: {
           _id: 0,
           __v: 0,
+          sub_area: 0,
+          updatedAt: 0,
         },
       },
     ]);
