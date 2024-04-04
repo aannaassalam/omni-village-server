@@ -91,6 +91,15 @@ module.exports.list_all = async (req, res) => {
   try {
     const users = await User.aggregate([
       {
+        $addFields: {
+          cultivation: "$sub_area.cultivation.land",
+          trees: "$sub_area.trees",
+          poultry: "$sub_area.poultry",
+          fishery: "$sub_area.fishery",
+          storage: "$sub_area.storage",
+        },
+      },
+      {
         $lookup: {
           from: "cultivations",
           foreignField: "user_id",
@@ -313,15 +322,6 @@ module.exports.list_all = async (req, res) => {
       // {
       //   $unwind: "$sub_area",
       // },
-      {
-        $addFields: {
-          cultivation: "$sub_area.cultivation.land",
-          trees: "$sub_area.trees",
-          poultry: "$sub_area.poultry",
-          fishery: "$sub_area.fishery",
-          storage: "$sub_area.storage",
-        },
-      },
       {
         $project: {
           _id: 0,
