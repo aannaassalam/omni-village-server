@@ -55,6 +55,8 @@ const upload = multer({ storage });
  */
 router.get("/list-all", user_controller.list_all);
 
+router.get("/download-pdf", user_controller.download_pdf);
+
 /**
  * @swagger
  * /user/register:

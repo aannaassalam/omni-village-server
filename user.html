@@ -1,0 +1,4936 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 80%;
+        margin: auto;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      h2 {
+        padding: 20px 10px;
+      }
+      h3 {
+        padding: 12px 10px;
+      }
+      p {
+        padding: 10px;
+        word-break: break-all; /* border-bottom: 1px solid #eee; */
+      }
+      .row {
+        display: flex;
+        width: 100%;
+        text-transform: capitalize;
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: #eee;
+      }
+      .row > * {
+        width: 70%;
+      }
+      .row > *:first-child {
+        width: 30% !important;
+        /* background-color: #e8e8e8; */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>User Details</h1>
+    <div>
+      <div class="row">
+        <p>first name</p>
+        <p>Anas</p>
+      </div>
+      <div class="row">
+        <p>last name</p>
+        <p>Alam</p>
+      </div>
+      <div class="row">
+        <p>village name</p>
+        <p>kolkata</p>
+      </div>
+      <div class="row">
+        <p>number of members</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #ccc !important">
+        <h3>members</h3>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>name</p>
+        <p>anas</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>age</p>
+        <p>22</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>gender</p>
+        <p>male</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>id</p>
+        <p>65913ed7d270c346d7d193b4</p>
+      </div>
+      <div class="row">
+        <p>country code</p>
+        <p>+91</p>
+      </div>
+      <div class="row">
+        <p>phone</p>
+        <p>7044804030</p>
+      </div>
+      <div class="row">
+        <p>document type</p>
+        <p>Pasport (Passport)</p>
+      </div>
+      <div class="row">
+        <p>social security number</p>
+        <p>Shusshehe</p>
+      </div>
+      <div class="row">
+        <p>address</p>
+        <p>22.53891410266775,88.37021664817443</p>
+      </div>
+      <div class="row">
+        <p>address proof</p>
+        <p>uploads/1704017623147.png</p>
+      </div>
+      <div class="row">
+        <p>total land</p>
+        <p>50</p>
+      </div>
+      <div class="row">
+        <p>currency</p>
+        <p>INR</p>
+      </div>
+      <div class="row">
+        <p>country</p>
+        <p>India</p>
+      </div>
+      <div class="row">
+        <p>land measurement</p>
+        <p>square kilometer</p>
+      </div>
+      <div class="row">
+        <p>land measurement symbol</p>
+        <p>km²</p>
+      </div>
+      <div class="row">
+        <p>street address</p>
+        <p>Jdnfbee</p>
+      </div>
+      <div class="row">
+        <p>createdAt</p>
+        <p>Sunday, 31 Dec 2023 03:42 pm</p>
+      </div>
+      <div class="row">
+        <p>cultivation</p>
+        <p>10</p>
+      </div>
+      <div class="row">
+        <p>trees</p>
+        <p>20</p>
+      </div>
+      <div class="row">
+        <p>poultry</p>
+        <p>5</p>
+      </div>
+      <div class="row">
+        <p>fishery</p>
+        <p>5</p>
+      </div>
+      <div class="row">
+        <p>storage</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #ccc !important">
+        <h2>cultivations</h2>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>1300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>750</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 12:48 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 12:48 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>sweet potato</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>3000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 12:49 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 12:49 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>600</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>2700</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>15</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>50000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>12000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 12:51 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 12:51 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>corn</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 12:52 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 12:52 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>3000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>3000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>50000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>10000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1125</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 12:52 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 12:52 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>rice</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>8</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>9000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 12:53 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 12:53 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>123</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 30 Dec 2023 03:44 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 31 Dec 2023 03:44 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>pumpkin</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 31 Dec 2023 03:48 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 31 Dec 2023 03:48 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>62.5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 12:47 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 12:47 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>chillies</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>250</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 12:48 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 12:48 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>50000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>333.3333333333333</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 01:53 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 01:53 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>cassava</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 01:54 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 01:54 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 03:58 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 03:58 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>coriander</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 03:58 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 03:58 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>3500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>50000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:02 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:02 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>turmeric</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>6000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:04 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:04 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>2500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:07 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:07 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>long bean</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:08 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:08 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>20000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>750</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 05:05 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 05:05 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>spinach</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 05:06 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 05:06 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>32000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>666.6666666666666</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 05:07 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 05:07 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>kangkung</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 05:08 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 05:08 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>23</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>150</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>1555</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>55</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>253</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:43 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:43 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>keriting</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>253</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:44 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:44 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>70</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>250</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 12:55 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 12:55 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>ginger</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 12:56 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 12:56 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>70</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>150000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>18000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>75</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:51 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:51 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>pandan</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>450</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:52 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:52 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>40</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>40</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>15870</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>870</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>60</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:54 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:54 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>dragonfruit</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>120</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:55 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:55 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:00 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:00 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>garlic</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:01 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:01 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>600</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:10 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:10 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>okra</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:10 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:10 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 05:04 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 05:04 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>bakchoi</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 05:05 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 05:05 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>3000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>6000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>15</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>2000000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:29 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:29 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>potato</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>10000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:30 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:30 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>58</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>15603</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>589</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>109.66666666666667</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:33 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:33 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>watermelon</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>658</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:39 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:39 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>9</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>56380</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>36000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:56 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:56 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>petola</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:57 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:57 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>1900</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>200000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 12:54 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 12:54 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>wheat</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>4000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 12:55 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 12:55 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>900</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>600</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>500000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>20000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>600</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 01:17 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 01:17 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>bitter gourd</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>3000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 01:18 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 01:18 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>2500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>150000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>833.3333333333334</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 01:19 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 01:19 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>tomato</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 01:20 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 01:20 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>2400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>1600</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>20000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1250</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 01:52 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 01:52 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>yam</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 01:53 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 01:53 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>2500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>100000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:01 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:01 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>lemongrass</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:02 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:02 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>900</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>750</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:22 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:22 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>pepper</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:23 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:23 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>350</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>15000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>240</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:08 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:08 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>spring onion</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:15 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:15 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>9</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>60</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>80</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>1532</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>532</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>184.5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:40 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:40 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>peanuts</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>369</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:40 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:40 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>90</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>210</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>600</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>16532</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>5689</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:40 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:40 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>melon</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:41 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:41 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>44</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>80</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>90</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>9</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>81.33333333333333</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:45 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:45 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>misai kucing</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>244</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:46 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:46 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>700</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>3500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>15689</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>869</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1750</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:53 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:53 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>vanilla</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>7000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:54 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:54 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>1536</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>36</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>18.666666666666668</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:57 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:57 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>jowar</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>56</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:58 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:58 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 03:59 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 03:59 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>onion</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 03:59 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 03:59 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>450</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>12</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>35000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:04 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:04 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>cabbage</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>4500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:05 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:05 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>360000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>6000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>833.3333333333334</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:12 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:12 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>cucumber</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>2500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:13 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:13 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>20000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>666.6666666666666</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 04:13 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 04:13 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>eggplant</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 04:15 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 04:15 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1750</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 05:03 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 05:03 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>mushroom</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>3500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 05:04 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 05:04 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Sunday, 31 Dec 2023 05:06 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Monday, 01 Jan 2024 05:06 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>choy sum</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 05:07 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 05:07 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>45</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>70</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>15000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:32 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:32 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>pineapple</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>150</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:32 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:32 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>32</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>54</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>40</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>stable</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>12536</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>563</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>63</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:42 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:42 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>sawi</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>126</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:43 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:43 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>300</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>700</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>7</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:49 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:49 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>curry leaves</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>1500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:50 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:50 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>40</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>150</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>150</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>30</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>chemical based</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>organic self made</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>13000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>900</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>180</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:50 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:50 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>coffee</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>360</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:51 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:51 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>fed to livestock</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold for industrial use</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>soil health</p>
+        <p>decreasing yield</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>decreasing rate</p>
+        <p>4</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of fertilizer used</p>
+        <p>organic purchased</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>type of pesticide used</p>
+        <p>none</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>1265</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>365</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>description</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>15.333333333333334</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month planted</p>
+        <p>Saturday, 06 Jan 2024 01:55 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>month harvested</p>
+        <p>Sunday, 07 Jan 2024 01:55 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>crop name</p>
+        <p>kundul</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>area allocated</p>
+        <p>3</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>output</p>
+        <p>46</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>weight measurement</p>
+        <p>kilogram</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Sunday, 07 Jan 2024 01:56 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>updatedAt</p>
+        <p>Sunday, 07 Jan 2024 01:56 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #ccc !important">
+        <h2>huntings</h2>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>number hunted</p>
+        <p>20</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>meat</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold in consumer market</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>0.25</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>processing method</p>
+        <p>false</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 02:12 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 02:12 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>crop name</p>
+        <p>snake</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>number hunted</p>
+        <p>25</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>meat</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>1200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold in consumer market</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>300000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>processing method</p>
+        <p>true</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 01:57 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 01:57 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>crop name</p>
+        <p>deer</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>number hunted</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>meat</p>
+        <p>2000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>200</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>800</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold in consumer market</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>20000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>400</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>processing method</p>
+        <p>false</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 01:59 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 01:59 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>crop name</p>
+        <p>wild boar</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>number hunted</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>meat</p>
+        <p>5000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold in consumer market</p>
+        <p>3500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>100000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>1000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>processing method</p>
+        <p>false</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 03:24 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 03:24 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>crop name</p>
+        <p>boar</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>number hunted</p>
+        <p>6</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>meat</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>250</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold in consumer market</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>100</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>50000</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>50</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>83.33333333333333</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>processing method</p>
+        <p>false</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 02:00 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 02:00 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>crop name</p>
+        <p>monkey</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>number hunted</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>meat</p>
+        <p>10</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>self consumed</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold to neighbours</p>
+        <p>2</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>sold in consumer market</p>
+        <p>8</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>wastage</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other</p>
+        <p></p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>other value</p>
+        <p>undefined</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>income from sale</p>
+        <p>500</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>expenditure on inputs</p>
+        <p>0</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>yeild</p>
+        <p>5</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>processing method</p>
+        <p>false</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>status</p>
+        <p>1</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>createdAt</p>
+        <p>Monday, 01 Jan 2024 03:06 pm</p>
+      </div>
+      <div class="row" style="border-bottom-color: #eee; padding-inline: 0px">
+        <p>updatedAt</p>
+        <p>Monday, 01 Jan 2024 03:06 pm</p>
+      </div>
+      <div
+        class="row"
+        style="border-bottom-color: #ccc !important; padding-inline: 0px"
+      >
+        <p>crop name</p>
+        <p>python</p>
+      </div>
+      <div class="row" style="border-bottom-color: #ccc !important">
+        <h2>fisheries</h2>
+      </div>
+      <div class="row" style="border-bottom-color: #ccc !important">
+        <h2>poultries</h2>
+      </div>
+      <div class="row" style="border-bottom-color: #ccc !important">
+        <h2>tree</h2>
+      </div>
+    </div>
+  </body>
+</html>
