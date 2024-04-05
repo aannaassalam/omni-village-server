@@ -519,7 +519,6 @@ module.exports.list_all = async (req, res) => {
       // },
       {
         $project: {
-          _id: 0,
           __v: 0,
           sub_area: 0,
           updatedAt: 0,
