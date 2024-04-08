@@ -1,4 +1,5 @@
 const FisheryCrop = require("../Models/fisheryCrop");
+const csvtojson = require("csvtojson");
 
 const handleErrors = (err) => {
   let errors = {};
@@ -80,6 +81,35 @@ module.exports.add_fishery_crop = async (req, res) => {
     res.json({ ...fishery_doc._doc, name: fishery_doc.name[language] });
   } catch (err) {
     res.status(400).json(handleErrors(err));
+  }
+};
+
+module.exports.bulk_upload = async (req, res) => {
+  const file = req.file.path;
+  try {
+    const data = await csvtojson().fromFile(file);
+    const hoo = await FisheryCrop.insertMany(data, {
+      rawResult: true,
+    });
+    return res.json({
+      inserted: hoo.insertedCount,
+      failed: data.length - hoo.insertedCount,
+    });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({
+        message: `Duplicate Data found in csv file. Data can be found at row number - ${
+          err.writeErrors[0].index + 1
+        }. Please remove the rows before row ${
+          err.writeErrors[0].index + 1
+        } along with the duplicate entry.`,
+      });
+    }
+    if (err.name === "ValidationError")
+      return res.status(400).json({
+        message: err.message,
+      });
+    return res.status(400).json(err);
   }
 };
 
