@@ -2088,7 +2088,7 @@ module.exports.organic_inorganic = async (req, res) => {
         },
         {
           $match: {
-            "user.village_name": village,
+            "user.village_name": { $in: village },
             status: 1,
           },
         },
