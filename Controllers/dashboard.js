@@ -22,12 +22,19 @@ const fx = require("money");
 
 const { landMeaurementConverter } = require("../utils/landConverter");
 const { weightConverter } = require("../utils/weightConverter");
+const moment = require("moment");
 
 var groupBy = function (xs, key) {
   return xs.reduce(function (rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
   }, {});
+};
+
+const date_fn = (date, original_obj) => {
+  const date_string = moment(date).format("DD-MM-YYYY");
+  original_obj[date_string] = (original_obj[date_string] || 0) + 1;
+  return original_obj;
 };
 
 // Production
@@ -1160,6 +1167,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           expenditure: "$important_information.expenditure_on_inputs",
           currency: "$user.currency",
           yeild: "$important_information.yeild",
+          month_planted: "$important_information.month_planted",
+          month_harvested: "$important_information.month_harvested",
           area_allocated: 1,
           land_measurement: "$user.land_measurement",
           type: "cultivation",
@@ -1308,6 +1317,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           sold_to_market: { $sum: "$products.sold_for_industrial_use" },
           wastage: { $sum: "$products.wastage" },
           other_value: { $sum: "$products.other_value" },
+          month_harvested: { $push: "$products.month_harvested" },
           doc: { $first: "$$ROOT" },
         },
       },
@@ -1323,6 +1333,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
                 sold_to_market: "$sold_to_market",
                 wastage: "$wastage",
                 other_value: "$other_value",
+                month_harvested: "$month_harvested",
               },
             ],
           },
@@ -1343,6 +1354,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$income_from_sale",
           expenditure: "$expenditure_on_inputs",
           currency: "$user.currency",
+          month_harvested: "$month_harvested",
           yeild: { $divide: ["$output", "$number"] },
           number: 1,
           type: "poultry",
@@ -1422,6 +1434,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           fed_to_livestock: { $sum: "$products.fed_to_livestock" },
           wastage: { $sum: "$products.wastage" },
           other_value: { $sum: "$products.other_value" },
+          month_harvested: { $push: "$products.month_harvested" },
           doc: { $first: "$$ROOT" },
         },
       },
@@ -1438,6 +1451,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
                 fed_to_livestock: "$fed_to_livestock",
                 wastage: "$wastage",
                 other_value: "$other_value",
+                month_harvested: "$month_harvested",
               },
             ],
           },
@@ -1458,6 +1472,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           income: "$income_from_sale",
           expenditure: "$expenditure_on_inputs",
           currency: "$user.currency",
+          month_harvested: "$month_harvested",
           yeild: { $divide: ["$output", "$number_of_trees"] },
           number: "$number_of_trees",
           type: "tree",
@@ -1573,6 +1588,8 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
       yeild: 0,
       area_allocated: 0,
       avg_number: null,
+      month_planted: {},
+      month_harvested: {},
     };
 
     merged_arr.forEach((_item) => {
@@ -1737,6 +1754,25 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
           obj.type = "number";
         }
       }
+
+      if (_item.month_planted) {
+        if (_item.month_planted.length) {
+          _item.month_planted.forEach((date) => {
+            date_fn(date, obj.month_planted);
+          });
+        } else {
+          date_fn(_item.month_planted, obj.month_planted);
+        }
+      }
+      if (_item.month_harvested) {
+        if (_item.month_harvested.length) {
+          _item.month_harvested.forEach((date) => {
+            date_fn(date, obj.month_harvested);
+          });
+        } else {
+          date_fn(_item.month_harvested, obj.month_harvested);
+        }
+      }
     });
 
     const yeild_sum = merged_arr.reduce((prev, current) => {
@@ -1790,6 +1826,7 @@ module.exports.bifurcated_chart_crop = async (req, res) => {
 
     res.json(obj);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 };
