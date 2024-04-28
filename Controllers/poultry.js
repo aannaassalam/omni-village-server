@@ -73,6 +73,14 @@ module.exports.get_all_poultry = async (req, res) => {
           as: "user",
         },
       },
+      {
+        $lookup: {
+          from: "poultry_products",
+          localField: "products",
+          foreignField: "_id",
+          as: "products",
+        },
+      },
       { $unwind: { path: "$crop" } },
       { $unwind: { path: "$user" } },
       {

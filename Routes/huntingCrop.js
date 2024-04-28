@@ -1,6 +1,34 @@
 const router = require("express").Router();
 const hunting_crop_controller = require("../Controllers/huntingCrop");
 const { verifyToken } = require("../Middlewares/user");
+const fs = require("fs");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    if (ext === "csv") {
+      fs.mkdir("./csv", (err) => {
+        cb(null, "./csv");
+      });
+    } else {
+      cb("Only CSV formats are supported", null);
+    }
+  },
+  filename: (req, file, cb) => {
+    // console.log(file.mimetype.split("/")[1]);
+    cb(null, `${Date.now()}.csv`);
+  },
+});
+
+const upload = multer({ storage });
+
+router.post(
+  "/bulk-upload",
+  upload.single("sheet"),
+  // verifyToken,
+  hunting_crop_controller.bulk_upload
+);
 
 /**
  * @swagger
