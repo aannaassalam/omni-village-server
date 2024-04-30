@@ -65,8 +65,22 @@ module.exports.get_all_cultivations = async (req, res) => {
           as: "user",
         },
       },
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "crop.label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
       { $unwind: { path: "$crop" } },
       { $unwind: { path: "$user" } },
+      { $unwind: { path: "$label" } },
+      {
+        $addFields: {
+          label_name: "$label.name.en",
+        },
+      },
       {
         $project: {
           __v: 0,
