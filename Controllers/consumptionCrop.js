@@ -111,7 +111,6 @@ module.exports.get_consumption_crop_dashboard = async (req, res) => {
 };
 
 module.exports.get_all = async (req, res) => {
-  const { language } = req.query;
   try {
     const crops = await consumptionCrop.aggregate([
       {

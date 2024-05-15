@@ -27,6 +27,26 @@ router.get(
   consumption_crop_controller.get_consumption_crop_dashboard
 );
 
+router.get("/get_all", consumption_crop_controller.get_all);
+
+router.post(
+  "/add_crop",
+  // verifyToken,
+  consumption_crop_controller.add_crop
+);
+router.post(
+  "/bulk-upload",
+  upload.single("sheet"),
+  // verifyToken,
+  consumption_crop_controller.bulk_upload
+);
+router.post(
+  "/edit_crop",
+  // verifyToken,
+  consumption_crop_controller.edit_crop
+);
+router.delete("/:id", consumption_crop_controller.delete_crop);
+
 /**
  * @swagger
  * /consumption_crop/{consumption_type_id}:
@@ -58,25 +78,5 @@ router.get(
   "/:consumption_type_id",
   consumption_crop_controller.get_consumption_crop
 );
-
-router.get("/get_all", consumption_crop_controller.get_all);
-
-router.post(
-  "/add_crop",
-  // verifyToken,
-  consumption_crop_controller.add_crop
-);
-router.post(
-  "/bulk-upload",
-  upload.single("sheet"),
-  // verifyToken,
-  consumption_crop_controller.bulk_upload
-);
-router.post(
-  "/edit_crop",
-  // verifyToken,
-  consumption_crop_controller.edit_crop
-);
-router.delete("/:id", consumption_crop_controller.delete_crop);
 
 module.exports = router;

@@ -82,4 +82,4 @@ const consumptionCropSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("ConsumptionCrop", consumptionCropSchema);
+module.exports = mongoose.model("consumptioncrop", consumptionCropSchema);
