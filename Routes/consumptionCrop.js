@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const multer = require("multer");
 const consumption_crop_controller = require("../Controllers/consumptionCrop");
 const { verifyToken } = require("../Middlewares/user");
 
@@ -18,6 +19,8 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}.csv`);
   },
 });
+
+const upload = multer({ storage });
 
 router.get(
   "/dashboard",
