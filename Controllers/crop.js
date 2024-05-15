@@ -14,7 +14,7 @@ module.exports.get_crop = async (req, res) => {
   const { language, country } = req.query;
   try {
     const crops = await Crop.aggregate([
-      { $match: { country: country.toLowerCase() } },
+      { $match: { country: { $in: country.toLowerCase() } } },
       {
         $lookup: {
           from: "consumption_type",

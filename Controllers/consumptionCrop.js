@@ -96,11 +96,8 @@ module.exports.get_consumption_crop_dashboard = async (req, res) => {
         { name: `$name.en`, country: 1, status: 1, label: 1 }
       ),
       await consumptionCrop.find(
-        {
-          label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
-        },
-        { name: `$name.${language}`, country: 1, status: 1, label: 1 }
+        { label: new ObjectId(consumption_type_id) },
+        { name: `$name.en`, country: 1, status: 1, label: 1 }
       ),
     ]);
     res.json(consumption_crops.flat());
