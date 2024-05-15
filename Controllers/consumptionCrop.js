@@ -110,6 +110,31 @@ module.exports.get_consumption_crop_dashboard = async (req, res) => {
   }
 };
 
+module.exports.get_all = async (req, res) => {
+  const { language } = req.query;
+  try {
+    const crops = await consumptionCrop.aggregate([
+      {
+        $lookup: {
+          from: "consumption_types",
+          localField: "label",
+          foreignField: "_id",
+          as: "label",
+        },
+      },
+      {
+        $unwind: {
+          path: "$label",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+    res.json(crops);
+  } catch (err) {
+    res.status(400).json(handleErrors(err));
+  }
+};
+
 module.exports.add_crop = async (req, res) => {
   const { name, country, status, label, ideal_consumption_per_person } =
     req.body;

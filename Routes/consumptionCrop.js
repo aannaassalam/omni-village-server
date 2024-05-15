@@ -59,6 +59,8 @@ router.get(
   consumption_crop_controller.get_consumption_crop
 );
 
+router.get("/get_all", consumption_crop_controller.get_all);
+
 router.post(
   "/add_crop",
   // verifyToken,
