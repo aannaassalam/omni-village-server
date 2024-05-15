@@ -92,6 +92,20 @@ module.exports.get_consumption = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -101,6 +115,7 @@ module.exports.get_consumption = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.${language}`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.${language}`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.${language}`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.${language}`,
         },
       },
     ]);
@@ -114,6 +129,8 @@ module.exports.get_consumption = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -305,6 +322,20 @@ module.exports.consumption_list = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -314,6 +345,7 @@ module.exports.consumption_list = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
       {
@@ -332,6 +364,8 @@ module.exports.consumption_list = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });

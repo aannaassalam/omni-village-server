@@ -15,6 +15,7 @@ const FisheryCrop = require("../Models/fisheryCrop");
 const PoultryCrop = require("../Models/poultryCrop");
 const TreeCrop = require("../Models/treeCrop");
 const HuntingCrop = require("../Models/huntingCrop");
+const ConsumptionCrop = require("../Models/consumptionCrop");
 
 const ObjectId = require("mongoose").Types.ObjectId;
 // const CC = require("currency-converter-lt");
@@ -67,6 +68,12 @@ module.exports.all_crops = async (req, res) => {
       }
     );
     const fishery_crops = await FisheryCrop.find(
+      { country: country.toLowerCase() },
+      {
+        name: "$name.en",
+      }
+    );
+    const consumption_crops = await ConsumptionCrop.find(
       { country: country.toLowerCase() },
       {
         name: "$name.en",
@@ -4297,6 +4304,20 @@ module.exports.consumption_from_production = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -4306,6 +4327,7 @@ module.exports.consumption_from_production = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -4460,6 +4482,20 @@ module.exports.self_grown_consumption_data = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -4469,6 +4505,7 @@ module.exports.self_grown_consumption_data = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -4487,6 +4524,8 @@ module.exports.self_grown_consumption_data = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -4633,6 +4672,20 @@ module.exports.self_consumed_data = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -4642,6 +4695,7 @@ module.exports.self_consumed_data = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -4660,6 +4714,8 @@ module.exports.self_consumed_data = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -4806,6 +4862,20 @@ module.exports.purchased_from_neighbours_consumed = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -4815,6 +4885,7 @@ module.exports.purchased_from_neighbours_consumed = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -4833,6 +4904,8 @@ module.exports.purchased_from_neighbours_consumed = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -4979,6 +5052,20 @@ module.exports.purchased_from_market_consumed = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -4988,6 +5075,7 @@ module.exports.purchased_from_market_consumed = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -5006,6 +5094,8 @@ module.exports.purchased_from_market_consumed = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -5150,6 +5240,20 @@ module.exports.consumption_by_crop = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -5159,6 +5263,7 @@ module.exports.consumption_by_crop = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -5188,6 +5293,8 @@ module.exports.consumption_by_crop = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -5326,6 +5433,20 @@ module.exports.ideal_consumption_by_label = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -5335,6 +5456,7 @@ module.exports.ideal_consumption_by_label = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
           "consumption_type.name": "$consumption_type.name.en",
         },
       },
@@ -5354,6 +5476,8 @@ module.exports.ideal_consumption_by_label = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
@@ -5487,6 +5611,20 @@ module.exports.ideal_consumption_expected = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "ConsumptionCrops",
+          localField: "consumption_crop_id",
+          foreignField: "_id",
+          as: "other_consumption_crop",
+        },
+      },
+      {
+        $unwind: {
+          path: "$other_consumption_crop",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $project: { __v: 0, "consumption_crop.__v": 0 },
       },
       {
@@ -5496,6 +5634,7 @@ module.exports.ideal_consumption_expected = async (req, res) => {
           "poultry_consumption_crop.name": `$poultry_consumption_crop.name.en`,
           "hunting_consumption_crop.name": `$hunting_consumption_crop.name.en`,
           "fishery_consumption_crop.name": `$fishery_consumption_crop.name.en`,
+          "other_consumption_crop.name": `$other_consumption_crop.name.en`,
         },
       },
     ]);
@@ -5514,6 +5653,8 @@ module.exports.ideal_consumption_expected = async (req, res) => {
         _consumption.consumption_crop = _consumption.hunting_consumption_crop;
       } else if (_consumption.fishery_consumption_crop._id) {
         _consumption.consumption_crop = _consumption.fishery_consumption_crop;
+      } else if (_consumption.other_consumption_crop._id) {
+        _consumption.consumption_crop = _consumption.other_consumption_crop;
       }
       return _consumption;
     });
