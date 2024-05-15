@@ -884,6 +884,7 @@ module.exports.send_otp = async (req, res) => {
   try {
     // console.log(authToken);
     const { country_code, phone, type = "login" } = req.body;
+    console.log(req.body);
     const user = await User.findOne({
       phone: phone,
       country_code,
