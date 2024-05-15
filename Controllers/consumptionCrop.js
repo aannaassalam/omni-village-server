@@ -24,42 +24,42 @@ module.exports.get_consumption_crop = async (req, res) => {
       await crop.find(
         {
           label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
+          country: { $in: country.toLowerCase() },
         },
         { name: `$name.${language}`, country: 1, status: 1, label: 1 }
       ),
       await treesCrop.find(
         {
           label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
+          country: { $in: country.toLowerCase() },
         },
         { name: `$name.${language}`, country: 1, status: 1, label: 1 }
       ),
       await poultryCrop.find(
         {
           label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
+          country: { $in: country.toLowerCase() },
         },
         { name: `$name.${language}`, country: 1, status: 1, label: 1 }
       ),
       await huntingCrop.find(
         {
           label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
+          country: { $in: country.toLowerCase() },
         },
         { name: `$name.${language}`, country: 1, status: 1, label: 1 }
       ),
       await fisheryCrop.find(
         {
           label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
+          country: { $in: country.toLowerCase() },
         },
         { name: `$name.${language}`, country: 1, status: 1, label: 1 }
       ),
       await consumptionCrop.find(
         {
           label: new ObjectId(consumption_type_id),
-          country: country.toLowerCase(),
+          country: { $in: country.toLowerCase() },
         },
         { name: `$name.${language}`, country: 1, status: 1, label: 1 }
       ),
