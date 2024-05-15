@@ -75,6 +75,7 @@ module.exports.add_crop = async (req, res) => {
       name: {
         en: name.en,
         ms: name.ms || name.en,
+        dz: name.dz || name.en,
       },
       country,
       label,
@@ -133,6 +134,7 @@ module.exports.edit_crop = async (req, res) => {
         name: {
           en: name.en,
           ms: name.ms || name.en,
+          dz: name.dz || name.en,
         },
         label,
         country,

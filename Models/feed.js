@@ -16,6 +16,12 @@ const feedSchema = new mongoose.Schema(
         // unique: true,
         set: (value) => value.toLowerCase(),
       },
+      dz: {
+        type: mongoose.Schema.Types.String,
+        default: "",
+        // unique: true,
+        set: (value) => value.toLowerCase(),
+      },
     },
     country: [
       {

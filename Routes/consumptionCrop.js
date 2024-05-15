@@ -2,6 +2,23 @@ const router = require("express").Router();
 const consumption_crop_controller = require("../Controllers/consumptionCrop");
 const { verifyToken } = require("../Middlewares/user");
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    if (ext === "csv") {
+      fs.mkdir("./csv", (err) => {
+        cb(null, "./csv");
+      });
+    } else {
+      cb("Only CSV formats are supported", null);
+    }
+  },
+  filename: (req, file, cb) => {
+    // console.log(file.mimetype.split("/")[1]);
+    cb(null, `${Date.now()}.csv`);
+  },
+});
+
 router.get(
   "/dashboard",
   consumption_crop_controller.get_consumption_crop_dashboard
@@ -38,5 +55,23 @@ router.get(
   "/:consumption_type_id",
   consumption_crop_controller.get_consumption_crop
 );
+
+router.post(
+  "/add_crop",
+  // verifyToken,
+  consumption_crop_controller.add_crop
+);
+router.post(
+  "/bulk-upload",
+  upload.single("sheet"),
+  // verifyToken,
+  consumption_crop_controller.bulk_upload
+);
+router.post(
+  "/edit_crop",
+  // verifyToken,
+  consumption_crop_controller.edit_crop
+);
+router.delete("/:id", consumption_crop_controller.delete_crop);
 
 module.exports = router;
