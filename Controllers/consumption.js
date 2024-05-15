@@ -93,7 +93,7 @@ module.exports.get_consumption = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -323,7 +323,7 @@ module.exports.consumption_list = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",

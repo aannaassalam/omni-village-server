@@ -4305,7 +4305,7 @@ module.exports.consumption_from_production = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -4483,7 +4483,7 @@ module.exports.self_grown_consumption_data = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -4673,7 +4673,7 @@ module.exports.self_consumed_data = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -4863,7 +4863,7 @@ module.exports.purchased_from_neighbours_consumed = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -5053,7 +5053,7 @@ module.exports.purchased_from_market_consumed = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -5241,7 +5241,7 @@ module.exports.consumption_by_crop = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -5434,7 +5434,7 @@ module.exports.ideal_consumption_by_label = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
@@ -5612,7 +5612,7 @@ module.exports.ideal_consumption_expected = async (req, res) => {
       },
       {
         $lookup: {
-          from: "ConsumptionCrops",
+          from: "consumptioncrops",
           localField: "consumption_crop_id",
           foreignField: "_id",
           as: "other_consumption_crop",
