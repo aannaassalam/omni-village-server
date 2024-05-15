@@ -1,6 +1,6 @@
 name.en,name.ms,name.dz,country.0,country.1,country.2,status,label,ideal_consumption_per_person
-Crop name in english,Crop name in dzongkha,Crop name in malay,first country name,second country name,third country nameAlways defaults to 1,Here it accepts the corresponding label id of the label that you want this to be. You can lookup form table id from consumption_labels csv file.,this should be a numerical value.
+Crop name in english,Crop name in malay,Crop name in dzongkha,first country name,second country name,third country name,Always defaults to 1,Here it accepts the corresponding label id of the label that you want this to be. You can lookup form table id from consumption_labels csv file.,this should be a numerical value.
 ,,name should be in lowercase,name should be in lowercase,,,
 Example,,,,,,
 ,,,,,,
-Apple,Aappil,ཨ་པེལ།india,malaysia,bhutan,1,6506e28381f75fd724a743bb,40
+Apple,Aappil,ཨ་པེལ།,india,malaysia,bhutan,1,6506e28381f75fd724a743bb,40
