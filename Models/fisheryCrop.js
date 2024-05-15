@@ -17,12 +17,12 @@ const fisheryCropSchema = new mongoose.Schema(
         set: (value) => value.toLowerCase(),
       },
 
-      // dz: {
-      //   type: mongoose.Schema.Types.String,
-      //   default: "",
-      //   // unique: true,
-      //   set: (value) => value.toLowerCase(),
-      // },
+      dz: {
+        type: mongoose.Schema.Types.String,
+        default: "",
+        // unique: true,
+        set: (value) => value.toLowerCase(),
+      },
 
       // hi: {
       //   type: mongoose.Schema.Types.String,

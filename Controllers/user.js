@@ -884,6 +884,7 @@ module.exports.send_otp = async (req, res) => {
   try {
     // console.log(authToken);
     const { country_code, phone, type = "login" } = req.body;
+    console.log(req.body);
     const user = await User.findOne({
       phone: phone,
       country_code,
@@ -916,13 +917,13 @@ module.exports.send_otp = async (req, res) => {
           statusCallback: "https://omnivillage.azurewebsites.net/api/webhook/",
         })
         .then((message) => res.send(message))
-        .catch(
-          (err) =>
-            err.code === 21211 &&
+        .catch((err) => {
+          if (err.code === 21211)
             res
               .status(400)
-              .json({ message: "Please enter a valid phone number!" })
-        );
+              .json({ message: "Please enter a valid phone number!" });
+          console.log(err, "message");
+        });
     }
   } catch (err) {
     console.log(err);

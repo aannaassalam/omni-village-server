@@ -14,7 +14,7 @@ module.exports.get_crop = async (req, res) => {
   const { language, country } = req.query;
   try {
     const crops = await Crop.aggregate([
-      { $match: { country: country.toLowerCase() } },
+      { $match: { country: { $in: country.toLowerCase() } } },
       {
         $lookup: {
           from: "consumption_type",
@@ -75,6 +75,7 @@ module.exports.add_crop = async (req, res) => {
       name: {
         en: name.en,
         ms: name.ms || name.en,
+        dz: name.dz || name.en,
       },
       country,
       label,
@@ -133,6 +134,7 @@ module.exports.edit_crop = async (req, res) => {
         name: {
           en: name.en,
           ms: name.ms || name.en,
+          dz: name.dz || name.en,
         },
         label,
         country,
