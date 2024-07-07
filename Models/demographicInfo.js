@@ -154,7 +154,7 @@ const demograhicSchema = new mongoose.Schema({
       },
       "habits is required",
     ],
-    default: [],
+    default: null,
   },
   education: {
     type: mongoose.Schema.Types.String,
@@ -184,7 +184,7 @@ const demograhicSchema = new mongoose.Schema({
       },
       "skillsets is required",
     ],
-    default: [],
+    default: null,
   },
   hobbies: {
     type: mongoose.Schema.Types.Array,
@@ -194,7 +194,7 @@ const demograhicSchema = new mongoose.Schema({
       },
       "hobbies is required",
     ],
-    default: [],
+    default: null,
   },
   skills_seeking_to_learn: {
     type: mongoose.Schema.Types.Array,
@@ -204,7 +204,7 @@ const demograhicSchema = new mongoose.Schema({
       },
       "skills seeking to learn is required",
     ],
-    default: [],
+    default: null,
   },
   hobbies_seeking_to_adopt: {
     type: mongoose.Schema.Types.Array,
@@ -214,7 +214,7 @@ const demograhicSchema = new mongoose.Schema({
       },
       "hobbies seeking to adopt is required",
     ],
-    default: [],
+    default: null,
   },
   aspiration: {
     type: mongoose.Schema.Types.String,
