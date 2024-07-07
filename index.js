@@ -33,6 +33,7 @@ const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const dashboard = require("./Routes/dashboard");
 const admin = require("./Routes/admin");
+const demographic = require('./Routes/demographicRoutes') 
 const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
@@ -119,6 +120,7 @@ app.use("/api/feeds", feed);
 app.use("/api/consumption_type", consumptionType);
 app.use("/api/consumption_crop", consumptionCrop);
 app.use("/api/consumption", consumption);
+app.use("/api/demographic", demographic);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 
