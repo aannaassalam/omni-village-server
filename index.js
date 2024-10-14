@@ -33,7 +33,7 @@ const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const dashboard = require("./Routes/dashboard");
 const admin = require("./Routes/admin");
-const demographic = require('./Routes/demographicRoutes') 
+const demographic = require("./Routes/demographicRoutes");
 const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
@@ -42,96 +42,55 @@ const app = express();
 
 const PORT = process.env.PORT || 5100;
 
-const swaggerDefinition = {
-  swagger: "2.0",
-  info: {
-    title: "Omni Village API Documentation",
-    version: "1.0.0",
-    description:
-      "This is a REST API Server made with Express. It serves data for Omni Village.",
-    contact: {
-      name: "Anas Alam",
-      url: "https://www.linkedin.com/in/anas-alam-0207331b2/",
-    },
-  },
-  basePath: "/api",
-  securityDefinitions: {
-    bearerAuth: {
-      type: "apiKey",
-      name: "Authorization",
-      scheme: "bearer",
-      in: "header",
-    },
-  },
-  security: [
-    {
-      bearerAuth: [],
-    },
-  ],
+const corsOption = {
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
 };
 
-const options = {
-  swaggerDefinition,
-  // Paths to files containing OpenAPI definitions
-  apis: ["./Routes/*.js"],
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-app.set("views", path.join(__dirname, "Views"));
-app.set("view engine", "ejs");
-
-app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
+app.use(cors(corsOption));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-app.use(
-  "/api/documentation",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    swaggerOptions: {
-      docExpansion: "none",
-    },
-  })
-);
-
-app.use("/api/admin", admin);
-app.use("/api/user", user);
-app.use("/api/cultivation", cultivation);
-app.use("/api/crop", crop);
-app.use("/api/trees", trees);
-app.use("/api/tree_crop", tree_crop);
-app.use("/api/poultry", poultry);
-app.use("/api/poultry_crop", poultry_crop);
-app.use("/api/hunting_crop", hunting_crop);
-app.use("/api/hunting", hunting);
-app.use("/api/storage_method", storage_method);
-app.use("/api/storage", storage);
-app.use("/api/selling_channel_method", selling_channel_method);
-app.use("/api/selling_channel", selling_channel);
-app.use("/api/fishery", fishery);
-app.use("/api/fishery_crop", fishery_crop);
-app.use("/api/villages", villages);
-app.use("/api/land_measurements", land_measurement);
-app.use("/api/weight_measurements", weight_measurement);
-app.use("/api/fish_feeds", fish_feed);
-app.use("/api/feeds", feed);
-app.use("/api/consumption_type", consumptionType);
-app.use("/api/consumption_crop", consumptionCrop);
-app.use("/api/consumption", consumption);
-app.use("/api/demographic", demographic);
-app.use("/api/webhook", webhook);
-app.use("/api/dashboard", dashboard);
+// app.use("/api/admin", admin);
+// app.use("/api/user", user);
+// app.use("/api/cultivation", cultivation);
+// app.use("/api/crop", crop);
+// app.use("/api/trees", trees);
+// app.use("/api/tree_crop", tree_crop);
+// app.use("/api/poultry", poultry);
+// app.use("/api/poultry_crop", poultry_crop);
+// app.use("/api/hunting_crop", hunting_crop);
+// app.use("/api/hunting", hunting);
+// app.use("/api/storage_method", storage_method);
+// app.use("/api/storage", storage);
+// app.use("/api/selling_channel_method", selling_channel_method);
+// app.use("/api/selling_channel", selling_channel);
+// app.use("/api/fishery", fishery);
+// app.use("/api/fishery_crop", fishery_crop);
+// app.use("/api/villages", villages);
+// app.use("/api/land_measurements", land_measurement);
+// app.use("/api/weight_measurements", weight_measurement);
+// app.use("/api/fish_feeds", fish_feed);
+// app.use("/api/feeds", feed);
+// app.use("/api/consumption_type", consumptionType);
+// app.use("/api/consumption_crop", consumptionCrop);
+// app.use("/api/consumption", consumption);
+// app.use("/api/demographic", demographic);
+// app.use("/api/webhook", webhook);
+// app.use("/api/dashboard", dashboard);
 
 app.get("/", async (req, res) => {
-  // const ress = await Crop.updateMany(
-  //   {},
-  //   { $set: { ideal_consumption_per_person: 20 } }
-  // );
-  // console.log(ress);
-  res.send("Welcome to OmniVillage Server!");
+    // const ress = await Crop.updateMany(
+    //   {},
+    //   { $set: { ideal_consumption_per_person: 20 } }
+    // );
+    // console.log(ress);
+    res.send("Welcome to OmniVillage Server!");
 });
+
+app.use(ErrorHandler);
 
 // app.use((err, req, res, next) => {
 //   console.log(err);
@@ -144,15 +103,15 @@ app.get("/", async (req, res) => {
 // });
 
 mongoose
-  .connect(connection_url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    family: 4,
-  })
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log("listening to port ", PORT);
-      // upload();
-    });
-  })
-  .catch((err) => console.log(err));
+    .connect(connection_url, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        family: 4,
+    })
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log("listening to port ", PORT);
+            // upload();
+        });
+    })
+    .catch((err) => console.log(err));
