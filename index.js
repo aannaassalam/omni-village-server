@@ -54,7 +54,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 // app.use("/api/admin", admin);
-// app.use("/api/user", user);
+app.use("/api/user", user);
 // app.use("/api/cultivation", cultivation);
 // app.use("/api/crop", crop);
 // app.use("/api/trees", trees);
