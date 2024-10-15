@@ -108,6 +108,7 @@ mongoose
         useNewUrlParser: true,
         useUnifiedTopology: true,
         family: 4,
+        dbName: "v2",
     })
     .then(() => {
         app.listen(PORT, () => {
