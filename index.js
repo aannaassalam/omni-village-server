@@ -6,6 +6,7 @@ require("dotenv").config();
 const swaggerUi = require("swagger-ui-express");
 const csvtojson = require("csvtojson");
 const path = require("path");
+const ErrorHandler = require("./Middlewares/errorHandler");
 
 const user = require("./Routes/user");
 const cultivation = require("./Routes/cultivation");
