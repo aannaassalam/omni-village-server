@@ -845,9 +845,8 @@ module.exports.generate_token = async (req, res) => {
     const { phone, country_code } = req.body;
     const user = await User.findOne({ phone, country_code });
     if (user) {
-        res.json({
-            token: createToken(user._id),
-        });
+        res.cookie("token", createToken(user._id), { httpOnly: true });
+        res.send("Token generated successfully");
     } else {
         return new AppError(0, "User not found!", 400);
     }
@@ -900,8 +899,7 @@ module.exports.send_otp = async (req, res) => {
 
 module.exports.register = async (req, res) => {
     const { country_code, phone, currency, country, otp } = req.body;
-
-    if (otp.trim() === otp_keeper[`${country_code}${phone}`]) {
+    if (otp.toString().trim() === otp_keeper[`${country_code}${phone}`]) {
         if (`${phone}` !== "1234567890") {
             delete otp_keeper[`${country_code}${phone}`];
         }
@@ -963,7 +961,6 @@ module.exports.login = async (req, res) => {
 
 module.exports.get_current_user = (req, res) => {
     const { user } = res.locals;
-    // console.log(user);
     res.json(user);
 };
 
@@ -988,34 +985,31 @@ module.exports.edit_user = async (req, res) => {
         land_measurement_unit_symbol: Joi.string().trim().required(),
         document_type: Joi.string().trim().required(),
         street_address: Joi.string().trim().required(),
+        village_governing_body: Joi.boolean().required(),
     }).options({ stripUnknown: true });
-    const address_proof = req.file;
+    const address_proof = req.files.address_proof[0];
+    const field_officer_document = req.files.field_officer_document[0];
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    if (address_proof?.filename) {
-        const buffer = await sharp(req.file.path)
-            .png({ quality: 10 })
-            .toBuffer();
-        await sharp(buffer).toFile("./" + req.file.path);
-    }
     const updatedUser = await User.findByIdAndUpdate(
         user._id,
         {
             ...user._doc,
             ...value,
+            address_proof: address_proof.path,
+            field_officer_document: field_officer_document.path,
         },
         { runValidators: true, new: true }
     );
-    return res.json({ msg: "User updated successfully!" });
+    return res.json({ msg: "User updated successfully!", ...updatedUser._doc });
 };
 
 module.exports.land_allocation = async (req, res) => {
     const { user } = res.locals;
     const { total_land, cultivation, trees, poultry, fishery, storage } =
         req.body;
-
     if (
         total_land >=
         parseInt(cultivation) +
@@ -1029,10 +1023,7 @@ module.exports.land_allocation = async (req, res) => {
             {
                 total_land,
                 sub_area: {
-                    cultivation: {
-                        ...user._doc.sub_area.cultivation,
-                        land: cultivation,
-                    },
+                    cultivation,
                     trees,
                     poultry,
                     fishery,

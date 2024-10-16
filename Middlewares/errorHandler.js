@@ -19,20 +19,20 @@ const ErrorHandler = (error, req, res, next) => {
         });
     }
 
-    if (err.message === "incorrect password") {
+    if (error.message === "incorrect password") {
         return res.status(400).json({
             // name: "Duplicate",
             message: "The Password is incorrect",
         });
     }
 
-    if (err.message === "invalid phone") {
+    if (error.message === "invalid phone") {
         return res.status(400).json({
             message: "Please enter a valid mobile number!",
         });
     }
 
-    if (err.code === 11000) {
+    if (error.code === 11000) {
         if (Object.keys(err.keyPattern)[0] === "phone") {
             return res.status(400).json({
                 message: "Phone number already in use!",

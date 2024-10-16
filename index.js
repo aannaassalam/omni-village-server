@@ -7,6 +7,7 @@ const swaggerUi = require("swagger-ui-express");
 const csvtojson = require("csvtojson");
 const path = require("path");
 const ErrorHandler = require("./Middlewares/errorHandler");
+const cookieParser = require("cookie-parser");
 
 const user = require("./Routes/user");
 const cultivation = require("./Routes/cultivation");
@@ -52,12 +53,13 @@ app.use(cors(corsOption));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
 app.use("/uploads", express.static("uploads"));
 
 // app.use("/api/admin", admin);
 app.use("/api/user", user);
-// app.use("/api/cultivation", cultivation);
-// app.use("/api/crop", crop);
+app.use("/api/cultivation", cultivation);
+app.use("/api/crop", crop);
 // app.use("/api/trees", trees);
 // app.use("/api/tree_crop", tree_crop);
 // app.use("/api/poultry", poultry);
@@ -70,7 +72,7 @@ app.use("/api/user", user);
 // app.use("/api/selling_channel", selling_channel);
 // app.use("/api/fishery", fishery);
 // app.use("/api/fishery_crop", fishery_crop);
-// app.use("/api/villages", villages);
+app.use("/api/villages", villages);
 // app.use("/api/land_measurements", land_measurement);
 // app.use("/api/weight_measurements", weight_measurement);
 // app.use("/api/fish_feeds", fish_feed);
@@ -92,16 +94,6 @@ app.get("/", async (req, res) => {
 });
 
 app.use(ErrorHandler);
-
-// app.use((err, req, res, next) => {
-//   console.log(err);
-//   res.status(500).send("Internal Server Error!");
-//   Logger.error(
-//     `${err.status || 500} - ${res.statusMessage} - ${err.message} - ${
-//       req.originalUrl
-//     } - ${req.method} - ${req.ip}`
-//   );
-// });
 
 mongoose
     .connect(connection_url, {

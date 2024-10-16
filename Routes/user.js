@@ -31,7 +31,7 @@ router.get("/download-pdf", ControllerWrapper(user_controller.download_pdf));
 
 router.post("/register", ControllerWrapper(user_controller.register));
 
-router.post(
+router.get(
     "/generate_token",
     ControllerWrapper(user_controller.generate_token)
 );
@@ -42,17 +42,20 @@ router.get(
     ControllerWrapper(user_controller.get_current_user)
 );
 router.post("/login", ControllerWrapper(user_controller.login));
-router.post(
+router.put(
     "/edit_user",
-    upload.single("address_proof"),
+    upload.fields([
+        { name: "address_proof", maxCount: 1 },
+        { name: "field_officer_document", maxCount: 1 },
+    ]),
     checkUser,
     ControllerWrapper(user_controller.edit_user)
 );
-router.post(
+router.put(
     "/land_allocation",
     verifyToken,
     checkUser,
-    ControllerWrapper(user_controller.land_allocation)
+    user_controller.land_allocation
 );
 
 module.exports = router;
