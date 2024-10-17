@@ -1,262 +1,90 @@
 const Hunting = require("../Models/hunting");
-const HuntingCrop = require("../Models/huntingCrop");
-const mongoose = require("mongoose");
-const moment = require("moment");
-
-const handleErrors = (err) => {
-  let errors = {};
-  return err;
-};
+const Joi = require("joi");
 
 module.exports.get_hunting = async (req, res) => {
-  const { language } = req.query;
-  const { user } = res.locals;
+    const { user } = res.locals;
 
-  try {
     const hunting_doc = await Hunting.aggregate([
-      {
-        $match: {
-          user_id: user._id,
+        {
+            $match: {
+                user_id: user._id,
+            },
         },
-      },
-      {
-        $lookup: {
-          from: "hunting_crops",
-          localField: "hunting_crop_id",
-          foreignField: "_id",
-          as: "hunting_crop",
+        {
+            $lookup: {
+                from: "crops",
+                localField: "crop_id",
+                foreignField: "_id",
+                as: "crop",
+            },
         },
-      },
-      { $unwind: { path: "$hunting_crop" } },
-      // { $unwind: { path: "$cultivation_crop" } },
-      {
-        $project: { __v: 0, "hunting_crop.__v": 0 },
-      },
-      {
-        $addFields: {
-          "hunting_crop.name": `$hunting_crop.name.${language}`,
-        },
-      },
+        { $unwind: { path: "$crop" } },
     ]);
-    // console.log(cultivation_doc);
-    res.json(hunting_doc);
-  } catch (err) {
-    res.status(400).json(handleErrors(err));
-  }
-};
-
-module.exports.get_all_hunting = async (req, res) => {
-  try {
-    const hunting_doc = await Hunting.aggregate([
-      {
-        $lookup: {
-          from: "hunting_crops",
-          localField: "hunting_crop_id",
-          foreignField: "_id",
-          as: "crop",
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "user_id",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $lookup: {
-          from: "consumption_types",
-          localField: "crop.label",
-          foreignField: "_id",
-          as: "label",
-        },
-      },
-      { $unwind: { path: "$crop" } },
-      { $unwind: { path: "$user" } },
-      { $unwind: { path: "$label" } },
-      {
-        $addFields: {
-          label_name: "$label.name.en",
-        },
-      },
-      {
-        $project: {
-          __v: 0,
-          "crop.__v": 0,
-        },
-      },
-      {
-        $sort: {
-          createdAt: -1,
-        },
-      },
-    ]);
-    res.json(hunting_doc);
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(handleErrors(err));
-  }
+    return res.json(hunting_doc);
 };
 
 module.exports.add_hunting = async (req, res) => {
-  const {
-    hunting_crop_id,
-    number_hunted,
-    meat,
-    self_consumed,
-    sold_to_neighbours,
-    sold_in_consumer_market,
-    weight_measurement = "kg",
-    wastage,
-    other,
-    other_value,
-    income_from_sale,
-    expenditure_on_inputs,
-    yeild,
-    processing_method,
-    status = 1,
-  } = req.body;
-  const { user } = res.locals;
-
-  try {
-    // if (parseInt(season) <= parseInt(cultivation_type)) {
-    const hunting_doc = await Hunting.create({
-      user_id: user._id,
-      hunting_crop_id,
-      number_hunted,
-      meat,
-      self_consumed,
-      sold_to_neighbours,
-      sold_in_consumer_market,
-      weight_measurement,
-      wastage,
-      other,
-      other_value,
-      income_from_sale,
-      expenditure_on_inputs,
-      yeild,
-      processing_method,
-      status,
+    const { user } = res.locals;
+    const schema = Joi.object({
+        crop_id: Joi.string().required(),
+        number_hunted: Joi.number().required(),
+        meat: Joi.number().required(),
+        self_consumed: Joi.number().required(),
+        sold_to_neighbours: Joi.number().required(),
+        sold_in_consumer_market: Joi.number().required(),
+        weight_measurement: Joi.string().required(),
+        wastage: Joi.number().required(),
+        others: Joi.string().optional().allow(""),
+        others_value: Joi.number().optional(),
+        income_from_sale: Joi.number().required(),
+        expenditure_on_inputs: Joi.number().required(),
+        yeild: Joi.number().required(),
+        required_processing: Joi.boolean().required(),
+        status: Joi.number().allow(1).allow(0).required(),
     });
-    res.json(hunting_doc);
-    // } else {
-    //   res.status(400).json({
-    //     message: `Season ${season} is not valid for type ${cultivation_type} cultivation`,
-    //   });
-    // }
-  } catch (err) {
-    res.status(400).json(handleErrors(err));
-  }
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const hunting_doc = await Hunting.create({
+        user_id: user._id,
+        ...value,
+    });
+    return res.json(hunting_doc);
 };
 
 module.exports.update_hunting = async (req, res) => {
-  const {
-    hunting_id,
-    number_hunted,
-    meat,
-    self_consumed,
-    sold_to_neighbours,
-    sold_in_consumer_market,
-    weight_measurement = "kg",
-    wastage,
-    other,
-    other_value,
-    income_from_sale,
-    expenditure_on_inputs,
-    yeild,
-    processing_method,
-    status = 1,
-  } = req.body;
+    const schema = Joi.object({
+        hunting_id: Joi.string().required(),
+        number_hunted: Joi.number().required(),
+        meat: Joi.number().required(),
+        self_consumed: Joi.number().required(),
+        sold_to_neighbours: Joi.number().required(),
+        sold_in_consumer_market: Joi.number().required(),
+        weight_measurement: Joi.string().required(),
+        wastage: Joi.number().required(),
+        others: Joi.string().optional().allow(""),
+        others_value: Joi.number().optional(),
+        income_from_sale: Joi.number().required(),
+        expenditure_on_inputs: Joi.number().required(),
+        yeild: Joi.number().required(),
+        required_processing: Joi.boolean().required(),
+        status: Joi.number().allow(1).allow(0).required(),
+    });
 
-  try {
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
     const hunting_doc = await Hunting.findByIdAndUpdate(
-      hunting_id,
-      {
-        number_hunted,
-        meat,
-        self_consumed,
-        sold_to_neighbours,
-        sold_in_consumer_market,
-        weight_measurement,
-        wastage,
-        other,
-        other_value,
-        income_from_sale,
-        expenditure_on_inputs,
-        yeild,
-        processing_method,
-        status,
-      },
-      { runValidators: true, new: true }
+        value.hunting_id,
+        value,
+        { runValidators: true, new: true }
     );
-    res.json(hunting_doc);
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(handleErrors(err));
-  }
+    return res.json(hunting_doc);
 };
 
 module.exports.delete_hunting = async (req, res) => {
-  const { id } = req.params;
-  try {
+    const { id } = req.params;
     const doc = await Hunting.findByIdAndDelete(id);
-    if (doc) {
-      res.json({ message: "Hunting deleted!" });
-    } else {
-      res.status(400).json({ message: "Something went wrong!" });
-    }
-  } catch (err) {
-    res.status(400).json(handleErrors(err));
-  }
-};
-
-module.exports.hunting_list = async (req, res) => {
-  const huntings = await Hunting.aggregate([
-    {
-      $lookup: {
-        from: "hunting_crop",
-        localField: "hunting_crop_id",
-        foreignField: "_id",
-        as: "hunting_crop",
-      },
-    },
-    {
-      $unwind: {
-        path: "$hunting_crop",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $lookup: {
-        from: "users",
-        localField: "user_id",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-
-    {
-      $unwind: {
-        path: "$user",
-      },
-    },
-    {
-      $sort: {
-        createdAt: -1,
-      },
-    },
-  ]);
-  // const processed_huntings = {};
-  // huntings.forEach((hunting) => {
-  //   const date = moment(hunting.createdAt).format("LL");
-  //   processed_huntings[date] = processed_huntings[date]
-  //     ? [...processed_huntings[date], hunting]
-  //     : [hunting];
-  // });
-  res.json(huntings);
-
-  // res.render("huntings", {
-  //   huntings: processed_huntings,
-  // });
+    return res.json({ message: "Hunting deleted!" });
 };

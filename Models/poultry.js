@@ -54,7 +54,7 @@ const poultrySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        other_type_of_feed: {
+        create_type: {
             type: mongoose.Schema.Types.String,
             default: "",
         },
@@ -108,11 +108,11 @@ const poultrySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        other: {
+        others: {
             type: mongoose.Schema.Types.String,
             default: "",
         },
-        other_value: {
+        others_value: {
             type: mongoose.Schema.Types.Number,
             default: "",
         },

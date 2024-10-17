@@ -1,112 +1,80 @@
+const Joi = require("joi");
 const Storage = require("../Models/storage");
 const StorageMethod = require("../Models/storageMethod");
 const mongoose = require("mongoose");
 
 const handleErrors = (err) => {
-  let errors = {};
-  return err;
+    let errors = {};
+    return err;
 };
 
 module.exports.get_storage = async (req, res) => {
-  const { user } = res.locals;
-  // console.log(user._id);
-  try {
-    const storage_doc = await Storage.aggregate(
-      [
+    const { user } = res.locals;
+
+    const storage_doc = await Storage.aggregate([
         {
-          $match: { user_id: user._id },
+            $match: { user_id: user._id },
         },
-        {
-          $addFields: {
-            stock_quantity: { $toString: "$stock_quantity" },
-          },
-        },
-      ]
-      // {
-      //   $lookup: {
-      //     from: "storage_methods",
-      //     localField: "storage_method_id",
-      //     foreignField: "_id",
-      //     as: "storage_method",
-      //   },
-      // },
-      // { $unwind: { path: "$storage_method" } },
-      // // { $unwind: { path: "$cultivation_crop" } },
-      // {
-      //   $project: { __v: 0, "storage_method.__v": 0 },
-      // },
-    );
-    // console.log(storage_doc);
-    res.json(storage_doc);
-  } catch (err) {
-    res.status(400).json(handleErrors(err));
-  }
+    ]);
+    return res.json(storage_doc);
 };
 
 module.exports.add_storage = async (req, res) => {
-  const { storages } = req.body;
-  const { user } = res.locals;
+    const { user } = res.locals;
 
-  try {
+    const schema = Joi.array().items({
+        storage_id: Joi.number().required(),
+        storage_name: Joi.string().required(),
+        storage_method_name: Joi.string().required(),
+        storage_quantity: Joi.number().required(),
+        storage_method_id: Joi.string().required(),
+    });
+
+    const { error, value } = schema.validate(req.body.storages);
+    if (error) throw error;
+
     const storage_docs = [];
-    // if (parseInt(season) <= parseInt(cultivation_type)) {
-    for await (const storage of storages) {
-      const storage_doc = await Storage.create({
-        user_id: user._id,
-        stock_name: storage.stock_name,
-        storage_method_name: storage.storage_method_name,
-        stock_quantity: storage.stock_quantity,
-        storage_method_id: storage.storage_method_id,
-      });
-      storage_docs.push(storage_doc);
+
+    for await (const storage of value) {
+        const storage_doc = await Storage.create({
+            user_id: user._id,
+            storage_name: storage.storage_name,
+            storage_method_name: storage.storage_method_name,
+            storage_quantity: storage.storage_quantity,
+            storage_method_id: storage.storage_method_id,
+        });
+        storage_docs.push(storage_doc);
     }
     res.json(storage_docs);
-    // } else {
-    //   res.status(400).json({
-    //     message: `Season ${season} is not valid for type ${cultivation_type} cultivation`,
-    //   });
-    // }
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(handleErrors(err));
-  }
 };
 
 module.exports.update_storage = async (req, res) => {
-  const { storages } = req.body;
+    const schema = Joi.array().items({
+        _id: Joi.number().required(),
+        storage_name: Joi.string().required(),
+        storage_method_name: Joi.string().required(),
+        storage_quantity: Joi.number().required(),
+        storage_method_id: Joi.string().required(),
+    });
 
-  try {
+    const { error, value } = schema.validate(req.body.storages);
+    if (error) throw error;
+
     const storage_docs = [];
-    for await (const storage of storages) {
-      const storage_doc = await Storage.findByIdAndUpdate(
-        storage.storage_id,
-        {
-          storage_method_name: storage.storage_method_name,
-          stock_quantity: storage.stock_quantity,
-          storage_method_id: storage.storage_method_id,
-        },
-        { runValidators: true, new: true }
-      );
-      storage_docs.push(storage_doc);
+    for await (const storage of value.storages) {
+        const storage_doc = await Storage.findByIdAndUpdate(
+            storage._id,
+            storage,
+            { runValidators: true, new: true }
+        );
+        storage_docs.push(storage_doc);
     }
 
-    res.json(storage_docs);
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(handleErrors(err));
-  }
+    return res.json(storage_docs);
 };
 
 module.exports.delete_storage = async (req, res) => {
-  const { id } = req.params;
-  try {
+    const { id } = req.params;
     const doc = await Storage.findByIdAndDelete(id);
-    if (doc) {
-      res.json({ message: "Storage deleted!" });
-    } else {
-      res.status(400).json({ message: "Something went wrong!" });
-    }
-  } catch (err) {
-    res.status(400).json(handleErrors(err));
-  }
+    return res.json({ message: "Storage deleted!" });
 };

@@ -1,15 +1,6 @@
 const Trees = require("../Models/trees");
 const TreeProducts = require("../Models/treeProducts");
-const TreeCrop = require("../Models/treeCrop");
-const mongoose = require("mongoose");
-const moment = require("moment");
 const Joi = require("joi");
-const { harvested_products } = require("./dashboard");
-
-const handleErrors = (err) => {
-    let errors = {};
-    return err;
-};
 
 module.exports.get_trees = async (req, res) => {
     const { language } = req.query;

@@ -73,11 +73,11 @@ const huntingSchema = new mongoose.Schema(
             ],
             default: "",
         },
-        other: {
+        others: {
             type: mongoose.Schema.Types.String,
             default: "",
         },
-        other_value: {
+        others_value: {
             type: mongoose.Schema.Types.Number,
             default: 0,
         },
@@ -111,7 +111,7 @@ const huntingSchema = new mongoose.Schema(
             ],
             default: "",
         },
-        processing_method: {
+        required_processing: {
             type: mongoose.Schema.Types.Boolean,
             reqired: [
                 function () {

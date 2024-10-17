@@ -8,14 +8,9 @@ router.post(
     "/",
     verifyToken,
     checkUser,
-    cultivation_controller.get_cultivation
+    ControllerWrapper(cultivation_controller.get_cultivation)
 );
-router.get(
-    "/get_all",
-    // verifyToken,
-    // checkUser,
-    cultivation_controller.get_all_cultivations
-);
+
 router.post(
     "/add_cultivation",
     verifyToken,
@@ -26,14 +21,13 @@ router.post(
     "/edit_cultivation",
     verifyToken,
     checkUser,
-    cultivation_controller.update_cultivation
+    ControllerWrapper(cultivation_controller.update_cultivation)
 );
 router.delete(
     "/delete_cultivation/:id",
-    // verifyToken,
-    // checkUser,
-    cultivation_controller.delete_cultivation
+    verifyToken,
+    checkUser,
+    ControllerWrapper(cultivation_controller.delete_cultivation)
 );
-router.get("/list-all", cultivation_controller.cultivation_list);
 
 module.exports = router;
