@@ -18,7 +18,6 @@ const fishery = require("./Routes/fishery");
 const villages = require("./Routes/villages");
 const land_measurement = require("./Routes/landMeasurement");
 const weight_measurement = require("./Routes/weightMeasurement");
-const fish_feed = require("./Routes/fishFeed");
 const feed = require("./Routes/feed");
 const consumptionType = require("./Routes/consumptionType");
 const consumptionCrop = require("./Routes/consumptionCrop");
@@ -58,10 +57,9 @@ app.use("/api/storage", storage);
 app.use("/api/selling_channel", selling_channel);
 app.use("/api/fishery", fishery);
 app.use("/api/villages", villages);
-// app.use("/api/land_measurements", land_measurement);
-// app.use("/api/weight_measurements", weight_measurement);
-// app.use("/api/fish_feeds", fish_feed);
-// app.use("/api/feeds", feed);
+app.use("/api/land_measurements", land_measurement);
+app.use("/api/weight_measurements", weight_measurement);
+app.use("/api/feeds", feed);
 // app.use("/api/consumption_type", consumptionType);
 // app.use("/api/consumption_crop", consumptionCrop);
 // app.use("/api/consumption", consumption);
@@ -70,11 +68,6 @@ app.use("/api/villages", villages);
 // app.use("/api/dashboard", dashboard);
 
 app.get("/", async (req, res) => {
-    // const ress = await Crop.updateMany(
-    //   {},
-    //   { $set: { ideal_consumption_per_person: 20 } }
-    // );
-    // console.log(ress);
     res.send("Welcome to OmniVillage Server!");
 });
 
@@ -90,7 +83,6 @@ mongoose
     .then(() => {
         app.listen(PORT, () => {
             console.log("listening to port ", PORT);
-            // upload();
         });
     })
     .catch((err) => console.log(err));

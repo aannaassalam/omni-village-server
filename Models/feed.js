@@ -1,46 +1,51 @@
 const mongoose = require("mongoose");
 
 const feedSchema = new mongoose.Schema(
-  {
-    name: {
-      en: {
-        type: mongoose.Schema.Types.String,
-        required: [true, "Please Enter a Feed name!"],
-        unique: true,
-        set: (value) => value.toLowerCase(),
-      },
+    {
+        name: {
+            en: {
+                type: mongoose.Schema.Types.String,
+                required: [true, "Please Enter a Feed name!"],
+                unique: true,
+                set: (value) => value.toLowerCase(),
+            },
 
-      ms: {
-        type: mongoose.Schema.Types.String,
-        default: "",
-        // unique: true,
-        set: (value) => value.toLowerCase(),
-      },
-      dz: {
-        type: mongoose.Schema.Types.String,
-        default: "",
-        // unique: true,
-        set: (value) => value.toLowerCase(),
-      },
+            ms: {
+                type: mongoose.Schema.Types.String,
+                default: "",
+                // unique: true,
+                set: (value) => value.toLowerCase(),
+            },
+            dz: {
+                type: mongoose.Schema.Types.String,
+                default: "",
+                // unique: true,
+                set: (value) => value.toLowerCase(),
+            },
+        },
+        feed_type: {
+            type: mongoose.Schema.Types.String,
+            required: true,
+            enum: ["normal", "fishery"],
+        },
+        country: [
+            {
+                type: mongoose.Schema.Types.String,
+                default: "India",
+                required: [true, "Country of Crop origin is required!"],
+                set: (value) => value.toLowerCase(),
+            },
+        ],
+        status: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+            required: [
+                true,
+                "Status is required!(0 - from user & 1 - from admin or approved)",
+            ],
+        },
     },
-    country: [
-      {
-        type: mongoose.Schema.Types.String,
-        default: "India",
-        required: [true, "Country of Crop origin is required!"],
-        set: (value) => value.toLowerCase(),
-      },
-    ],
-    status: {
-      type: mongoose.Schema.Types.Number,
-      default: 0,
-      required: [
-        true,
-        "Status is required!(0 - from user & 1 - from admin or approved)",
-      ],
-    },
-  },
-  { timestamps: true }
+    { timestamps: true }
 );
 
 module.exports = mongoose.model("feed", feedSchema);
