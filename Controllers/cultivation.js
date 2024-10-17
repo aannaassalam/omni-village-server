@@ -117,7 +117,7 @@ module.exports.add_cultivation = async (req, res) => {
         other: Joi.string().optional().allow(""),
         other_value: Joi.number().optional(),
         soil_health: Joi.string().required(),
-        decreasing_rate: Joi.when("soil_health", {
+        decreasing_yeild: Joi.when("soil_health", {
             is: "decreasing yield",
             then: Joi.number().required(),
             otherwise: Joi.number().optional(),
@@ -131,6 +131,8 @@ module.exports.add_cultivation = async (req, res) => {
         month_planted: Joi.date().required(),
         month_harvested: Joi.date().required(),
         status: Joi.number().allow(0).allow(1).required(),
+        required_processing: Joi.boolean().required(),
+        processing_method: Joi.string(),
     });
 
     const { error, value } = schema.validate(req.body);

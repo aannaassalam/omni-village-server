@@ -915,19 +915,15 @@ module.exports.register = async (req, res) => {
             social_security_number: "-",
             address: "-",
             address_proof: "-",
+            field_officer_document: "-",
             land_measurement: "-",
             land_measurement_symbol: "-",
             currency,
             country,
             street_address: "-",
         });
-        const refreshToken = jwt.sign(
-            {
-                id: user._id,
-            },
-            process.env.JWT_SECRET_KEY
-        );
-        return res.json({ token: createToken(user._id), refreshToken });
+        res.cookie("token", createToken(user._id), { httpOnly: true });
+        return res.json({ msg: "User registered successfully" });
     } else {
         return new AppError(0, "Incorrect OTP", 400);
     }
@@ -944,13 +940,8 @@ module.exports.login = async (req, res) => {
             country_code,
         });
         if (user._id) {
-            const refreshToken = jwt.sign(
-                {
-                    id: user._id,
-                },
-                process.env.JWT_SECRET_KEY
-            );
-            return res.json({ token: createToken(user._id), refreshToken });
+            res.cookie("token", createToken(user._id), { httpOnly: true });
+            return res.json({ msg: "User logged in successfully" });
         } else {
             return new AppError(0, "User doesn't exists!", 400);
         }

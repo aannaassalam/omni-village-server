@@ -48,6 +48,7 @@ router.put(
         { name: "address_proof", maxCount: 1 },
         { name: "field_officer_document", maxCount: 1 },
     ]),
+    verifyToken,
     checkUser,
     ControllerWrapper(user_controller.edit_user)
 );

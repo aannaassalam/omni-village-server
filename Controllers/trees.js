@@ -3,6 +3,8 @@ const TreeProducts = require("../Models/treeProducts");
 const TreeCrop = require("../Models/treeCrop");
 const mongoose = require("mongoose");
 const moment = require("moment");
+const Joi = require("joi");
+const { harvested_products } = require("./dashboard");
 
 const handleErrors = (err) => {
     let errors = {};
@@ -117,50 +119,52 @@ module.exports.get_all_trees = async (req, res) => {
 };
 
 module.exports.add_trees = async (req, res) => {
-    const {
-        tree_crop_id,
-        number_of_trees,
-        avg_age_of_trees,
-        soil_health,
-        decreasing_rate,
-        type_of_fertilizer_used,
-        type_of_pesticide_used,
-        income_from_sale,
-        expenditure_on_inputs,
-        products,
-        status = 1,
-    } = req.body;
     const { user } = res.locals;
-    // Logger.info(JSON.stringify(req.body));
-    try {
-        // if (parseInt(season) <= parseInt(cultivation_type)) {
-        const tree_product_docs = await TreeProducts.insertMany(
-            products.map((p) => ({ ...p, tree_crop_id }))
-        );
-        const tree_doc = await Trees.create({
-            user_id: user._id,
-            tree_crop_id,
-            number_of_trees,
-            avg_age_of_trees,
-            soil_health,
-            decreasing_rate,
-            type_of_fertilizer_used,
-            type_of_pesticide_used,
-            income_from_sale,
-            products: tree_product_docs.map((tp) => tp._id),
-            expenditure_on_inputs,
-            status,
-        });
-        res.json(tree_doc);
-        // } else {
-        //   res.status(400).json({
-        //     message: `Season ${season} is not valid for type ${cultivation_type} cultivation`,
-        //   });
-        // }
-    } catch (err) {
-        // Logger.error(err);
-        res.status(400).json(handleErrors(err));
-    }
+
+    const schema = Joi.object({
+        crop_id: Joi.string().required(),
+        number_of_trees: Joi.number().required(),
+        average_age_of_trees: Joi.string().required(),
+        soil_health: Joi.string().required(),
+        decreasing_yield: Joi.when("soil_health", {
+            is: "decreasing yield",
+            then: Joi.number().required(),
+            otherwise: Joi.number().optional(),
+        }),
+        type_of_fertiliser: Joi.string().required(),
+        type_of_pesticide: Joi.string().required(),
+        income_from_sale: Joi.number().required(),
+        expenditure_on_inputs: Joi.number().required(),
+        status: Joi.number().allow(0).allow(1).required(),
+        harvested_products: Joi.array().items(
+            Joi.object({
+                product_name: Joi.string().required(),
+                output: Joi.number().required(),
+                self_consumed: Joi.number().required(),
+                fed_to_livestock: Joi.number().required(),
+                sold_to_neighbours: Joi.number().required(),
+                sold_for_industrial_use: Joi.number().required(),
+                wastage: Joi.number().required(),
+                others: Joi.string().optional().allow(""),
+                others_value: Joi.number().optional(),
+                month_harvested: Joi.date().required(),
+                required_processing: Joi.boolean().required(),
+            })
+        ),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const tree_product_docs = await TreeProducts.insertMany(
+        value.harvested_products.map((p) => ({ ...p, crop_id: value.crop_id }))
+    );
+    const tree_doc = await Trees.create({
+        user_id: user._id,
+        ...value,
+        products: tree_product_docs.map((tp) => tp._id),
+    });
+    res.json(tree_doc);
 };
 
 module.exports.update_trees = async (req, res) => {

@@ -45,7 +45,7 @@ const treeSchema = new mongoose.Schema(
             enum: ["", "stable", "decreasing yield"],
             default: "",
         },
-        decreasing_rate: {
+        decreasing_yeild: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {

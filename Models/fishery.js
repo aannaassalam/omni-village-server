@@ -12,13 +12,17 @@ const fisherySchema = new mongoose.Schema(
             required: [true, "Fishery type is required!"],
             enum: ["pond", "river"],
         },
+        create_type: {
+            type: mongoose.Schema.Types.String,
+            default: "",
+        },
         crop_id: {
             type: mongoose.Schema.Types.ObjectId,
             default: "",
             ref: "crop",
             required: [true, "Fish Crop is required!"],
         },
-        number_of_fishes: {
+        number: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {
@@ -48,7 +52,7 @@ const fisherySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        production_output: {
+        output: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {
@@ -98,11 +102,11 @@ const fisherySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        other: {
+        others: {
             type: mongoose.Schema.Types.String,
             default: "",
         },
-        other_value: {
+        others_value: {
             type: mongoose.Schema.Types.Number,
             default: "",
         },
@@ -136,7 +140,7 @@ const fisherySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        processing_method: {
+        required_processing: {
             type: mongoose.Schema.Types.Boolean,
             required: [
                 function () {
