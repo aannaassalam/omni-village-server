@@ -975,8 +975,8 @@ module.exports.edit_user = async (req, res) => {
             })
         ),
         number_of_members: Joi.number().required().min(1),
-        land_measurement_unit: Joi.string().trim().required(),
-        land_measurement_unit_symbol: Joi.string().trim().required(),
+        land_measurement: Joi.string().trim().required(),
+        land_measurement_symbol: Joi.string().trim().required(),
         document_type: Joi.string().trim().required(),
         street_address: Joi.string().trim().required(),
         village_governing_body: Joi.boolean().required(),
