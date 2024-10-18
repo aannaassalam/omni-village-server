@@ -27,86 +27,101 @@ module.exports.get_fishery = async (req, res) => {
         //     },
         // },
     ]);
-    res.json(fishery_doc);
+    return res.json(fishery_doc);
 };
 
 module.exports.add_fishery = async (req, res) => {
     const { user } = res.locals;
-    const schema = Joi.object({
-        crop_id: Joi.string().required(),
-        number: Joi.number().required(),
-        fishery_type: Joi.string().required(),
-        create_type: Joi.string().required(),
-        type_of_feed: Joi.when("fishery_type", {
-            is: "pond",
-            then: Joi.string().required(),
-            otherwise: Joi.string().optional(),
-        }),
-        total_feed: Joi.when("fishery_type", {
-            is: "pond",
-            then: Joi.number().required(),
-            otherwise: Joi.number().optional(),
-        }),
-        output: Joi.number().required(),
-        weight_measurement: Joi.string().required(),
-        self_consumed: Joi.number().required(),
-        sold_to_neighbours: Joi.number().required(),
-        sold_for_industrial_use: Joi.number().required(),
-        wastage: Joi.number().required(),
-        others: Joi.string().optional().allow(""),
-        others_value: Joi.number().optional(),
-        yield: Joi.number().required(),
-        income_from_sale: Joi.number().required(),
-        expenditure_on_inputs: Joi.number().required(),
-        required_processing: Joi.boolean().required(),
-        status: Joi.number().allow(1).allow(0).required(),
-    });
+    if (req.body.status) {
+        const schema = Joi.object({
+            crop_id: Joi.string().required(),
+            number: Joi.number().required(),
+            fishery_type: Joi.string().required(),
+            create_type: Joi.string().required(),
+            type_of_feed: Joi.when("fishery_type", {
+                is: "pond",
+                then: Joi.string().required(),
+                otherwise: Joi.string().optional(),
+            }),
+            total_feed: Joi.when("fishery_type", {
+                is: "pond",
+                then: Joi.number().required(),
+                otherwise: Joi.number().optional(),
+            }),
+            output: Joi.number().required(),
+            weight_measurement: Joi.string().required(),
+            self_consumed: Joi.number().required(),
+            sold_to_neighbours: Joi.number().required(),
+            sold_for_industrial_use: Joi.number().required(),
+            wastage: Joi.number().required(),
+            others: Joi.string().optional().allow(""),
+            others_value: Joi.number().optional(),
+            yield: Joi.number().required(),
+            income_from_sale: Joi.number().required(),
+            expenditure_on_inputs: Joi.number().required(),
+            required_processing: Joi.boolean().required(),
+            status: Joi.number().allow(1).allow(0).required(),
+        });
 
-    const { error, value } = schema.validate(req.body);
-    if (error) throw error;
+        const { error, value } = schema.validate(req.body);
+        if (error) throw error;
+        const fishery_doc = await Fishery.create({
+            user_id: user._id,
+            ...value,
+        });
+        return res.json(fishery_doc);
+    }
     const fishery_doc = await Fishery.create({
         user_id: user._id,
-        ...value,
+        ...req.body,
     });
-    res.json(fishery_doc);
+    return res.json(fishery_doc);
 };
 
 module.exports.update_fishery = async (req, res) => {
-    const schema = Joi.object({
-        fishery_id: Joi.string().required(),
-        number: Joi.number().required(),
-        fishery_type: Joi.string().required(),
-        create_type: Joi.string().required(),
-        type_of_feed: Joi.when("fishery_type", {
-            is: "pond",
-            then: Joi.string().required(),
-            otherwise: Joi.string().optional(),
-        }),
-        total_feed: Joi.when("fishery_type", {
-            is: "pond",
-            then: Joi.number().required(),
-            otherwise: Joi.number().optional(),
-        }),
-        output: Joi.number().required(),
-        weight_measurement: Joi.string().required(),
-        self_consumed: Joi.number().required(),
-        sold_to_neighbours: Joi.number().required(),
-        sold_for_industrial_use: Joi.number().required(),
-        wastage: Joi.number().required(),
-        others: Joi.string().optional().allow(""),
-        others_value: Joi.number().optional(),
-        yield: Joi.number().required(),
-        income_from_sale: Joi.number().required(),
-        expenditure_on_inputs: Joi.number().required(),
-        required_processing: Joi.boolean().required(),
-        status: Joi.number().allow(1).allow(0).required(),
-    });
+    if (req.body.status) {
+        const schema = Joi.object({
+            fishery_id: Joi.string().required(),
+            number: Joi.number().required(),
+            fishery_type: Joi.string().required(),
+            create_type: Joi.string().required(),
+            type_of_feed: Joi.when("fishery_type", {
+                is: "pond",
+                then: Joi.string().required(),
+                otherwise: Joi.string().optional(),
+            }),
+            total_feed: Joi.when("fishery_type", {
+                is: "pond",
+                then: Joi.number().required(),
+                otherwise: Joi.number().optional(),
+            }),
+            output: Joi.number().required(),
+            weight_measurement: Joi.string().required(),
+            self_consumed: Joi.number().required(),
+            sold_to_neighbours: Joi.number().required(),
+            sold_for_industrial_use: Joi.number().required(),
+            wastage: Joi.number().required(),
+            others: Joi.string().optional().allow(""),
+            others_value: Joi.number().optional(),
+            yield: Joi.number().required(),
+            income_from_sale: Joi.number().required(),
+            expenditure_on_inputs: Joi.number().required(),
+            required_processing: Joi.boolean().required(),
+            status: Joi.number().allow(1).allow(0).required(),
+        });
 
-    const { error, value } = schema.validate(req.body);
-    if (error) throw error;
+        const { error, value } = schema.validate(req.body);
+        if (error) throw error;
+        const fishery_doc = await Fishery.findByIdAndUpdate(
+            value.fishery_id,
+            value,
+            { runValidators: true, new: true }
+        );
+        return res.json(fishery_doc);
+    }
     const fishery_doc = await Fishery.findByIdAndUpdate(
-        value.fishery_id,
-        value,
+        req.body.fishery_id,
+        req.body,
         { runValidators: true, new: true }
     );
     return res.json(fishery_doc);

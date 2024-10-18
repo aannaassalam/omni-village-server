@@ -34,50 +34,64 @@ module.exports.get_poultries = async (req, res) => {
 
 module.exports.add_poultries = async (req, res) => {
     const { user } = res.locals;
-    const schema = Joi.object({
-        crop_id: Joi.string().required(),
-        number: Joi.number().required(),
-        average_age_of_livestocks: Joi.string().required(),
-        avg_age_time_period: Joi.string().required(),
-        type_of_feed: Joi.string().required(),
-        create_type: Joi.string().required(),
-        total_feed: Joi.number().required(),
-        self_produced: Joi.number().required(),
-        neighbours: Joi.number().required(),
-        purchased_from_market: Joi.number().required(),
-        others: Joi.string().optional().allow(""),
-        others_value: Joi.number().optional(),
-        income_from_sale: Joi.number().required(),
-        expenditure_on_inputs: Joi.number().required(),
-        steriods: Joi.boolean().required(),
-        weight_measurement: Joi.string().required(),
-        harvested_product: Joi.array().items({
-            product_name: Joi.string().required(),
-            output: Joi.number().required(),
-            self_consumed: Joi.number().required(),
-            sold_to_neighbours: Joi.number().required(),
-            sold_for_industrial_use: Joi.number().required(),
-            wastage: Joi.number().required(),
+    if (req.body.status) {
+        const schema = Joi.object({
+            crop_id: Joi.string().required(),
+            number: Joi.number().required(),
+            average_age_of_livestocks: Joi.string().required(),
+            avg_age_time_period: Joi.string().required(),
+            type_of_feed: Joi.string().required(),
+            create_type: Joi.string().required(),
+            total_feed: Joi.number().required(),
+            self_produced: Joi.number().required(),
+            neighbours: Joi.number().required(),
+            purchased_from_market: Joi.number().required(),
             others: Joi.string().optional().allow(""),
             others_value: Joi.number().optional(),
-            month_harvested: new Date(),
-            required_processing: Joi.boolean().required(),
-        }),
-        status: Joi.number().allow(0).allow(1).required(),
-    });
+            income_from_sale: Joi.number().required(),
+            expenditure_on_inputs: Joi.number().required(),
+            steriods: Joi.boolean().required(),
+            weight_measurement: Joi.string().required(),
+            harvested_product: Joi.array().items({
+                product_name: Joi.string().required(),
+                output: Joi.number().required(),
+                self_consumed: Joi.number().required(),
+                sold_to_neighbours: Joi.number().required(),
+                sold_for_industrial_use: Joi.number().required(),
+                wastage: Joi.number().required(),
+                others: Joi.string().optional().allow(""),
+                others_value: Joi.number().optional(),
+                month_harvested: new Date(),
+                required_processing: Joi.boolean().required(),
+            }),
+            status: Joi.number().allow(0).allow(1).required(),
+        });
 
-    const { error, value } = schema.validate(req.body);
-    if (error) throw error;
+        const { error, value } = schema.validate(req.body);
+        if (error) throw error;
 
+        const poultry_product_docs = await PoultryProducts.insertMany(
+            value.harvested_product.map((p) => ({
+                ...p,
+                crop_id: value.crop_id,
+            }))
+        );
+        const poultry_doc = await Poultry.create({
+            user_id: user._id,
+            ...value,
+            products: poultry_product_docs.map((tp) => tp._id),
+        });
+        return res.json(poultry_doc);
+    }
     const poultry_product_docs = await PoultryProducts.insertMany(
-        products.map((p) => ({ ...p, crop_id: value.crop_id }))
+        req.body.products.map((p) => ({ ...p, crop_id: value.crop_id }))
     );
     const poultry_doc = await Poultry.create({
         user_id: user._id,
-        ...value,
+        ...req.body,
         products: poultry_product_docs.map((tp) => tp._id),
     });
-    res.json(poultry_doc);
+    return res.json(poultry_doc);
 };
 
 module.exports.update_poultries = async (req, res) => {
@@ -190,6 +204,8 @@ module.exports.update_poultries = async (req, res) => {
 module.exports.delete_poultry = async (req, res) => {
     const { id } = req.params;
     const doc = await Poultry.findByIdAndDelete(id);
-    await PoultryProducts.deleteMany({ _id: { $in: product } });
+    await PoultryProducts.deleteMany({
+        _id: { $in: doc.products.map((_product) => _product._id) },
+    });
     return res.json({ message: "Poultry deleted!" });
 };
