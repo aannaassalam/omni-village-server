@@ -995,9 +995,12 @@ module.exports.edit_user = async (req, res) => {
         {
             ...user._doc,
             ...value,
-            address_proof: address_proof.path || user.address_proof,
-            field_officer_document:
-                field_officer_document.path || user.field_officer_document,
+            address_proof: address_proof
+                ? address_proof?.path
+                : user.address_proof,
+            field_officer_document: field_officer_document
+                ? field_officer_document?.path
+                : user.field_officer_document,
         },
         { runValidators: true, new: true }
     );
