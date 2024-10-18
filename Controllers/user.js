@@ -845,8 +845,9 @@ module.exports.generate_token = async (req, res) => {
     const { phone, country_code } = req.body;
     const user = await User.findOne({ phone, country_code });
     if (user) {
-        res.cookie("token", createToken(user._id), { httpOnly: true });
-        res.send("Token generated successfully");
+        const token = createToken(user._id);
+        res.cookie("token", token, { httpOnly: true });
+        res.json({ msg: "Token generated successfully", token });
     } else {
         return new AppError(0, "User not found!", 400);
     }
@@ -922,8 +923,9 @@ module.exports.register = async (req, res) => {
             country,
             street_address: "-",
         });
-        res.cookie("token", createToken(user._id), { httpOnly: true });
-        return res.json({ msg: "User registered successfully" });
+        const token = createToken(user._id);
+        res.cookie("token", token, { httpOnly: true });
+        return res.json({ msg: "User registered successfully", token });
     } else {
         return new AppError(0, "Incorrect OTP", 400);
     }
@@ -940,8 +942,9 @@ module.exports.login = async (req, res) => {
             country_code,
         });
         if (user._id) {
-            res.cookie("token", createToken(user._id), { httpOnly: true });
-            return res.json({ msg: "User logged in successfully" });
+            const token = createToken(user._id);
+            res.cookie("token", token, { httpOnly: true });
+            return res.json({ msg: "User logged in successfully", token });
         } else {
             return new AppError(0, "User doesn't exists!", 400);
         }
@@ -981,7 +984,10 @@ module.exports.edit_user = async (req, res) => {
     const address_proof = req.files.address_proof[0];
     const field_officer_document = req.files.field_officer_document[0];
 
-    const { error, value } = schema.validate(req.body);
+    const { error, value } = schema.validate({
+        ...req.body,
+        members: JSON.parse(req.body.members),
+    });
     if (error) throw error;
 
     const updatedUser = await User.findByIdAndUpdate(
