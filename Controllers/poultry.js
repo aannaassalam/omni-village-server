@@ -61,7 +61,7 @@ module.exports.add_poultries = async (req, res) => {
                 wastage: Joi.number().required(),
                 others: Joi.string().optional().allow(""),
                 others_value: Joi.number().optional(),
-                month_harvested: new Date(),
+                month_harvested: Joi.date().required(),
                 required_processing: Joi.boolean().required(),
             }),
             status: Joi.number().allow(0).allow(1).required(),
