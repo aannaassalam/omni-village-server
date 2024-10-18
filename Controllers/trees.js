@@ -3,7 +3,6 @@ const TreeProducts = require("../Models/treeProducts");
 const Joi = require("joi");
 
 module.exports.get_trees = async (req, res) => {
-    const { language } = req.query;
     const { user } = res.locals;
 
     try {
@@ -15,28 +14,19 @@ module.exports.get_trees = async (req, res) => {
             },
             {
                 $lookup: {
-                    from: "tree_crops",
-                    localField: "tree_crop_id",
+                    from: "crops",
+                    localField: "crop_id",
                     foreignField: "_id",
-                    as: "tree_crop",
+                    as: "crop",
                 },
             },
-            { $unwind: { path: "$tree_crop" } },
+            { $unwind: { path: "$crop" } },
             {
                 $lookup: {
                     from: "tree_products",
                     localField: "products",
                     foreignField: "_id",
                     as: "products",
-                },
-            },
-            // { $unwind: { path: "$cultivation_crop" } },
-            {
-                $project: { __v: 0, "tree_crop.__v": 0, "products.__v": 0 },
-            },
-            {
-                $addFields: {
-                    "tree_crop.name": `$tree_crop.name.${language}`,
                 },
             },
             {
@@ -48,63 +38,6 @@ module.exports.get_trees = async (req, res) => {
         // console.log(cultivation_doc);
         res.json(trees_doc);
     } catch (err) {
-        res.status(400).json(handleErrors(err));
-    }
-};
-
-module.exports.get_all_trees = async (req, res) => {
-    try {
-        const tree_doc = await Trees.aggregate([
-            {
-                $lookup: {
-                    from: "tree_crops",
-                    localField: "tree_crop_id",
-                    foreignField: "_id",
-                    as: "crop",
-                },
-            },
-            {
-                $lookup: {
-                    from: "users",
-                    localField: "user_id",
-                    foreignField: "_id",
-                    as: "user",
-                },
-            },
-            {
-                $lookup: {
-                    from: "tree_products",
-                    localField: "products",
-                    foreignField: "_id",
-                    as: "products",
-                },
-            },
-            {
-                $lookup: {
-                    from: "consumption_types",
-                    localField: "crop.label",
-                    foreignField: "_id",
-                    as: "label",
-                },
-            },
-            { $unwind: { path: "$crop" } },
-            { $unwind: { path: "$user" } },
-            { $unwind: { path: "$label" } },
-            {
-                $addFields: {
-                    label_name: "$label.name.en",
-                },
-            },
-            {
-                $project: {
-                    __v: 0,
-                    "crop.__v": 0,
-                },
-            },
-        ]);
-        res.json(tree_doc);
-    } catch (err) {
-        console.log(err);
         res.status(400).json(handleErrors(err));
     }
 };
@@ -260,54 +193,4 @@ module.exports.delete_tree = async (req, res) => {
         console.log(err, "err");
         res.status(400).json(err);
     }
-};
-
-module.exports.tree_list = async (req, res) => {
-    const trees = await Trees.aggregate([
-        {
-            $lookup: {
-                from: "tree_crops",
-                localField: "tree_crop_id",
-                foreignField: "_id",
-                as: "tree_crop",
-            },
-        },
-        {
-            $unwind: {
-                path: "$tree_crop",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
-            $lookup: {
-                from: "users",
-                localField: "user_id",
-                foreignField: "_id",
-                as: "user",
-            },
-        },
-
-        {
-            $unwind: {
-                path: "$user",
-            },
-        },
-        {
-            $sort: {
-                createdAt: -1,
-            },
-        },
-    ]);
-    // const processed_trees = {};
-    // trees.forEach((tree) => {
-    //   const date = moment(tree.createdAt).format("LL");
-    //   processed_trees[date] = processed_trees[date]
-    //     ? [...processed_trees[date], tree]
-    //     : [tree];
-    // });
-    res.json(trees);
-
-    // res.render("trees", {
-    //   trees: processed_trees,
-    // });
 };

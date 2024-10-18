@@ -18,7 +18,7 @@ router.post(
     ControllerWrapper(selling_channel_controller.add_selling_channel)
 );
 
-router.post(
+router.put(
     "/edit_selling_channel",
     verifyToken,
     checkUser,

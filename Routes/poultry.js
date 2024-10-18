@@ -18,7 +18,7 @@ router.post(
     ControllerWrapper(poultry_controller.add_poultries)
 );
 
-router.post(
+router.put(
     "/edit_poultry",
     verifyToken,
     checkUser,

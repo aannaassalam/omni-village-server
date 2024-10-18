@@ -981,8 +981,8 @@ module.exports.edit_user = async (req, res) => {
         street_address: Joi.string().trim().required(),
         village_governing_body: Joi.boolean().required(),
     }).options({ stripUnknown: true });
-    const address_proof = req.files.address_proof[0];
-    const field_officer_document = req.files.field_officer_document[0];
+    const address_proof = req.files?.address_proof?.[0];
+    const field_officer_document = req.files?.field_officer_document?.[0];
 
     const { error, value } = schema.validate({
         ...req.body,
@@ -995,8 +995,9 @@ module.exports.edit_user = async (req, res) => {
         {
             ...user._doc,
             ...value,
-            address_proof: address_proof.path,
-            field_officer_document: field_officer_document.path,
+            address_proof: address_proof.path || user.address_proof,
+            field_officer_document:
+                field_officer_document.path || user.field_officer_document,
         },
         { runValidators: true, new: true }
     );

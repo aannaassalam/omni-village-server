@@ -12,7 +12,7 @@ router.post(
     hunting_controller.add_hunting
 );
 
-router.post(
+router.put(
     "/edit_hunting",
     verifyToken,
     checkUser,

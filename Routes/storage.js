@@ -18,7 +18,7 @@ router.post(
     ControllerWrapper(storage_controller.add_storage)
 );
 
-router.post(
+router.put(
     "/edit_storage",
     verifyToken,
     checkUser,

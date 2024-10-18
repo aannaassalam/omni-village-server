@@ -17,7 +17,7 @@ router.post(
     checkUser,
     ControllerWrapper(cultivation_controller.add_cultivation)
 );
-router.post(
+router.put(
     "/edit_cultivation",
     verifyToken,
     checkUser,

@@ -18,7 +18,7 @@ router.post(
     ControllerWrapper(fishery_controller.add_fishery)
 );
 
-router.post(
+router.put(
     "/edit_fishery",
     verifyToken,
     checkUser,
