@@ -23,7 +23,7 @@ const poultrySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        avg_age_of_live_stocks: {
+        average_age_of_livestocks: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {

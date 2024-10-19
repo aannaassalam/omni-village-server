@@ -62,7 +62,7 @@ module.exports.add_cultivation = async (req, res) => {
             month_harvested: Joi.date().required(),
             status: Joi.number().allow(0).allow(1).required(),
             required_processing: Joi.boolean().required(),
-            processing_method: Joi.string(),
+            processing_method: Joi.string().optional().allow(""),
         });
 
         const { error, value } = schema.validate(req.body);
@@ -112,7 +112,7 @@ module.exports.update_cultivation = async (req, res) => {
             month_harvested: Joi.date().required(),
             status: Joi.number().allow(0).allow(1).required(),
             required_processing: Joi.boolean().required(),
-            processing_method: Joi.string(),
+            processing_method: Joi.string().optional().allow(),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);

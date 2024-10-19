@@ -23,7 +23,7 @@ const treeSchema = new mongoose.Schema(
             ],
             default: "",
         },
-        avg_age_of_trees: {
+        average_age_of_trees: {
             type: mongoose.Schema.Types.String,
             required: [
                 function () {
