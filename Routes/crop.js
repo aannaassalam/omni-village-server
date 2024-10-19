@@ -25,7 +25,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get("/", checkUser, ControllerWrapper(crop_controller.get_crops));
-router.get("/get_all", crop_controller.get_all);
+router.get("/get_all", ControllerWrapper(crop_controller.get_all));
+router.get(
+    "/consumption_crops",
+    ControllerWrapper(crop_controller.get_consumption_crops)
+);
 router.post(
     "/add_crop",
     verifyToken,
