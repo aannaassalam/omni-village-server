@@ -21,7 +21,7 @@ module.exports.get_cultivation = async (req, res) => {
                 user_id: user._id,
             },
         },
-        { $unwind: { path: "crop" } },
+        { $unwind: { path: "$crop" } },
         // {
         //     $addFields: {
         //         "cultivation_crop.name": `$cultivation_crop.name.${language}`,
