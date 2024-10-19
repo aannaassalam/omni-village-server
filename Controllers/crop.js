@@ -1,3 +1,4 @@
+const Joi = require("joi");
 const Crop = require("../Models/crop");
 const csvtojson = require("csvtojson");
 
@@ -70,25 +71,32 @@ module.exports.get_all = async (req, res) => {
 };
 
 module.exports.add_crop = async (req, res) => {
-    const { name, country, status, label, ideal_consumption_per_person } =
-        req.body;
     const { language } = req.query;
-    try {
-        const crop_doc = await Crop.create({
-            name: {
-                en: name.en,
-                ms: name.ms || name.en,
-                dz: name.dz || name.en,
-            },
-            country,
-            label,
-            status,
-            ideal_consumption_per_person,
-        });
-        res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
-    } catch (err) {
-        res.status(400).json(handleErrors(err));
-    }
+    const schema = Joi.object({
+        name: Joi.object({
+            en: Joi.string().required(),
+            ms: Joi.string().optional().allow(""),
+            dz: Joi.string().optional().allow(""),
+        }).required(),
+        country: Joi.array().items(Joi.string().required()).min(1),
+        status: Joi.number().allow(1).allow(0).required(),
+        label: Joi.string().optional().allow(""),
+        ideal_consumption_per_person: Joi.number().optional(),
+        category: Joi.string().required(),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const crop_doc = await Crop.create({
+        ...value,
+        name: {
+            en: value.name.en,
+            ms: value.name.ms || value.name.en,
+            dz: value.name.dz || value.name.en,
+        },
+    });
+    return res.json({ ...crop_doc._doc, name: crop_doc.name[language] });
 };
 
 module.exports.bulk_upload = async (req, res) => {

@@ -33,12 +33,12 @@ const ErrorHandler = (error, req, res, next) => {
     }
 
     if (error.code === 11000) {
-        if (Object.keys(err.keyPattern)[0] === "phone") {
+        if (Object.keys(error.keyPattern)[0] === "phone") {
             return res.status(400).json({
                 message: "Phone number already in use!",
             });
         }
-        if (Object.keys(err.keyPattern)[0] === "username") {
+        if (Object.keys(error.keyPattern)[0] === "username") {
             return res.status(400).json({
                 message: "Username already in use!",
             });

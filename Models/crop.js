@@ -55,7 +55,6 @@ const cropSchema = new mongoose.Schema(
         ideal_consumption_per_person: {
             type: mongoose.Schema.Types.Number,
             default: 0,
-            required: [true, "Ideal Consumption Per Person is required"],
         },
         category: {
             type: mongoose.Schema.Types.String,

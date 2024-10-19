@@ -28,8 +28,8 @@ router.get("/", checkUser, ControllerWrapper(crop_controller.get_crops));
 router.get("/get_all", crop_controller.get_all);
 router.post(
     "/add_crop",
-    // verifyToken,
-    crop_controller.add_crop
+    verifyToken,
+    ControllerWrapper(crop_controller.add_crop)
 );
 router.post(
     "/bulk-upload",
