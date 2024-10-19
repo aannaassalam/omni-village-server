@@ -4,7 +4,7 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
 
 const router = require("express").Router();
 
-router.post(
+router.get(
     "/",
     verifyToken,
     checkUser,
