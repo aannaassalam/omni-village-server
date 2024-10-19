@@ -45,12 +45,12 @@ module.exports.add_cultivation = async (req, res) => {
             sold_for_industrial_use: Joi.number().required(),
             wastage: Joi.number().required(),
             other: Joi.string().optional().allow(""),
-            other_value: Joi.number().optional(),
+            other_value: Joi.number().optional().allow(null),
             soil_health: Joi.string().required(),
             decreasing_yeild: Joi.when("soil_health", {
                 is: "decreasing yield",
                 then: Joi.number().required(),
-                otherwise: Joi.number().optional(),
+                otherwise: Joi.number().optional().allow(null, "0"),
             }),
             type_of_fertilizer_used: Joi.string().required(),
             type_of_pesticide_used: Joi.string().required(),
@@ -95,12 +95,12 @@ module.exports.update_cultivation = async (req, res) => {
             sold_for_industrial_use: Joi.number().required(),
             wastage: Joi.number().required(),
             other: Joi.string().optional().allow(""),
-            other_value: Joi.number().optional(),
+            other_value: Joi.number().optional().allow(null),
             soil_health: Joi.string().required(),
             decreasing_yeild: Joi.when("soil_health", {
                 is: "decreasing yield",
                 then: Joi.number().required(),
-                otherwise: Joi.number().optional(),
+                otherwise: Joi.number().optional().allow(null, "0"),
             }),
             type_of_fertilizer_used: Joi.string().required(),
             type_of_pesticide_used: Joi.string().required(),
@@ -112,7 +112,7 @@ module.exports.update_cultivation = async (req, res) => {
             month_harvested: Joi.date().required(),
             status: Joi.number().allow(0).allow(1).required(),
             required_processing: Joi.boolean().required(),
-            processing_method: Joi.string().optional().allow(),
+            processing_method: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);

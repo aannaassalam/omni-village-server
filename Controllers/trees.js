@@ -49,7 +49,7 @@ module.exports.add_trees = async (req, res) => {
             decreasing_yield: Joi.when("soil_health", {
                 is: "decreasing yield",
                 then: Joi.number().required(),
-                otherwise: Joi.number().optional(),
+                otherwise: Joi.number().optional().allow(null, "0"),
             }),
             type_of_fertiliser: Joi.string().required(),
             type_of_pesticide: Joi.string().required(),
@@ -66,7 +66,7 @@ module.exports.add_trees = async (req, res) => {
                     sold_for_industrial_use: Joi.number().required(),
                     wastage: Joi.number().required(),
                     others: Joi.string().optional().allow(""),
-                    others_value: Joi.number().optional(),
+                    others_value: Joi.number().optional().allow(null),
                     month_harvested: Joi.date().required(),
                     required_processing: Joi.boolean().required(),
                 })

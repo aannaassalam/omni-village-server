@@ -55,7 +55,7 @@ const treeSchema = new mongoose.Schema(
             ],
             default: "",
         },
-        type_of_fertilizer_used: {
+        type_of_fertiliser: {
             type: mongoose.Schema.Types.String,
             required: [
                 function () {
@@ -73,7 +73,7 @@ const treeSchema = new mongoose.Schema(
             ],
             default: "",
         },
-        type_of_pesticide_used: {
+        type_of_pesticide: {
             type: mongoose.Schema.Types.String,
             required: [
                 function () {
