@@ -17,7 +17,7 @@ module.exports.get_storage = async (req, res) => {
         },
         {
             $addFields: {
-                stock_quantity: { $toString: "$stock_quantity" },
+                storage_quantity: { $toString: "storage_quantity" },
             },
         },
     ]);
