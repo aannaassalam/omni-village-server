@@ -15,6 +15,11 @@ module.exports.get_storage = async (req, res) => {
         {
             $match: { user_id: user._id },
         },
+        {
+            $addFields: {
+                stock_quantity: { $toString: "$stock_quantity" },
+            },
+        },
     ]);
     return res.json(storage_doc);
 };

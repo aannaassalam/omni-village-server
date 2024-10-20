@@ -61,7 +61,7 @@ app.use("/api/weight_measurements", weight_measurement);
 app.use("/api/feeds", feed);
 app.use("/api/consumption_type", consumptionType);
 app.use("/api/consumption", consumption);
-// app.use("/api/demographic", demographic);
+app.use("/api/demographic", demographic);
 // app.use("/api/webhook", webhook);
 // app.use("/api/dashboard", dashboard);
 

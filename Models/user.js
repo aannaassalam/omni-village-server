@@ -127,10 +127,6 @@ const userSchema = new mongoose.Schema(
                 default: 0,
             },
         },
-        demographic_info: {
-            type: mongoose.Schema.Types.ObjectId,
-            default: null,
-        },
         street_address: {
             type: mongoose.Schema.Types.String,
             default: "",
