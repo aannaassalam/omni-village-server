@@ -65,7 +65,7 @@ module.exports.update_storage = async (req, res) => {
     if (error) throw error;
 
     const storage_docs = [];
-    for await (const storage of value.storages) {
+    for await (const storage of value) {
         const storage_doc = await Storage.findByIdAndUpdate(
             storage._id,
             storage,
