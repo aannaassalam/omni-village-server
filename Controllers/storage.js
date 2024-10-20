@@ -54,7 +54,7 @@ module.exports.add_storage = async (req, res) => {
 
 module.exports.update_storage = async (req, res) => {
     const schema = Joi.array().items({
-        _id: Joi.number().required(),
+        _id: Joi.string().required(),
         storage_name: Joi.string().required(),
         storage_method_name: Joi.string().required(),
         storage_quantity: Joi.number().required(),
