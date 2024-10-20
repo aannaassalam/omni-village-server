@@ -92,7 +92,7 @@ module.exports.add_trees = async (req, res) => {
     const tree_product_docs = await TreeProducts.insertMany(
         req.body.harvested_products.map((p) => ({
             ...p,
-            crop_id: value.crop_id,
+            crop_id: req.body.crop_id,
         }))
     );
     const tree_doc = await Trees.create({

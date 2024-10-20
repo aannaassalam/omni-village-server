@@ -86,7 +86,7 @@ module.exports.add_poultries = async (req, res) => {
     const poultry_product_docs = await PoultryProducts.insertMany(
         req.body.harvested_product.map((p) => ({
             ...p,
-            crop_id: value.crop_id,
+            crop_id: req.body.crop_id,
         }))
     );
     const poultry_doc = await Poultry.create({
