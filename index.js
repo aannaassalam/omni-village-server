@@ -51,7 +51,7 @@ app.use("/api/crop", crop);
 app.use("/api/trees", trees);
 app.use("/api/poultry", poultry);
 app.use("/api/hunting", hunting);
-// app.use("/api/storage_method", storage_method);
+app.use("/api/storage_method", storage_method);
 app.use("/api/storage", storage);
 app.use("/api/selling_channel", selling_channel);
 app.use("/api/fishery", fishery);

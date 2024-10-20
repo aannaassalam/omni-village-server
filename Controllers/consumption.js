@@ -6,34 +6,31 @@ module.exports.get_consumptions = async (req, res) => {
     const { user } = res.locals;
     const { consumption_type_id } = req.params;
 
-    try {
-        const consumption_doc = await Consumption.aggregate([
-            {
-                $match: {
-                    user_id: user._id,
-                    consumption_type_id,
-                },
+    const consumption_doc = await Consumption.aggregate([
+        {
+            $match: {
+                user_id: user._id,
+                consumption_type_id: new mongoose.Types.ObjectId(
+                    consumption_type_id
+                ),
             },
-            {
-                $lookup: {
-                    from: "crops",
-                    localField: "crop_id",
-                    foreignField: "_id",
-                    as: "crop",
-                },
+        },
+        {
+            $lookup: {
+                from: "crops",
+                localField: "crop_id",
+                foreignField: "_id",
+                as: "crop",
             },
-            {
-                $unwind: {
-                    path: "$crop",
-                    preserveNullAndEmptyArrays: true,
-                },
+        },
+        {
+            $unwind: {
+                path: "$crop",
+                preserveNullAndEmptyArrays: true,
             },
-        ]);
-        return res.json(consumption_doc);
-    } catch (err) {
-        console.log(err);
-        res.status(400).json(handleErrors(err));
-    }
+        },
+    ]);
+    return res.json(consumption_doc);
 };
 
 module.exports.add_consumption = async (req, res) => {

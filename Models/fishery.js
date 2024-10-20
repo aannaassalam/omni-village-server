@@ -130,7 +130,7 @@ const fisherySchema = new mongoose.Schema(
             ],
             default: "",
         },
-        yeild: {
+        yield: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {

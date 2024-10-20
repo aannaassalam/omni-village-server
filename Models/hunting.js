@@ -33,6 +33,10 @@ const huntingSchema = new mongoose.Schema(
             ],
             default: "",
         },
+        weight_measurement: {
+            type: mongoose.Schema.Types.String,
+            default: "kilogram",
+        },
         self_consumed: {
             type: mongoose.Schema.Types.Number,
             required: [

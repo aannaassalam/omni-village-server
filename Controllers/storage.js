@@ -29,7 +29,7 @@ module.exports.add_storage = async (req, res) => {
         storage_method_id: Joi.string().required(),
     });
 
-    const { error, value } = schema.validate(req.body.storages);
+    const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
     const storage_docs = [];
