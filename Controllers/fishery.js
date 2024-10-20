@@ -37,7 +37,7 @@ module.exports.add_fishery = async (req, res) => {
             crop_id: Joi.string().required(),
             number: Joi.number().required(),
             fishery_type: Joi.string().required(),
-            create_type: Joi.string().required(),
+            create_type: Joi.string().optional().allow(null, ""),
             type_of_feed: Joi.when("fishery_type", {
                 is: "pond",
                 then: Joi.string().required(),
@@ -84,7 +84,7 @@ module.exports.update_fishery = async (req, res) => {
             fishery_id: Joi.string().required(),
             number: Joi.number().required(),
             fishery_type: Joi.string().required(),
-            create_type: Joi.string().required(),
+            create_type: Joi.string().optional().allow(null, ""),
             type_of_feed: Joi.when("fishery_type", {
                 is: "pond",
                 then: Joi.string().required(),
