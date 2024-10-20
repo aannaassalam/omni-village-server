@@ -84,7 +84,10 @@ module.exports.add_poultries = async (req, res) => {
         return res.json(poultry_doc);
     }
     const poultry_product_docs = await PoultryProducts.insertMany(
-        req.body.products.map((p) => ({ ...p, crop_id: value.crop_id }))
+        req.body.harvested_product.map((p) => ({
+            ...p,
+            crop_id: value.crop_id,
+        }))
     );
     const poultry_doc = await Poultry.create({
         user_id: user._id,
