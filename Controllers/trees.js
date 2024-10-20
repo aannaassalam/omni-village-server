@@ -104,86 +104,90 @@ module.exports.add_trees = async (req, res) => {
 };
 
 module.exports.update_trees = async (req, res) => {
-    const {
-        tree_id,
-        number_of_trees,
-        avg_age_of_trees,
-        soil_health,
-        decreasing_rate,
-        type_of_fertilizer_used,
-        type_of_pesticide_used,
-        income_from_sale,
-        expenditure_on_inputs,
-        products,
-        status = 1,
-    } = req.body;
-    try {
-        const current_tree = await Trees.findById(tree_id);
-        const processed_products = []; // All products send via api after adding new ones
-
-        for await (const item of products) {
-            if (item._id) {
-                processed_products.push(item);
-            } else {
-                const new_product = await TreeProducts.create({
-                    ...item,
-                    tree_crop_id: current_tree.tree_crop_id,
-                });
-                processed_products.push(new_product);
-            }
-        }
-
-        const all_products = await TreeProducts.find({
-            _id: { $in: processed_products.map((p) => p._id) },
-        }); // All products from products field in body
-
-        const updated_products = await Promise.all(
-            processed_products.map(async (product) => {
-                const current_product = all_products.find(
-                    (p) => p._id.toString() === product._id.toString()
-                );
-
-                var updated_product;
-
-                if (current_product) {
-                    updated_product = await TreeProducts.findByIdAndUpdate(
-                        product._id,
-                        product
-                    );
-                    return updated_product._id;
-                }
+    const schema = Joi.object({
+        tree_id: Joi.string().required(),
+        number_of_trees: Joi.number().required(),
+        average_age_of_trees: Joi.string().required(),
+        soil_health: Joi.string().required(),
+        decreasing_yield: Joi.when("soil_health", {
+            is: "decreasing yield",
+            then: Joi.number().required(),
+            otherwise: Joi.number().optional().allow(null, "0"),
+        }),
+        type_of_fertiliser: Joi.string().required(),
+        type_of_pesticide: Joi.string().required(),
+        income_from_sale: Joi.number().required(),
+        expenditure_on_inputs: Joi.number().required(),
+        status: Joi.number().allow(0).allow(1).required(),
+        harvested_products: Joi.array().items(
+            Joi.object({
+                _id: Joi.string().optional(),
+                product_name: Joi.string().required(),
+                output: Joi.number().required(),
+                self_consumed: Joi.number().required(),
+                fed_to_livestock: Joi.number().required(),
+                sold_to_neighbours: Joi.number().required(),
+                sold_for_industrial_use: Joi.number().required(),
+                wastage: Joi.number().required(),
+                others: Joi.string().optional().allow(""),
+                others_value: Joi.number().optional().allow(null),
+                month_harvested: Joi.date().required(),
+                required_processing: Joi.boolean().required(),
             })
-        );
+        ),
+    });
 
-        const deleted_products = current_tree.products.filter((product) => {
-            return !all_products
-                .map((p) => p._id.toString())
-                .includes(product.toString());
-        });
-        const deleted = deleted_products.forEach(async (item) => {
-            await TreeProducts.findByIdAndDelete(item._id);
-        });
-        const cultivation_doc = await Trees.findByIdAndUpdate(
-            tree_id,
-            {
-                number_of_trees,
-                avg_age_of_trees,
-                soil_health,
-                decreasing_rate,
-                type_of_fertilizer_used,
-                type_of_pesticide_used,
-                income_from_sale,
-                expenditure_on_inputs,
-                products: updated_products,
-                status,
-            },
-            { runValidators: true, new: true }
-        );
-        res.json(cultivation_doc);
-    } catch (err) {
-        console.log(err);
-        res.status(400).json(handleErrors(err));
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const current_tree = await Trees.findById(value.tree_id);
+    const products_to_be_deleted = [];
+    const products_to_be_updated = [];
+    const products_to_be_added = [];
+    const tree_products_ids = value.harvested_products
+        .filter((_product) => _product._id)
+        .map((_product) => _product._id);
+
+    for await (const item of value.harvested_products) {
+        if (item._id) {
+            products_to_be_updated.push(item);
+        } else {
+            products_to_be_added.push({
+                ...item,
+                crop_id: current_tree.crop_id,
+            });
+        }
     }
+
+    current_tree.products.forEach((_product) => {
+        if (!tree_products_ids.includes(_product._id.toString()))
+            products_to_be_deleted.push(_product._id.toString());
+    });
+
+    await TreeProducts.deleteMany({ _id: { $in: products_to_be_deleted } });
+    const added_products = await TreeProducts.insertMany(products_to_be_added);
+    for await (const product of products_to_be_updated) {
+        await TreeProducts.findByIdAndUpdate(
+            product._id,
+            { ...product },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+    }
+    const tree_doc = await Trees.findByIdAndUpdate(
+        value.tree_id,
+        {
+            ...value,
+            products: [
+                ...products_to_be_updated,
+                ...added_products.map((_product) => _product._id),
+            ],
+        },
+        { runValidators: true, new: true }
+    );
+    res.json(tree_doc);
 };
 
 module.exports.delete_tree = async (req, res) => {

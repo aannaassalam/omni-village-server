@@ -125,83 +125,66 @@ module.exports.update_poultries = async (req, res) => {
             wastage: Joi.number().required(),
             others: Joi.string().optional().allow(""),
             others_value: Joi.number().optional().allow(null),
-            month_harvested: new Date(),
+            month_harvested: Joi.date().required(),
             required_processing: Joi.boolean().required(),
         }),
         status: Joi.number().allow(0).allow(1).required(),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    try {
-        const current_poultry = await Poultry.findById(value.poultry_id);
-        const processed_products = []; // All products send via api after adding new ones
+    const current_poultry = await Poultry.findById(value.poultry_id);
+    const products_to_be_deleted = [];
+    const products_to_be_updated = [];
+    const products_to_be_added = [];
+    const poultry_products_ids = value.harvested_product
+        .filter((_product) => _product._id)
+        .map((_product) => _product._id);
 
-        for await (const item of products) {
-            if (item._id) {
-                processed_products.push(item);
-            } else {
-                const new_product = await PoultryProducts.create({
-                    ...item,
-                    crop_id: current_poultry.crop_id,
-                });
-                processed_products.push(new_product);
-            }
+    for await (const item of value.harvested_product) {
+        if (item._id) {
+            products_to_be_updated.push(item);
+        } else {
+            products_to_be_added.push({
+                ...item,
+                crop_id: current_poultry.crop_id,
+            });
         }
-
-        const all_products = await PoultryProducts.find({
-            _id: { $in: processed_products.map((p) => p._id) },
-        }); // All products from products field in body
-
-        const updated_products = await Promise.all(
-            processed_products.map(async (product) => {
-                const current_product = all_products.find(
-                    (p) => p._id.toString() === product._id.toString()
-                );
-
-                var updated_product;
-
-                if (current_product) {
-                    updated_product = await PoultryProducts.findByIdAndUpdate(
-                        product._id,
-                        product
-                    );
-                    return updated_product._id;
-                }
-            })
-        );
-        const deleted_products = current_poultry.products.filter((product) => {
-            return !all_products
-                .map((p) => p._id.toString())
-                .includes(product.toString());
-        });
-        const deleted = deleted_products.forEach(async (item) => {
-            await PoultryProducts.findByIdAndDelete(item._id);
-        });
-        const poultry_doc = await Poultry.findByIdAndUpdate(
-            poultry_id,
-            {
-                number,
-                avg_age_of_live_stocks,
-                avg_age_time_period,
-                type_of_feed,
-                other_type_of_feed,
-                weight_measurement,
-                personal_information,
-                income_from_sale,
-                expenditure_on_inputs,
-                steroids,
-                products: updated_products,
-                status,
-            },
-            { runValidators: true, new: true }
-        );
-        res.json(poultry_doc);
-    } catch (err) {
-        console.log(err);
-        res.status(400).json(handleErrors(err));
     }
+
+    current_poultry.products.forEach((_product) => {
+        if (!poultry_products_ids.includes(_product._id.toString()))
+            products_to_be_deleted.push(_product._id.toString());
+    });
+
+    await PoultryProducts.deleteMany({ _id: { $in: products_to_be_deleted } });
+    const added_products = await PoultryProducts.insertMany(
+        products_to_be_added
+    );
+    for await (const product of products_to_be_updated) {
+        await PoultryProducts.findByIdAndUpdate(
+            product._id,
+            { ...product },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+    }
+
+    const poultry_doc = await Poultry.findByIdAndUpdate(
+        value.poultry_id,
+        {
+            ...value,
+            products: [
+                ...products_to_be_updated,
+                ...added_products.map((_product) => _product._id),
+            ],
+        },
+        { runValidators: true, new: true }
+    );
+    return res.json(poultry_doc);
 };
 
 module.exports.delete_poultry = async (req, res) => {
