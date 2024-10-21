@@ -107,7 +107,7 @@ const cultivationSchema = new mongoose.Schema(
             enum: ["", "stable", "decreasing yield"],
             default: "",
         },
-        decreasing_yeild: {
+        decreasing_yield: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {
@@ -177,13 +177,13 @@ const cultivationSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.String,
             default: "",
         },
-        yeild: {
+        yield: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {
                     return this.status === 1;
                 },
-                "Yeild is required!",
+                "Yield is required!",
             ],
             default: "",
         },

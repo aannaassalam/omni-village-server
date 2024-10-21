@@ -140,7 +140,7 @@ const fisherySchema = new mongoose.Schema(
                 function () {
                     return this.status === 1;
                 },
-                "Yeild is required!",
+                "Yield is required!",
             ],
             default: "",
         },

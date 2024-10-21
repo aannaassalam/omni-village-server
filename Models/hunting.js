@@ -105,13 +105,13 @@ const huntingSchema = new mongoose.Schema(
             ],
             default: "",
         },
-        yeild: {
+        yield: {
             type: mongoose.Schema.Types.Number,
             required: [
                 function () {
                     return this.status === 1;
                 },
-                "Yeild is required!",
+                "Yield is required!",
             ],
             default: "",
         },

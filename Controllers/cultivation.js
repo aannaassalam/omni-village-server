@@ -47,7 +47,7 @@ module.exports.add_cultivation = async (req, res) => {
             other: Joi.string().optional().allow(""),
             other_value: Joi.number().optional().allow(null),
             soil_health: Joi.string().required(),
-            decreasing_yeild: Joi.when("soil_health", {
+            decreasing_yield: Joi.when("soil_health", {
                 is: "decreasing yield",
                 then: Joi.number().required(),
                 otherwise: Joi.number().optional().allow(null, "0"),
@@ -57,7 +57,7 @@ module.exports.add_cultivation = async (req, res) => {
             income_from_sale: Joi.number().required(),
             expenditure_on_inputs: Joi.number().required(),
             description: Joi.string().optional().allow(""),
-            yeild: Joi.number().required(),
+            yield: Joi.number().required(),
             month_planted: Joi.date().required(),
             month_harvested: Joi.date().required(),
             status: Joi.number().allow(0).allow(1).required(),
@@ -97,7 +97,7 @@ module.exports.update_cultivation = async (req, res) => {
             other: Joi.string().optional().allow(""),
             other_value: Joi.number().optional().allow(null),
             soil_health: Joi.string().required(),
-            decreasing_yeild: Joi.when("soil_health", {
+            decreasing_yield: Joi.when("soil_health", {
                 is: "decreasing yield",
                 then: Joi.number().required(),
                 otherwise: Joi.number().optional().allow(null, "0"),
@@ -107,7 +107,7 @@ module.exports.update_cultivation = async (req, res) => {
             income_from_sale: Joi.number().required(),
             expenditure_on_inputs: Joi.number().required(),
             description: Joi.string().optional().allow(""),
-            yeild: Joi.number().required(),
+            yield: Joi.number().required(),
             month_planted: Joi.date().required(),
             month_harvested: Joi.date().required(),
             status: Joi.number().allow(0).allow(1).required(),

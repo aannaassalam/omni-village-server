@@ -39,7 +39,7 @@ module.exports.add_hunting = async (req, res) => {
             others_value: Joi.number().optional().allow(null),
             income_from_sale: Joi.number().required(),
             expenditure_on_inputs: Joi.number().required(),
-            yeild: Joi.number().required(),
+            yield: Joi.number().required(),
             required_processing: Joi.boolean().required(),
             status: Joi.number().allow(1).allow(0).required(),
         });
@@ -75,7 +75,7 @@ module.exports.update_hunting = async (req, res) => {
             others_value: Joi.number().optional().allow(null),
             income_from_sale: Joi.number().required(),
             expenditure_on_inputs: Joi.number().required(),
-            yeild: Joi.number().required(),
+            yield: Joi.number().required(),
             required_processing: Joi.boolean().required(),
             status: Joi.number().allow(1).allow(0).required(),
         });
