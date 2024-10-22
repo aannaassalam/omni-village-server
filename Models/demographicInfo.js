@@ -116,6 +116,16 @@ const demograhicSchema = new mongoose.Schema({
         ],
         default: false,
     },
+    savings_investment_amount: {
+        type: mongoose.Schema.Types.Number,
+        required: [
+            function () {
+                return this.status === 1;
+            },
+            " savings and investments amount is required",
+        ],
+        default: false,
+    },
     chronic_diseases: {
         type: mongoose.Schema.Types.String,
         required: [
@@ -126,8 +136,8 @@ const demograhicSchema = new mongoose.Schema({
         ],
         default: "",
     },
-    handicap: {
-        type: mongoose.Schema.Types.Boolean,
+    motor_disability: {
+        type: mongoose.Schema.Types.String,
         required: [
             function () {
                 return this.status === 1;
@@ -238,11 +248,18 @@ const demograhicSchema = new mongoose.Schema({
             default: "",
         },
     ],
-    unfulfilled: {
-        type: mongoose.Schema.Types.String,
-        required: [false, "unfullfilled is required"],
-        default: "",
-    },
+    unfulfilled_needs: [
+        {
+            type: mongoose.Schema.Types.String,
+            required: [
+                function () {
+                    return this.status === 1;
+                },
+                "Unfulfilled needs is required",
+            ],
+            default: "",
+        },
+    ],
     wishes: [
         {
             type: mongoose.Schema.Types.String,
@@ -255,6 +272,10 @@ const demograhicSchema = new mongoose.Schema({
             default: "",
         },
     ],
+    others_wishes: {
+        type: mongoose.Schema.Types.String,
+        default: "",
+    },
     status: {
         type: mongoose.Schema.Types.Number,
         default: 1,
