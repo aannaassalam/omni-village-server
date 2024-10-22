@@ -87,14 +87,14 @@ const demograhicSchema = new mongoose.Schema({
         default: "",
     },
     yearly_income: {
-        type: mongoose.Schema.Types.Number,
+        type: mongoose.Schema.Types.String,
         required: [
             function () {
                 return this.status === 1;
             },
             "yearly_income is required",
         ],
-        default: 0,
+        default: "",
     },
     bank_account: {
         type: mongoose.Schema.Types.Boolean,
