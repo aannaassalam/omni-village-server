@@ -975,6 +975,7 @@ module.exports.register = async (req, res) => {
                 social_security_number: "-",
                 address: "-",
                 address_proof: "-",
+                officer_proof: "-",
                 land_measurement: "-",
                 land_measurement_symbol: "-",
                 currency,
