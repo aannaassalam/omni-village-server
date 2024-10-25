@@ -6,20 +6,20 @@ const fs = require("fs");
 const sharp = require("sharp");
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const ext = file.mimetype.split("/")[0];
-    if (ext === "image") {
-      fs.mkdir("./uploads", (err) => {
-        cb(null, "./uploads");
-      });
-    } else {
-      cb("Only image formats are supported", null);
-    }
-  },
-  filename: (req, file, cb) => {
-    // console.log(file.mimetype.split("/")[1]);
-    cb(null, `${Date.now()}.png`);
-  },
+    destination: (req, file, cb) => {
+        const ext = file.mimetype.split("/")[0];
+        if (ext === "image") {
+            fs.mkdir("./uploads", (err) => {
+                cb(null, "./uploads");
+            });
+        } else {
+            cb("Only image formats are supported", null);
+        }
+    },
+    filename: (req, file, cb) => {
+        // console.log(file.mimetype.split("/")[1]);
+        cb(null, `${Date.now()}.png`);
+    },
 });
 
 const upload = multer({ storage });
@@ -136,24 +136,27 @@ router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", checkUser, user_controller.get_current_user);
 router.post("/login", user_controller.login);
 router.post(
-  "/edit_user",
-  upload.single("address_proof"),
-  checkUser,
-  user_controller.edit_user
+    "/edit_user",
+    upload.fields([
+        { name: "address_proof", maxCount: 1 },
+        { name: "officer_proof", maxCount: 1 },
+    ]),
+    checkUser,
+    user_controller.edit_user
 );
 router.post("/refresh", user_controller.refresh);
 router.delete("/delete_user", verifyToken, user_controller.delete_user);
 router.post(
-  "/land_allocation",
-  verifyToken,
-  checkUser,
-  user_controller.land_allocation
+    "/land_allocation",
+    verifyToken,
+    checkUser,
+    user_controller.land_allocation
 );
 router.post(
-  "/cultivation_land_allocation",
-  verifyToken,
-  checkUser,
-  user_controller.cultivation_land_allocation
+    "/cultivation_land_allocation",
+    verifyToken,
+    checkUser,
+    user_controller.cultivation_land_allocation
 );
 // router.post("/check_url", upload.single("img"), async (req, res) => {
 //   console.log(req.body);
