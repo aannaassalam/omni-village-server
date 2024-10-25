@@ -2,6 +2,7 @@ const router = require("express").Router();
 const demographic_dropdown = require("../Controllers/demographic-dropdown");
 const multer = require("multer");
 const fs = require("fs");
+const ControllerWrapper = require("../utils/ControllerWrapper");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -22,12 +23,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/", demographic_dropdown.get_demographic_dropdowns);
+router.get(
+    "/",
+    ControllerWrapper(demographic_dropdown.get_demographic_dropdowns)
+);
 // router.get("/get_all", crop_controller.get_all);
 router.post(
     "/add_demographic_dropdown",
     // verifyToken,
-    demographic_dropdown.add_demographic_data
+    ControllerWrapper(demographic_dropdown.add_demographic_data)
 );
 // router.post(
 //     "/bulk-upload",
