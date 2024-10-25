@@ -2,7 +2,13 @@ const Joi = require("joi");
 const DemographicDropdown = require("../Models/demographic-dropdown");
 
 module.exports.get_demographic_dropdowns = async (req, res) => {
+    const { language = "en" } = req.query;
     const data = await DemographicDropdown.aggregate([
+        {
+            $addFields: {
+                name: `$name.${language}`,
+            },
+        },
         {
             $group: {
                 _id: "$type",
