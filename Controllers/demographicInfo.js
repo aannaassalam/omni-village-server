@@ -191,612 +191,679 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
             },
         },
         {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "marital_status",
-                foreignField: "_id",
-                as: "marital_status",
+            $facet: {
+                general_data: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "marital_status",
+                            foreignField: "_id",
+                            as: "marital_status",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$marital_status",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "diet",
+                            foreignField: "_id",
+                            as: "diet",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$diet",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "occupation",
+                            foreignField: "_id",
+                            as: "occupation",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$occupation",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "yearly_income",
+                            foreignField: "_id",
+                            as: "yearly_income",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$yearly_income",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "chronic_disease",
+                            foreignField: "_id",
+                            as: "chronic_disease",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$chronic_disease",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "motor_disablity",
+                            foreignField: "_id",
+                            as: "motor_disablity",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$motor_disablity",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "specific_habit",
+                            foreignField: "_id",
+                            as: "specific_habit",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$specific_habit",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "education_status",
+                            foreignField: "_id",
+                            as: "education_status",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$education_status",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "education_seeking_to_gain",
+                            foreignField: "_id",
+                            as: "education_seeking_to_gain",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$education_seeking_to_gain",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $project: {
+                            marital_status: 1,
+                            diet: 1,
+                            occupation: 1,
+                            yearly_income: 1,
+                            chronic_disease: 1,
+                            motor_disablity: 1,
+                            specific_habit: 1,
+                            education_status: 1,
+                            education_seeking_to_gain: 1,
+                            status: 1,
+                        },
+                    },
+                ],
+                mental_and_emotional_wellbeing: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "currently_feeling",
+                            foreignField: "_id",
+                            as: "currently_feeling",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$currently_feeling",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "feelings_with_others",
+                            foreignField: "_id",
+                            as: "feelings_with_others",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$feelings_with_others",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "support_you_have",
+                            foreignField: "_id",
+                            as: "support_you_have",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "recover_from_stress",
+                            foreignField: "_id",
+                            as: "recover_from_stress",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$recover_from_stress",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "share_feelings_of_others",
+                            foreignField: "_id",
+                            as: "share_feelings_of_others",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$share_feelings_of_others",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $project: {
+                            currently_feeling: 1,
+                            feelings_with_others: 1,
+                            support_you_have: 1,
+                            recover_from_stress: 1,
+                            share_feelings_of_others: 1,
+                        },
+                    },
+                ],
+                hobbies: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "cultural_traditional_hobbies",
+                            foreignField: "_id",
+                            as: "cultural_traditional_hobbies",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "outdoor_nature_based_hobbies",
+                            foreignField: "_id",
+                            as: "outdoor_nature_based_hobbies",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "modern_digital_hobbies",
+                            foreignField: "_id",
+                            as: "modern_digital_hobbies",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "creative_artistics_hobbies",
+                            foreignField: "_id",
+                            as: "creative_artistics_hobbies",
+                        },
+                    },
+                    {
+                        $project: {
+                            cultural_traditional_hobbies: 1,
+                            outdoor_nature_based_hobbies: 1,
+                            modern_digital_hobbies: 1,
+                            creative_artistics_hobbies: 1,
+                        },
+                    },
+                ],
+                skills_to_learn: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "technical_vocational_skills_learn",
+                            foreignField: "_id",
+                            as: "technical_vocational_skills_learn",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "entrepreneurial_business_skills_learn",
+                            foreignField: "_id",
+                            as: "entrepreneurial_business_skills_learn",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "digital_technological_skills_learn",
+                            foreignField: "_id",
+                            as: "digital_technological_skills_learn",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "communication_language_skills_learn",
+                            foreignField: "_id",
+                            as: "communication_language_skills_learn",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "health_well_being_skills_learn",
+                            foreignField: "_id",
+                            as: "health_well_being_skills_learn",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "creative_artistics_skills_learn",
+                            foreignField: "_id",
+                            as: "creative_artistics_skills_learn",
+                        },
+                    },
+                    {
+                        $project: {
+                            technical_vocational_skills_learn: 1,
+                            entrepreneurial_business_skills_learn: 1,
+                            digital_technological_skills_learn: 1,
+                            communication_language_skills_learn: 1,
+                            health_well_being_skills_learn: 1,
+                            creative_artistics_skills_learn: 1,
+                            others_skills_learn: 1,
+                        },
+                    },
+                ],
+                skills: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "technical_vocational_skills",
+                            foreignField: "_id",
+                            as: "technical_vocational_skills",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "entrepreneurial_business_skills",
+                            foreignField: "_id",
+                            as: "entrepreneurial_business_skills",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "interpersonal_skills",
+                            foreignField: "_id",
+                            as: "interpersonal_skills",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "creative_artistic_skills",
+                            foreignField: "_id",
+                            as: "creative_artistic_skills",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "professional_skills",
+                            foreignField: "_id",
+                            as: "professional_skills",
+                        },
+                    },
+                    {
+                        $project: {
+                            technical_vocational_skills: 1,
+                            entrepreneurial_business_skills: 1,
+                            interpersonal_skills: 1,
+                            creative_artistic_skills: 1,
+                            professional_skills: 1,
+                            others_skills: 1,
+                        },
+                    },
+                ],
+                aspiration: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "economic",
+                            foreignField: "_id",
+                            as: "economic",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "educational",
+                            foreignField: "_id",
+                            as: "educational",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "health_well_being",
+                            foreignField: "_id",
+                            as: "health_well_being",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "infrastructure_technology",
+                            foreignField: "_id",
+                            as: "infrastructure_technology",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "environmental_sustainability",
+                            foreignField: "_id",
+                            as: "environmental_sustainability",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "cultural",
+                            foreignField: "_id",
+                            as: "cultural",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "community_social",
+                            foreignField: "_id",
+                            as: "community_social",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "personal_growth",
+                            foreignField: "_id",
+                            as: "personal_growth",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "spiritual",
+                            foreignField: "_id",
+                            as: "spiritual",
+                        },
+                    },
+                    {
+                        $project: {
+                            economic: 1,
+                            educational: 1,
+                            health_well_being: 1,
+                            infrastructure_technology: 1,
+                            environmental_sustainability: 1,
+                            cultural: 1,
+                            community_social: 1,
+                            personal_growth: 1,
+                            spiritual: 1,
+                        },
+                    },
+                ],
+                unfulfilled_needs: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "basic_necessities",
+                            foreignField: "_id",
+                            as: "basic_necessities",
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "educational_needs",
+                            foreignField: "_id",
+                            as: "educational_needs",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "economic_needs",
+                            foreignField: "_id",
+                            as: "economic_needs",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "healthcare_needs",
+                            foreignField: "_id",
+                            as: "healthcare_needs",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "infrastructure_needs",
+                            foreignField: "_id",
+                            as: "infrastructure_needs",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "social_governance_needs",
+                            foreignField: "_id",
+                            as: "social_governance_needs",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "environmental_needs",
+                            foreignField: "_id",
+                            as: "environmental_needs",
+                        },
+                    },
+                    {
+                        $project: {
+                            basic_necessities: 1,
+                            educational_needs: 1,
+                            economic_needs: 1,
+                            healthcare_needs: 1,
+                            infrastructure_needs: 1,
+                            social_governance_needs: 1,
+                            environmental_needs: 1,
+                            others_needs: 1,
+                        },
+                    },
+                ],
+                wishes: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "for_community",
+                            foreignField: "_id",
+                            as: "for_community",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "for_economy",
+                            foreignField: "_id",
+                            as: "for_economy",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "for_personal_growth",
+                            foreignField: "_id",
+                            as: "for_personal_growth",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "for_environment",
+                            foreignField: "_id",
+                            as: "for_environment",
+                        },
+                    },
+
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "for_family_future_generation",
+                            foreignField: "_id",
+                            as: "for_family_future_generation",
+                        },
+                    },
+                    {
+                        $project: {
+                            for_community: 1,
+                            for_economy: 1,
+                            for_personal_growth: 1,
+                            for_environment: 1,
+                            for_family_future_generation: 1,
+                            others_wishes: 1,
+                        },
+                    },
+                ],
             },
         },
         {
             $unwind: {
-                path: "$marital_status",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "diet",
-                foreignField: "_id",
-                as: "diet",
+                path: "$general_data",
             },
         },
         {
             $unwind: {
-                path: "$diet",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "language_speak",
-                foreignField: "_id",
-                as: "language_speak",
+                path: "$mental_and_emotional_wellbeing",
             },
         },
         {
             $unwind: {
-                path: "$language_speak",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "language_read",
-                foreignField: "_id",
-                as: "language_read",
+                path: "$hobbies",
             },
         },
         {
             $unwind: {
-                path: "$language_read",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "language_write",
-                foreignField: "_id",
-                as: "language_write",
+                path: "$skills_to_learn",
             },
         },
         {
             $unwind: {
-                path: "$language_write",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "occupation",
-                foreignField: "_id",
-                as: "occupation",
+                path: "$skills",
             },
         },
         {
             $unwind: {
-                path: "$occupation",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "yearly_income",
-                foreignField: "_id",
-                as: "yearly_income",
+                path: "$aspiration",
             },
         },
         {
             $unwind: {
-                path: "$yearly_income",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "chronic_disease",
-                foreignField: "_id",
-                as: "chronic_disease",
+                path: "$unfulfilled_needs",
             },
         },
         {
             $unwind: {
-                path: "$chronic_disease",
-                preserveNullAndEmptyArrays: true,
+                path: "$wishes",
             },
         },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "motor_disablity",
-                foreignField: "_id",
-                as: "motor_disablity",
-            },
-        },
-        {
-            $unwind: {
-                path: "$motor_disablity",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "currently_feeling",
-                foreignField: "_id",
-                as: "currently_feeling",
-            },
-        },
-        {
-            $unwind: {
-                path: "$currently_feeling",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "feelings_with_others",
-                foreignField: "_id",
-                as: "feelings_with_others",
-            },
-        },
-        {
-            $unwind: {
-                path: "$feelings_with_others",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "support_you_have",
-                foreignField: "_id",
-                as: "support_you_have",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "recover_from_stress",
-                foreignField: "_id",
-                as: "recover_from_stress",
-            },
-        },
-        {
-            $unwind: {
-                path: "$recover_from_stress",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "share_feelings_of_others",
-                foreignField: "_id",
-                as: "share_feelings_of_others",
-            },
-        },
-        {
-            $unwind: {
-                path: "$share_feelings_of_others",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "specific_habit",
-                foreignField: "_id",
-                as: "specific_habit",
-            },
-        },
-        {
-            $unwind: {
-                path: "$specific_habit",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "education_status",
-                foreignField: "_id",
-                as: "education_status",
-            },
-        },
-        {
-            $unwind: {
-                path: "$education_status",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "education_seeking_to_gain",
-                foreignField: "_id",
-                as: "education_seeking_to_gain",
-            },
-        },
-        {
-            $unwind: {
-                path: "$education_seeking_to_gain",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "cultural_traditional_hobbies",
-                foreignField: "_id",
-                as: "cultural_traditional_hobbies",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "outdoor_nature_based_hobbies",
-                foreignField: "_id",
-                as: "outdoor_nature_based_hobbies",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "modern_digital_hobbies",
-                foreignField: "_id",
-                as: "modern_digital_hobbies",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "creative_artistics_hobbies",
-                foreignField: "_id",
-                as: "creative_artistics_hobbies",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "technical_vocational_skills_learn",
-                foreignField: "_id",
-                as: "technical_vocational_skills_learn",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "entrepreneurial_business_skills_learn",
-                foreignField: "_id",
-                as: "entrepreneurial_business_skills_learn",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "digital_technological_skills_learn",
-                foreignField: "_id",
-                as: "digital_technological_skills_learn",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "communication_language_skills_learn",
-                foreignField: "_id",
-                as: "communication_language_skills_learn",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "health_well_being_skills_learn",
-                foreignField: "_id",
-                as: "health_well_being_skills_learn",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "creative_artistics_skills_learn",
-                foreignField: "_id",
-                as: "creative_artistics_skills_learn",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "technical_vocational_skills",
-                foreignField: "_id",
-                as: "technical_vocational_skills",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "entrepreneurial_business_skills",
-                foreignField: "_id",
-                as: "entrepreneurial_business_skills",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "interpersonal_skills",
-                foreignField: "_id",
-                as: "interpersonal_skills",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "creative_artistic_skills",
-                foreignField: "_id",
-                as: "creative_artistic_skills",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "professional_skills",
-                foreignField: "_id",
-                as: "professional_skills",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "economic",
-                foreignField: "_id",
-                as: "economic",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "educational",
-                foreignField: "_id",
-                as: "educational",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "health_well_being",
-                foreignField: "_id",
-                as: "health_well_being",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "infrastructure_technology",
-                foreignField: "_id",
-                as: "infrastructure_technology",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "environmental_sustainability",
-                foreignField: "_id",
-                as: "environmental_sustainability",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "cultural",
-                foreignField: "_id",
-                as: "cultural",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "community_social",
-                foreignField: "_id",
-                as: "community_social",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "personal_growth",
-                foreignField: "_id",
-                as: "personal_growth",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "spiritual",
-                foreignField: "_id",
-                as: "spiritual",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "basic_necessities",
-                foreignField: "_id",
-                as: "basic_necessities",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "educational_needs",
-                foreignField: "_id",
-                as: "educational_needs",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "economic_needs",
-                foreignField: "_id",
-                as: "economic_needs",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "healthcare_needs",
-                foreignField: "_id",
-                as: "healthcare_needs",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "infrastructure_needs",
-                foreignField: "_id",
-                as: "infrastructure_needs",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "social_governance_needs",
-                foreignField: "_id",
-                as: "social_governance_needs",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "environmental_needs",
-                foreignField: "_id",
-                as: "environmental_needs",
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "for_community",
-                foreignField: "_id",
-                as: "for_community",
-            },
-        },
-        {
-            $unwind: {
-                path: "$for_community",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "for_economy",
-                foreignField: "_id",
-                as: "for_economy",
-            },
-        },
-        {
-            $unwind: {
-                path: "$for_economy",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "for_personal_growth",
-                foreignField: "_id",
-                as: "for_personal_growth",
-            },
-        },
-        {
-            $unwind: {
-                path: "$for_personal_growth",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "for_environment",
-                foreignField: "_id",
-                as: "for_environment",
-            },
-        },
-        {
-            $unwind: {
-                path: "$for_environment",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-
-        {
-            $lookup: {
-                from: "demographic_dropdowns",
-                localField: "for_family_future_generation",
-                foreignField: "_id",
-                as: "for_family_future_generation",
-            },
-        },
-        {
-            $unwind: {
-                path: "$for_family_future_generation",
-                preserveNullAndEmptyArrays: true,
-            },
-        },
+        // {
+        //     $unwind: {
+        //         path: "$data",
+        //     },
+        // },
     ]);
     res.status(200).json({
         success: true,
         message: "Info got successfully",
-        data: data,
+        data: data[0],
     });
 };
 
