@@ -144,6 +144,7 @@ exports.add_demographic_info = async (req, res) => {
             user_id: user._id,
             ...value,
         });
+        console.log(user);
         const updated_members = user.members.map((_member) => {
             if (_member._id === value.member_id) {
                 _member.demographic_id = demographic_info._id;
