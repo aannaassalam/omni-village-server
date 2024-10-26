@@ -146,7 +146,7 @@ exports.add_demographic_info = async (req, res) => {
         });
         console.log(user);
         const updated_members = user.members.map((_member) => {
-            if (_member._id === value.member_id) {
+            if (_member._id.toString() === value.member_id) {
                 _member.demographic_id = demographic_info._id;
             }
             return _member;
