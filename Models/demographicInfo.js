@@ -336,7 +336,7 @@ const demograhicSchema = new mongoose.Schema({
             default: null,
         },
     ],
-    others: {
+    others_skills: {
         type: mongoose.Schema.Types.String,
         default: "",
     },
@@ -500,7 +500,7 @@ const demograhicSchema = new mongoose.Schema({
             default: null,
         },
     ],
-    others: {
+    others_needs: {
         type: mongoose.Schema.Types.String,
         default: "",
     },
@@ -544,7 +544,7 @@ const demograhicSchema = new mongoose.Schema({
         ref: "demographic_dropdown",
         default: null,
     },
-    others: {
+    others_wishes: {
         type: mongoose.Schema.Types.String,
         default: "",
     },
