@@ -504,46 +504,56 @@ const demograhicSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.String,
         default: "",
     },
-    for_community: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    for_community: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    for_economy: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    for_economy: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    for_personal_growth: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    for_personal_growth: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    for_environment: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    for_environment: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    for_family_future_generation: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    for_family_future_generation: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
+    ],
     others_wishes: {
         type: mongoose.Schema.Types.String,
         default: "",

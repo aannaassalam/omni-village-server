@@ -121,11 +121,19 @@ exports.add_demographic_info = async (req, res) => {
                 .items(Joi.string().required())
                 .required(),
             others_needs: Joi.string().optional().allow(null, ""),
-            for_community: Joi.string().required(),
-            for_economy: Joi.string().required(),
-            for_personal_growth: Joi.string().required(),
-            for_environment: Joi.string().required(),
-            for_family_future_generation: Joi.string().required(),
+            for_community: Joi.array()
+                .items(Joi.string().required())
+                .required(),
+            for_economy: Joi.array().items(Joi.string().required()).required(),
+            for_personal_growth: Joi.array()
+                .items(Joi.string().required())
+                .required(),
+            for_environment: Joi.array()
+                .items(Joi.string().required())
+                .required(),
+            for_family_future_generation: Joi.array()
+                .items(Joi.string().required())
+                .required(),
             others_wishes: Joi.string().optional().allow(null, ""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
@@ -909,11 +917,19 @@ exports.update_demographic_info_by_user_id = async (req, res) => {
                 .items(Joi.string().required())
                 .required(),
             others_needs: Joi.string().optional().allow(null, ""),
-            for_community: Joi.string().required(),
-            for_economy: Joi.string().required(),
-            for_personal_growth: Joi.string().required(),
-            for_environment: Joi.string().required(),
-            for_family_future_generation: Joi.string().required(),
+            for_community: Joi.array()
+                .items(Joi.string().required())
+                .required(),
+            for_economy: Joi.array().items(Joi.string().required()).required(),
+            for_personal_growth: Joi.array()
+                .items(Joi.string().required())
+                .required(),
+            for_environment: Joi.array()
+                .items(Joi.string().required())
+                .required(),
+            for_family_future_generation: Joi.array()
+                .items(Joi.string().required())
+                .required(),
             others_wishes: Joi.string().optional().allow(null, ""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
