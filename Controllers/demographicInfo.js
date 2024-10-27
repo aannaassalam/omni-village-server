@@ -517,6 +517,7 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             outdoor_nature_based_hobbies: 1,
                             modern_digital_hobbies: 1,
                             creative_artistics_hobbies: 1,
+                            other_hobbies: 1,
                         },
                     },
                 ],
