@@ -329,6 +329,11 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                         $project: {
                             marital_status: 1,
                             diet: 1,
+                            height: 1,
+                            weight: 1,
+                            bank_account: 1,
+                            savings_investment: 1,
+                            savings_investment_amount: 1,
                             occupation: 1,
                             yearly_income: 1,
                             chronic_disease: 1,
@@ -337,6 +342,57 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             education_status: 1,
                             education_seeking_to_gain: 1,
                             status: 1,
+                        },
+                    },
+                ],
+                language: [
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "language_speak",
+                            foreignField: "_id",
+                            as: "language_speak",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$language_speak",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "language_read",
+                            foreignField: "_id",
+                            as: "language_read",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$language_read",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $lookup: {
+                            from: "demographic_dropdowns",
+                            localField: "language_write",
+                            foreignField: "_id",
+                            as: "language_write",
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: "$language_write",
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                    {
+                        $project: {
+                            language_read: 1,
+                            language_speak: 1,
+                            language_write: 1,
                         },
                     },
                 ],
