@@ -739,16 +739,6 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                 path: "$aspiration",
             },
         },
-        {
-            $unwind: {
-                path: "$unfulfilled_needs",
-            },
-        },
-        {
-            $unwind: {
-                path: "$wishes",
-            },
-        },
         // {
         //     $unwind: {
         //         path: "$data",
