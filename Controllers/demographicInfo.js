@@ -20,7 +20,9 @@ exports.add_demographic_info = async (req, res) => {
             bank_account: Joi.boolean().required(),
             savings_investment: Joi.boolean().required(),
             savings_investment_amount: Joi.number().allow(null),
-            chronic_disease: Joi.string().required(),
+            chronic_disease: Joi.array()
+                .items(Joi.string().required())
+                .required(),
             motor_disablity: Joi.string().required(),
             currently_feeling: Joi.string().required(),
             feelings_with_others: Joi.string().required(),
@@ -99,42 +101,8 @@ exports.add_demographic_info = async (req, res) => {
                 .items(Joi.string().required())
                 .required(),
             spiritual: Joi.array().items(Joi.string().required()).required(),
-            basic_necessities: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            educational_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            economic_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            healthcare_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            infrastructure_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            social_governance_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            environmental_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            others_needs: Joi.string().optional().allow(null, ""),
-            for_community: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            for_economy: Joi.array().items(Joi.string().required()).required(),
-            for_personal_growth: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            for_environment: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            for_family_future_generation: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            others_wishes: Joi.string().optional().allow(null, ""),
+            unfulfilled_needs: Joi.string().optional().allow(null, ""),
+            wishes: Joi.string().optional().allow(null, ""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
@@ -341,6 +309,8 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             education_status: 1,
                             education_seeking_to_gain: 1,
                             status: 1,
+                            unfulfilled_needs: 1,
+                            wishes: 1,
                         },
                     },
                 ],
@@ -737,137 +707,6 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                         },
                     },
                 ],
-                unfulfilled_needs: [
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "basic_necessities",
-                            foreignField: "_id",
-                            as: "basic_necessities",
-                        },
-                    },
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "educational_needs",
-                            foreignField: "_id",
-                            as: "educational_needs",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "economic_needs",
-                            foreignField: "_id",
-                            as: "economic_needs",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "healthcare_needs",
-                            foreignField: "_id",
-                            as: "healthcare_needs",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "infrastructure_needs",
-                            foreignField: "_id",
-                            as: "infrastructure_needs",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "social_governance_needs",
-                            foreignField: "_id",
-                            as: "social_governance_needs",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "environmental_needs",
-                            foreignField: "_id",
-                            as: "environmental_needs",
-                        },
-                    },
-                    {
-                        $project: {
-                            basic_necessities: 1,
-                            educational_needs: 1,
-                            economic_needs: 1,
-                            healthcare_needs: 1,
-                            infrastructure_needs: 1,
-                            social_governance_needs: 1,
-                            environmental_needs: 1,
-                            others_needs: 1,
-                        },
-                    },
-                ],
-                wishes: [
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "for_community",
-                            foreignField: "_id",
-                            as: "for_community",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "for_economy",
-                            foreignField: "_id",
-                            as: "for_economy",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "for_personal_growth",
-                            foreignField: "_id",
-                            as: "for_personal_growth",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "for_environment",
-                            foreignField: "_id",
-                            as: "for_environment",
-                        },
-                    },
-
-                    {
-                        $lookup: {
-                            from: "demographic_dropdowns",
-                            localField: "for_family_future_generation",
-                            foreignField: "_id",
-                            as: "for_family_future_generation",
-                        },
-                    },
-                    {
-                        $project: {
-                            for_community: 1,
-                            for_economy: 1,
-                            for_personal_growth: 1,
-                            for_environment: 1,
-                            for_family_future_generation: 1,
-                            others_wishes: 1,
-                        },
-                    },
-                ],
             },
         },
         {
@@ -940,7 +779,9 @@ exports.update_demographic_info_by_user_id = async (req, res) => {
             bank_account: Joi.boolean().required(),
             savings_investment: Joi.boolean().required(),
             savings_investment_amount: Joi.number().allow(null),
-            chronic_disease: Joi.string().required(),
+            chronic_disease: Joi.array()
+                .items(Joi.string().required())
+                .required(),
             motor_disablity: Joi.string().required(),
             currently_feeling: Joi.string().required(),
             feelings_with_others: Joi.string().required(),
@@ -1019,42 +860,8 @@ exports.update_demographic_info_by_user_id = async (req, res) => {
                 .items(Joi.string().required())
                 .required(),
             spiritual: Joi.array().items(Joi.string().required()).required(),
-            basic_necessities: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            educational_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            economic_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            healthcare_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            infrastructure_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            social_governance_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            environmental_needs: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            others_needs: Joi.string().optional().allow(null, ""),
-            for_community: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            for_economy: Joi.array().items(Joi.string().required()).required(),
-            for_personal_growth: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            for_environment: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            for_family_future_generation: Joi.array()
-                .items(Joi.string().required())
-                .required(),
-            others_wishes: Joi.string().optional().allow(null, ""),
+            unfulfilled_needs: Joi.string().optional().allow(null, ""),
+            wishes: Joi.string().optional().allow(null, ""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 

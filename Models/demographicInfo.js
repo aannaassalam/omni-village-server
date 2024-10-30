@@ -96,14 +96,16 @@ const demograhicSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Number,
         default: 0,
     },
-    chronic_disease: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    chronic_disease: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
+    ],
     motor_disablity: {
         type: mongoose.Schema.Types.ObjectId,
         required: function () {
@@ -430,131 +432,11 @@ const demograhicSchema = new mongoose.Schema({
             default: null,
         },
     ],
-    basic_necessities: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    educational_needs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    economic_needs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    healthcare_needs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    infrastructure_needs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    social_governance_needs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    environmental_needs: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    others_needs: {
+    unfulfilled_needs: {
         type: mongoose.Schema.Types.String,
         default: "",
     },
-    for_community: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    for_economy: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    for_personal_growth: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    for_environment: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    for_family_future_generation: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    others_wishes: {
+    wishes: {
         type: mongoose.Schema.Types.String,
         default: "",
     },
