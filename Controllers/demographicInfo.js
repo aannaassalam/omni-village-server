@@ -227,12 +227,6 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             as: "chronic_disease",
                         },
                     },
-                    {
-                        $unwind: {
-                            path: "$chronic_disease",
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
 
                     {
                         $lookup: {
