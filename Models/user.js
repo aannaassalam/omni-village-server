@@ -141,6 +141,10 @@ const userSchema = new mongoose.Schema(
             default: "",
             required: [true, "Street Address is required!"],
         },
+        is_landholding_data: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

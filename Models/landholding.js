@@ -6,15 +6,19 @@ const landholdingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: true,
         },
-        total_number_of_land: {
+        // landholding_by_user_id: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     required: true,
+        // },
+        land_located: {
+            type: String,
+            default: null,
+        },
+        total_land_area: {
             type: Number,
             default: null,
         },
-        land_own_inside_village: {
-            type: Number,
-            default: null,
-        },
-        land_own_outside_village: {
+        year_purchased: {
             type: Number,
             default: null,
         },
@@ -22,42 +26,58 @@ const landholdingSchema = new mongoose.Schema(
             type: String,
             default: null,
         },
-        total_area: {
-            type: Number,
-            default: null,
-        },
-        land_requirement: {
+        land_under_use: {
             type: Boolean,
             default: false,
         },
-        land_requirement_area: {
-            type: Number,
-            default: null,
-        },
-        and_requirement_purpose: {
-            type: String,
-            default: null,
-        },
-        and_requirement_urgency: {
-            type: String,
-            default: null,
-        },
-        total_village_area_allocated: {
-            type: Number,
-            default: null,
-        },
-        total_area_for_community: {
-            type: Number,
-            default: null,
-        },
-        land_own_by_residents: {
-            type: Number,
-            default: null,
-        },
-        freehold_village_land: {
-            type: Number,
-            default: null,
-        },
+        total_purpose: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                default: null,
+            },
+        ],
+        purpose_land_utilised_for: [
+            {
+                type: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    default: null,
+                },
+                type_category: [
+                    {
+                        type: mongoose.Schema.Types.ObjectId,
+                        default: null,
+                    },
+                ],
+                total_land_area_utilised: {
+                    type: Number,
+                    default: null,
+                },
+            },
+        ],
+        status_of_land: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                default: null,
+            },
+        ],
+        purpose_status_of_land: [
+            {
+                type: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    default: null,
+                },
+                type_category: [
+                    {
+                        type: mongoose.Schema.Types.ObjectId,
+                        default: null,
+                    },
+                ],
+                total_land_area_utilised: {
+                    type: Number,
+                    default: null,
+                },
+            },
+        ],
         status: {
             type: mongoose.Schema.Types.Number,
             default: 0,

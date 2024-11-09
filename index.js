@@ -36,6 +36,7 @@ const dashboard = require("./Routes/dashboard");
 const admin = require("./Routes/admin");
 const demographic = require("./Routes/demographicRoutes");
 const demographic_dropdown = require("./Routes/demographic-dropdown");
+const landholding_by_user = require("./Routes/landholding-by-user");
 const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
@@ -125,6 +126,7 @@ app.use("/api/consumption_crop", consumptionCrop);
 app.use("/api/consumption", consumption);
 app.use("/api/demographic_dropdown", demographic_dropdown);
 app.use("/api/demographic", demographic);
+app.use("/api/landholding-by-user", landholding_by_user);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 
