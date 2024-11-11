@@ -33,6 +33,7 @@ const landholdingSchema = new mongoose.Schema(
         total_purpose: [
             {
                 type: mongoose.Schema.Types.ObjectId,
+                ref: "landholding_dropdown",
                 default: null,
             },
         ],
@@ -40,11 +41,13 @@ const landholdingSchema = new mongoose.Schema(
             {
                 type: {
                     type: mongoose.Schema.Types.ObjectId,
+                    ref: "landholding_dropdown",
                     default: null,
                 },
                 type_category: [
                     {
                         type: mongoose.Schema.Types.ObjectId,
+                        ref: "landholding_dropdown",
                         default: null,
                     },
                 ],
@@ -57,6 +60,7 @@ const landholdingSchema = new mongoose.Schema(
         status_of_land: [
             {
                 type: mongoose.Schema.Types.ObjectId,
+                ref: "landholding_dropdown",
                 default: null,
             },
         ],
@@ -64,11 +68,13 @@ const landholdingSchema = new mongoose.Schema(
             {
                 type: {
                     type: mongoose.Schema.Types.ObjectId,
+                    ref: "landholding_dropdown",
                     default: null,
                 },
                 type_category: [
                     {
                         type: mongoose.Schema.Types.ObjectId,
+                        ref: "landholding_dropdown",
                         default: null,
                     },
                 ],

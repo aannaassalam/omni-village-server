@@ -4,7 +4,7 @@ const { verifyToken, checkUser } = require("../Middlewares/user");
 
 router.get("/", verifyToken, checkUser, landholding.get_landholding);
 
-router.post(
+router.put(
     "/update-landholding",
     verifyToken,
     checkUser,
