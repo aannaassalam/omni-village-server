@@ -145,6 +145,10 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        is_housing_data: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

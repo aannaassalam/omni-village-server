@@ -15,7 +15,7 @@ module.exports.update_landholding = async (req, res) => {
             total_land_area: Joi.number().required(),
             year_purchased: Joi.number().required(),
             geotag: Joi.string().required(),
-            land_under_use: Joi.boolean().required,
+            land_under_use: Joi.boolean().required(),
             total_purpose: Joi.array().items(Joi.string().allow("")).optional(),
             purpose_land_utilised_for: Joi.array()
                 .items(

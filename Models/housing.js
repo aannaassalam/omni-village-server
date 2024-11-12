@@ -5,16 +5,25 @@ const housingSchema = new mongoose.Schema(
         user_id: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
+            ref: "user",
         },
-        land_utilised_main_family_housing: {
+        name_of_the_house: {
+            type: String,
+            default: "",
+        },
+        type_of_house: {
             type: Number,
             default: null,
         },
-        number_of_units_built: {
+        land_utilised_for_family_housing: {
             type: Number,
             default: null,
         },
-        total_built_up_area: {
+        no_of_units_built: {
+            type: Number,
+            default: null,
+        },
+        total_built_area: {
             type: Number,
             default: null,
         },
@@ -24,42 +33,77 @@ const housingSchema = new mongoose.Schema(
         },
         living_area: {
             type: Number,
-            default: null,
+            default: false,
         },
         year_built: {
             type: Number,
-            default: false,
+            default: null,
         },
-        year_last_renovated: {
-            type: Number,
+        year_renovated: {
+            type: String,
             default: null,
         },
         year_last_expanded: {
+            type: Date,
+            default: null,
+        },
+        type: {
+            type: String,
+            default: "",
+        },
+        front_photo: {
             type: String,
             default: null,
         },
-        photos: [
-            {
-                type: String,
-                default: null,
-            },
-        ],
+        back_photo: {
+            type: String,
+            default: null,
+        },
+        neighbourhood_photo: {
+            type: String,
+            default: null,
+        },
+        inside_living_photo: {
+            type: String,
+            default: null,
+        },
+        kitchen_photo: {
+            type: String,
+            default: null,
+        },
         amenities: [
             {
-                type: String,
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "housing_dropdown",
                 default: null,
             },
         ],
-        household_needs: {
-            type: String,
+        equipment: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "housing_dropdown",
             default: null,
         },
-        land_utilised_for_farmhouses: {
-            type: Number,
+        furnishing: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "housing_dropdown",
             default: null,
         },
-        land_utilised_for_farmhouses: {
-            type: Number,
+        renovation_requirement: {
+            type: Boolean,
+            default: false,
+        },
+        renovation_urgency: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "housing_dropdown",
+            default: null,
+        },
+        expansion_requirement: {
+            type: Boolean,
+            default: false,
+        },
+        expansion_urgency: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "housing_dropdown",
             default: null,
         },
         status: {
