@@ -8,7 +8,6 @@ module.exports.get_landholding = async (req, res) => {
 };
 
 module.exports.update_landholding = async (req, res) => {
-    const user = req.user;
     if (req.body.status) {
         const schema = Joi.object({
             landholding_id: Joi.string().required(),

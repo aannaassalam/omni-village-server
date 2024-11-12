@@ -4,7 +4,7 @@ const LandholdingByUser = require("../Models/landholding-by-user");
 const User = require("../Models/user");
 
 module.exports.get_landholding_by_user = async (req, res) => {
-    const user = req.user;
+    const { user } = res.locals;
     const landholding_by_user = await LandholdingByUser.findOne({
         user_id: user._id,
     });
@@ -12,7 +12,7 @@ module.exports.get_landholding_by_user = async (req, res) => {
 };
 
 module.exports.add_landholding_by_user_data = async (req, res) => {
-    const user = req.user;
+    const { user } = res.locals;
     const schema = Joi.object({
         total_numbers_of_lands: Joi.number().required(),
         land_requirements: Joi.boolean().required(),
