@@ -8,12 +8,25 @@ router.get(
     checkUser,
     landholding_by_user.get_landholding_by_user
 );
+router.get(
+    "/landholding-requirements",
+    verifyToken,
+    checkUser,
+    landholding_by_user.get_landholding_requirements
+);
 
 router.post(
     "/add-landholding-by-user",
     verifyToken,
     checkUser,
     landholding_by_user.add_landholding_by_user_data
+);
+
+router.put(
+    "/edit-landholding-requirements",
+    verifyToken,
+    checkUser,
+    landholding_by_user.edit_landholding_requirements
 );
 
 module.exports = router;

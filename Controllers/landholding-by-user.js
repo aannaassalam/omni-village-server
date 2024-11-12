@@ -44,3 +44,40 @@ module.exports.add_landholding_by_user_data = async (req, res) => {
         ...landholding_by_user._doc,
     });
 };
+
+module.exports.get_landholding_requirements = async (req, res) => {
+    const { user } = res.locals;
+    const landholding_requirements_by_user = await LandholdingByUser.findOne(
+        {
+            user_id: user._id,
+        },
+        {
+            required_area: 1,
+            purpose_for_required_land: 1,
+            urgency_required_land: 1,
+        }
+    );
+    return res.json(landholding_requirements_by_user);
+};
+
+module.exports.edit_landholding_requirements = async (req, res) => {
+    const { user } = res.locals;
+    const schema = Joi.object({
+        required_area: Joi.number().required(),
+        purpose_for_required_land: Joi.string().required().allow(""),
+        urgency_required_land: Joi.string().required().allow(""),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const landholding_requirements_by_user =
+        await LandholdingByUser.findOneAndUpdate(
+            { user_id: user._id },
+            {
+                $set: value,
+            }
+        );
+
+    return res.json(landholding_requirements_by_user);
+};

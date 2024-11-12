@@ -39,6 +39,9 @@ const demographic_dropdown = require("./Routes/demographic-dropdown");
 const landholding_dropdown = require("./Routes/landholding-dropdown");
 const landholding_by_user = require("./Routes/landholding-by-user");
 const landholding = require("./Routes/landholding");
+const housing_dropdown = require("./Routes/housing-dropdown");
+const housing_by_user = require("./Routes/housing-by-user");
+const housing = require("./Routes/housing");
 const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
@@ -131,6 +134,9 @@ app.use("/api/demographic", demographic);
 app.use("/api/landholding-dropdown", landholding_dropdown);
 app.use("/api/landholding-by-user", landholding_by_user);
 app.use("/api/landholding", landholding);
+app.use("/api/housing-dropdown", housing_dropdown);
+app.use("/api/housing-by-user", housing_by_user);
+app.use("/api/housing", housing);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 

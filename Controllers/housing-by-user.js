@@ -44,3 +44,43 @@ module.exports.add_housing_by_user_data = async (req, res) => {
         ...housing_by_user._doc,
     });
 };
+
+module.exports.get_housing_requirements = async (req, res) => {
+    const { user } = res.locals;
+    const housing_requirements_by_user = await HousingByUser.findOne(
+        {
+            user_id: user._id,
+        },
+        {
+            need_new_unit: 1,
+            new_unit_purpose: 1,
+            new_unit_urgency: 1,
+            land_for_new_unit: 1,
+            required_area: 1,
+        }
+    );
+    return res.json(housing_requirements_by_user);
+};
+
+module.exports.edit_housing_requirements = async (req, res) => {
+    const { user } = res.locals;
+    const schema = Joi.object({
+        need_new_unit: Joi.boolean().required(),
+        new_unit_purpose: Joi.string().required(),
+        new_unit_urgency: Joi.string().required(),
+        land_for_new_unit: Joi.boolean().required(),
+        required_area: Joi.string().required(),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const housing_requirements_by_user = await HousingByUser.findOneAndUpdate(
+        { user_id: user._id },
+        {
+            $set: value,
+        }
+    );
+
+    return res.json(housing_requirements_by_user);
+};

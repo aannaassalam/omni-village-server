@@ -8,6 +8,20 @@ module.exports.get_housing = async (req, res) => {
 };
 
 module.exports.update_housing = async (req, res) => {
+    let front_photo,
+        back_photo,
+        neighbourhood_photo,
+        inside_living_photo,
+        kitchen_photo;
+
+    if (req.files) {
+        front_photo = req.files.front_photo?.[0]?.path;
+        back_photo = req.files.back_photo?.[0]?.path;
+        neighbourhood_photo = req.files.neighbourhood_photo?.[0]?.path;
+        inside_living_photo = req.files.inside_living_photo?.[0]?.path;
+        kitchen_photo = req.files.kitchen_photo?.[0]?.path;
+    }
+
     if (req.body.status) {
         const schema = Joi.object({
             housing_id: Joi.string().required(),
@@ -38,13 +52,27 @@ module.exports.update_housing = async (req, res) => {
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
 
-        await Housing.findByIdAndUpdate(value.housing_id, value);
+        await Housing.findByIdAndUpdate(value.housing_id, {
+            ...value,
+            front_photo,
+            back_photo,
+            neighbourhood_photo,
+            inside_living_photo,
+            kitchen_photo,
+        });
 
         return res.json({
             message: "Housing updated successfully",
         });
     }
-    await Housing.findByIdAndUpdate(req.body.housing_id, req.body);
+    await Housing.findByIdAndUpdate(req.body.housing_id, {
+        ...req.body,
+        front_photo,
+        back_photo,
+        neighbourhood_photo,
+        inside_living_photo,
+        kitchen_photo,
+    });
 
     return res.json({
         message: "Housing updated successfully",
