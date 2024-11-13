@@ -44,8 +44,14 @@ module.exports.update_housing = async (req, res) => {
                 .items(Joi.string().required())
                 .required()
                 .min(1),
-            equipment: Joi.string().required(),
-            furnishing: Joi.string().required(),
+            equipment: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            furnishing: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
             renovation_requirement: Joi.boolean().required(),
             renovation_urgency: Joi.string().required(),
             expansion_requirement: Joi.boolean().required(),

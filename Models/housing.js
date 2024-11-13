@@ -78,16 +78,20 @@ const housingSchema = new mongoose.Schema(
                 default: null,
             },
         ],
-        equipment: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "housing_dropdown",
-            default: null,
-        },
-        furnishing: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "housing_dropdown",
-            default: null,
-        },
+        equipment: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "housing_dropdown",
+                default: null,
+            },
+        ],
+        furnishing: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "housing_dropdown",
+                default: null,
+            },
+        ],
         renovation_requirement: {
             type: Boolean,
             default: false,
