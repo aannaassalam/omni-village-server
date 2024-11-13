@@ -16,7 +16,7 @@ module.exports.add_housing_by_user_data = async (req, res) => {
     const schema = Joi.object({
         total_numbers_of_house: Joi.number().required(),
         house_requirements: Joi.boolean().required(),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
@@ -70,7 +70,7 @@ module.exports.edit_housing_requirements = async (req, res) => {
         new_unit_urgency: Joi.string().required(),
         land_for_new_unit: Joi.boolean().required(),
         required_area: Joi.string().required(),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;

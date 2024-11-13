@@ -16,7 +16,7 @@ module.exports.add_landholding_by_user_data = async (req, res) => {
     const schema = Joi.object({
         total_numbers_of_lands: Joi.number().required(),
         land_requirements: Joi.boolean().required(),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
@@ -66,7 +66,7 @@ module.exports.edit_landholding_requirements = async (req, res) => {
         required_area: Joi.number().required(),
         purpose_for_required_land: Joi.string().required().allow(""),
         urgency_required_land: Joi.string().required().allow(""),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
