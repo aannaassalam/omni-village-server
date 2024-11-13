@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const multer = require("multer");
+const fs = require("fs");
 const housing = require("../Controllers/housing");
 const { verifyToken, checkUser } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
