@@ -62,29 +62,43 @@ module.exports.update_housing = async (req, res) => {
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
 
-        await Housing.findByIdAndUpdate(value.housing_id, {
-            ...value,
+        const housing = await Housing.findByIdAndUpdate(
+            value.housing_id,
+            {
+                ...value,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+            },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+
+        return res.json({
+            message: "Housing updated successfully",
+            ...housing._doc,
+        });
+    }
+
+    const housing = await Housing.findByIdAndUpdate(
+        req.body.housing_id,
+        {
+            ...req.body,
             front_photo,
             back_photo,
             neighbourhood_photo,
             inside_living_photo,
             kitchen_photo,
-        });
-
-        return res.json({
-            message: "Housing updated successfully",
-        });
-    }
-    await Housing.findByIdAndUpdate(req.body.housing_id, {
-        ...req.body,
-        front_photo,
-        back_photo,
-        neighbourhood_photo,
-        inside_living_photo,
-        kitchen_photo,
-    });
+        },
+        { runValidators: true, new: true }
+    );
 
     return res.json({
         message: "Housing updated successfully",
+        ...housing._doc,
     });
 };
