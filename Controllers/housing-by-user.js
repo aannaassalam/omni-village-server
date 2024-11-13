@@ -2,12 +2,25 @@ const Joi = require("joi");
 const Housing = require("../Models/housing");
 const HousingByUser = require("../Models/housing-by-user");
 const User = require("../Models/user");
+const mongoose = require("mongoose");
 
 module.exports.get_housing_by_user = async (req, res) => {
     const { user } = res.locals;
-    const housing_by_user = await HousingByUser.findOne({
-        user_id: user._id,
-    });
+    const housing_by_user = await HousingByUser.aggregate([
+        {
+            $match: {
+                user_id: new mongoose.Types.ObjectId(user._id),
+            },
+        },
+        {
+            $lookup: {
+                from: "housings",
+                foreignField: "_id",
+                localField: "housings",
+                as: "housings",
+            },
+        },
+    ]);
     return res.json(housing_by_user);
 };
 

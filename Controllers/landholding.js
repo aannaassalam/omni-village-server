@@ -1,10 +1,14 @@
 const Joi = require("joi");
 const Landholding = require("../Models/landholding");
+const AppError = require("../AppError");
 
 module.exports.get_landholding = async (req, res) => {
     const { landholding_id } = req.query;
-    const landholding = await Landholding.findById(landholding_id);
-    return res.json(landholding);
+    if (landholding_id) {
+        const landholding = await Landholding.findById(landholding_id);
+        return res.json(landholding);
+    }
+    throw new AppError(0, "Please provide landholding_id", 400);
 };
 
 module.exports.update_landholding = async (req, res) => {

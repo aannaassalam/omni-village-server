@@ -1,10 +1,14 @@
 const Joi = require("joi");
 const Housing = require("../Models/housing");
+const AppError = require("../AppError");
 
 module.exports.get_housing = async (req, res) => {
     const { housing_id } = req.query;
-    const housing = await Housing.findById(housing_id);
-    return res.json(housing);
+    if (housing_id) {
+        const housing = await Housing.findById(housing_id);
+        return res.json(housing);
+    }
+    throw new AppError(0, "Please provide landholding_id", 400);
 };
 
 module.exports.update_housing = async (req, res) => {
