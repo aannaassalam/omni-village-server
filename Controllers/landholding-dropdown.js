@@ -6,6 +6,8 @@ module.exports.get_landholding_dropdown = async (req, res) => {
     const obj = {
         purpose: [],
         status: [],
+        purpose_requirement: [],
+        urgency_requirement: [],
     };
     data.forEach((_data) => {
         if (!_data.parent) {
