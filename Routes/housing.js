@@ -2,6 +2,7 @@ const router = require("express").Router();
 const multer = require("multer");
 const housing = require("../Controllers/housing");
 const { verifyToken, checkUser } = require("../Middlewares/user");
+const ControllerWrapper = require("../utils/ControllerWrapper");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/", verifyToken, checkUser, housing.get_housing);
+router.get("/", verifyToken, checkUser, ControllerWrapper(housing.get_housing));
 
 router.put(
     "/update-housing",
@@ -50,7 +51,7 @@ router.put(
             maxCount: 1,
         },
     ]),
-    housing.update_housing
+    ControllerWrapper(housing.update_housing)
 );
 
 module.exports = router;

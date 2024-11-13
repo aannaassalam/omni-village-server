@@ -1,32 +1,33 @@
 const router = require("express").Router();
 const landholding_by_user = require("../Controllers/landholding-by-user");
 const { verifyToken, checkUser } = require("../Middlewares/user");
+const ControllerWrapper = require("../utils/ControllerWrapper");
 
 router.get(
     "/",
     verifyToken,
     checkUser,
-    landholding_by_user.get_landholding_by_user
+    ControllerWrapper(landholding_by_user.get_landholding_by_user)
 );
 router.get(
     "/landholding-requirements",
     verifyToken,
     checkUser,
-    landholding_by_user.get_landholding_requirements
+    ControllerWrapper(landholding_by_user.get_landholding_requirements)
 );
 
 router.post(
     "/add-landholding-by-user",
     verifyToken,
     checkUser,
-    landholding_by_user.add_landholding_by_user_data
+    ControllerWrapper(landholding_by_user.add_landholding_by_user_data)
 );
 
 router.put(
     "/edit-landholding-requirements",
     verifyToken,
     checkUser,
-    landholding_by_user.edit_landholding_requirements
+    ControllerWrapper(landholding_by_user.edit_landholding_requirements)
 );
 
 module.exports = router;
