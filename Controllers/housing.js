@@ -8,7 +8,7 @@ module.exports.get_housing = async (req, res) => {
         const housing = await Housing.findById(housing_id);
         return res.json(housing);
     }
-    throw new AppError(0, "Please provide landholding_id", 400);
+    throw new AppError(0, "Please provide housing_id", 400);
 };
 
 module.exports.update_housing = async (req, res) => {
@@ -36,9 +36,9 @@ module.exports.update_housing = async (req, res) => {
             total_built_area: Joi.number().required(),
             no_of_floors: Joi.number().required(),
             living_area: Joi.number().required(),
-            year_built: Joi.string().required(),
-            year_renovated: Joi.string().required(),
-            year_last_expanded: Joi.string().required(),
+            year_built: Joi.number().required(),
+            year_renovated: Joi.number().required(),
+            year_last_expanded: Joi.number().required(),
             type: Joi.string().required(),
             amenities: Joi.array()
                 .items(Joi.string().required())

@@ -40,11 +40,11 @@ const housingSchema = new mongoose.Schema(
             default: null,
         },
         year_renovated: {
-            type: String,
+            type: Number,
             default: null,
         },
         year_last_expanded: {
-            type: Date,
+            type: Number,
             default: null,
         },
         type: {
