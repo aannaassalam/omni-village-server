@@ -16,7 +16,6 @@ const landholdingDropdownSchema = new mongoose.Schema(
             en: {
                 type: mongoose.Schema.Types.String,
                 required: [true, "Please Enter a Landholding dropdown name!"],
-                unique: true,
                 set: (value) => value.toLowerCase(),
             },
 

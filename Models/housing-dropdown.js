@@ -11,7 +11,6 @@ const housingDropdownSchema = new mongoose.Schema(
             en: {
                 type: mongoose.Schema.Types.String,
                 required: [true, "Please Enter a Housing dropdown name!"],
-                unique: true,
                 set: (value) => value.toLowerCase(),
             },
 
