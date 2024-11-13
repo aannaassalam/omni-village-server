@@ -4,7 +4,14 @@ const housingDropdownSchema = new mongoose.Schema(
     {
         type: {
             type: String,
-            enum: ["type", "amenities", "urgency", "equipment", "furnishing"],
+            enum: [
+                "type",
+                "amenities",
+                "urgency",
+                "equipment",
+                "furnishing",
+                "purpose",
+            ],
             required: true,
         },
         name: {

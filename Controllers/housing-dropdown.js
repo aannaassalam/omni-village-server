@@ -3,7 +3,9 @@ const HousingDropdown = require("../Models/housing-dropdown");
 
 module.exports.get_housing_dropdown = async (req, res) => {
     const data = await HousingDropdown.find({});
-    const obj = {};
+    const obj = {
+        purpose: [],
+    };
     data.forEach((_data) => {
         obj[_data.type] = [...(obj[_data.type] || []), _data];
     });
