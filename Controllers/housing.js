@@ -30,7 +30,7 @@ module.exports.update_housing = async (req, res) => {
         const schema = Joi.object({
             housing_id: Joi.string().required(),
             name_of_the_house: Joi.string().required(),
-            type_of_house: Joi.number().required(),
+            type_of_house: Joi.string().required(),
             land_utilised_for_family_housing: Joi.number().required(),
             no_of_units_built: Joi.number().required(),
             total_built_area: Joi.number().required(),
