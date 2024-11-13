@@ -4,7 +4,12 @@ const landholdingDropdownSchema = new mongoose.Schema(
     {
         type: {
             type: String,
-            enum: ["purpose", "status"],
+            enum: [
+                "purpose",
+                "status",
+                "purpose_requirement",
+                "urgency_requirement",
+            ],
             required: true,
         },
         name: {
