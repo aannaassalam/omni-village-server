@@ -82,7 +82,7 @@ module.exports.edit_housing_requirements = async (req, res) => {
         new_unit_purpose: Joi.string().required(),
         new_unit_urgency: Joi.string().required(),
         land_for_new_unit: Joi.boolean().required(),
-        required_area: Joi.string().required(),
+        required_area: Joi.number().required(),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
