@@ -12,7 +12,7 @@ const housingSchema = new mongoose.Schema(
             default: "",
         },
         type_of_house: {
-            type: Number,
+            type: String,
             default: null,
         },
         land_utilised_for_family_housing: {
