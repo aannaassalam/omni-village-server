@@ -30,13 +30,6 @@ const landholdingSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        total_purpose: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "landholding_dropdown",
-                default: null,
-            },
-        ],
         purpose_land_utilised_for: [
             {
                 type: {
@@ -55,13 +48,6 @@ const landholdingSchema = new mongoose.Schema(
                     type: Number,
                     default: null,
                 },
-            },
-        ],
-        status_of_land: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "landholding_dropdown",
-                default: null,
             },
         ],
         purpose_status_of_land: [
