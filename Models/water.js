@@ -61,6 +61,10 @@ const waterSchema = new mongoose.Schema(
                 default: null,
             },
         ],
+        water_recycle: {
+            type: Boolean,
+            default: false,
+        },
         water_recycling_methods: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -79,6 +83,12 @@ const waterSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             default: null,
         },
+        months_of_year_of_scarcity: [
+            {
+                type: String,
+                default: null,
+            },
+        ],
         status: {
             type: mongoose.Schema.Types.Number,
             default: 1,

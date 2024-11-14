@@ -23,10 +23,12 @@ module.exports.get_water_by_user = async (req, res) => {
         {
             $project: {
                 "others.wastewater_disposal_methods": 0,
+                "others.water_recycle": 0,
                 "others.water_recycling_methods": 0,
                 "others.water_meter": 0,
                 "others.water_scarcity": 0,
                 "others.water_scarcity_severity": 0,
+                "others.months_of_year_of_scarcity": 0,
                 "others.type_of_harvesting": 0,
             },
         },
@@ -52,12 +54,14 @@ module.exports.get_water_usage_info = async (req, res) => {
                 },
             },
             {
+                type_of_harvesting: 0,
                 wastewater_disposal_methods: 0,
+                water_recycle: 0,
                 water_recycling_methods: 0,
                 water_meter: 0,
                 water_scarcity: 0,
                 water_scarcity_severity: 0,
-                type_of_harvesting: 0,
+                months_of_year_of_scarcity: 0,
             }
         );
         return res.json(water);
@@ -77,10 +81,12 @@ module.exports.get_water_harvesting_capacity = async (req, res) => {
                 expense: 0,
                 other_name: 0,
                 wastewater_disposal_methods: 0,
+                water_recycle: 0,
                 water_recycling_methods: 0,
                 water_meter: 0,
                 water_scarcity: 0,
                 water_scarcity_severity: 0,
+                months_of_year_of_scarcity: 0,
             }
         );
         return res.json(water);
@@ -103,6 +109,7 @@ module.exports.get_wastewater_disposal = async (req, res) => {
                 water_meter: 0,
                 water_scarcity: 0,
                 water_scarcity_severity: 0,
+                months_of_year_of_scarcity: 0,
             }
         );
         return res.json(water);
@@ -123,6 +130,7 @@ module.exports.get_general_info = async (req, res) => {
                 other_name: 0,
                 type_of_harvesting: 0,
                 wastewater_disposal_methods: 0,
+                water_recycle: 0,
                 water_recycling_methods: 0,
             }
         );
@@ -315,10 +323,17 @@ module.exports.add_wastewater_disposal = async (req, res) => {
                 .items(Joi.string().required())
                 .required()
                 .min(1),
-            water_recycling_methods: Joi.array()
-                .items(Joi.string().required())
-                .required()
-                .min(1),
+            water_recycle: Joi.boolean().required(),
+            water_recycling_methods: Joi.when("water_recycle", {
+                is: true,
+                then: Joi.array()
+                    .items(Joi.string().required())
+                    .required()
+                    .min(1),
+                otherwise: Joi.array()
+                    .items(Joi.string().required())
+                    .optional(),
+            }),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
@@ -360,6 +375,86 @@ module.exports.add_wastewater_disposal = async (req, res) => {
         { user_id: user._id },
         {
             waste_water_disposal: {
+                water_id: water_data._id,
+                isDrafted: true,
+            },
+        },
+        {
+            runValidators: true,
+            new: true,
+            upsert: true,
+        }
+    );
+
+    return res.json({
+        message: "Water information added successfully",
+        ...water_data._doc,
+    });
+};
+
+module.exports.add_general_info = async (req, res) => {
+    const { user } = res.locals;
+    if (req.body.status) {
+        const schema = Joi.object({
+            type: Joi.string().required().equal("general_information"),
+            water_meter: Joi.boolean().required(),
+            water_scarcity: Joi.boolean().required(),
+            water_scarcity_severity: Joi.when("water_scarcity", {
+                is: true,
+                then: Joi.string().required(),
+                otherwise: Joi.string().optional().allow(""),
+            }),
+            months_of_year_of_scarcity: Joi.when("water_scarcity", {
+                is: true,
+                then: Joi.array()
+                    .items(Joi.string().required())
+                    .required()
+                    .min(1),
+                otherwise: Joi.array()
+                    .items(Joi.string().required())
+                    .optional(),
+            }),
+            status: Joi.number().required().allow(0, 1),
+        }).options({ stripUnknown: true });
+
+        const { error, value } = schema.validate(req.body);
+        if (error) throw error;
+
+        const water_data = await Water.create({
+            user_id: user._id,
+            ...value,
+        });
+
+        await WaterByUser.findOneAndUpdate(
+            { user_id: user._id },
+            {
+                general_information: {
+                    water_id: water_data._id,
+                    isDrafted: false,
+                },
+            },
+            {
+                runValidators: true,
+                new: true,
+                upsert: true,
+            }
+        );
+
+        return res.json({
+            message: "Water information added successfully",
+            ...water_data._doc,
+        });
+    }
+
+    const water_data = await Water.create({
+        user_id: user._id,
+        ...req.body,
+    });
+
+    await WaterByUser.findOneAndUpdate(
+        { user_id: user._id },
+        {
+            general_information: {
                 water_id: water_data._id,
                 isDrafted: true,
             },
@@ -426,72 +521,6 @@ module.exports.edit_water_usage_entry = async (req, res) => {
     });
 };
 
-module.exports.add_general_info = async (req, res) => {
-    const { user } = res.locals;
-    if (req.body.status) {
-        const schema = Joi.object({
-            type: Joi.string().required().equal("general_information"),
-            water_meter: Joi.boolean().required(),
-            water_scarcity: Joi.boolean().required(),
-            water_scarcity_severity: Joi.string().required(),
-            status: Joi.number().required().allow(0, 1),
-        }).options({ stripUnknown: true });
-
-        const { error, value } = schema.validate(req.body);
-        if (error) throw error;
-
-        const water_data = await Water.create({
-            user_id: user._id,
-            ...value,
-        });
-
-        await WaterByUser.findOneAndUpdate(
-            { user_id: user._id },
-            {
-                general_information: {
-                    water_id: water_data._id,
-                    isDrafted: false,
-                },
-            },
-            {
-                runValidators: true,
-                new: true,
-                upsert: true,
-            }
-        );
-
-        return res.json({
-            message: "Water information added successfully",
-            ...water_data._doc,
-        });
-    }
-
-    const water_data = await Water.create({
-        user_id: user._id,
-        ...req.body,
-    });
-
-    await WaterByUser.findOneAndUpdate(
-        { user_id: user._id },
-        {
-            general_information: {
-                water_id: water_data._id,
-                isDrafted: true,
-            },
-        },
-        {
-            runValidators: true,
-            new: true,
-            upsert: true,
-        }
-    );
-
-    return res.json({
-        message: "Water information added successfully",
-        ...water_data._doc,
-    });
-};
-
 module.exports.edit_water_harvesting_capacity = async (req, res) => {
     if (req.body.status) {
         const schema = Joi.object({
@@ -546,10 +575,17 @@ module.exports.edit_wastewater_disposal = async (req, res) => {
                 .items(Joi.string().required())
                 .required()
                 .min(1),
-            water_recycling_methods: Joi.array()
-                .items(Joi.string().required())
-                .required()
-                .min(1),
+            water_recycle: Joi.boolean().required(),
+            water_recycling_methods: Joi.when("water_recycle", {
+                is: true,
+                then: Joi.array()
+                    .items(Joi.string().required())
+                    .required()
+                    .min(1),
+                otherwise: Joi.array()
+                    .items(Joi.string().required())
+                    .optional(),
+            }),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
@@ -586,7 +622,21 @@ module.exports.edit_general_info = async (req, res) => {
             water_id: Joi.string().required(),
             water_meter: Joi.boolean().required(),
             water_scarcity: Joi.boolean().required(),
-            water_scarcity_severity: Joi.string().required(),
+            water_scarcity_severity: Joi.when("water_scarcity", {
+                is: true,
+                then: Joi.string().required(),
+                otherwise: Joi.string().optional().allow(""),
+            }),
+            months_of_year_of_scarcity: Joi.when("water_scarcity", {
+                is: true,
+                then: Joi.array()
+                    .items(Joi.string().required())
+                    .required()
+                    .min(1),
+                otherwise: Joi.array()
+                    .items(Joi.string().required())
+                    .optional(),
+            }),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
