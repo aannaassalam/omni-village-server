@@ -1,22 +1,28 @@
 const Joi = require("joi");
-const HousingDropdown = require("../Models/housing-dropdown");
+const WaterDropdown = require("../Models/water-dropdown");
 
-module.exports.get_housing_dropdown = async (req, res) => {
-    const data = await HousingDropdown.find({});
-    const obj = {
-        purpose: [],
-    };
+module.exports.get_water_dropdown = async (req, res) => {
+    const data = await WaterDropdown.find({});
+    const obj = {};
     data.forEach((_data) => {
         obj[_data.type] = [...(obj[_data.type] || []), _data];
     });
     return res.json(obj);
 };
 
-module.exports.add_housing_dropdown = async (req, res) => {
+module.exports.add_water_dropdown = async (req, res) => {
     const schema = Joi.object({
         type: Joi.string()
             .required()
-            .equal("type", "amenities", "urgency", "equipment", "furnishing"),
+            .equal(
+                "yearly_consumption",
+                "sourced_from",
+                "water_quality",
+                "type_of_harvesting",
+                "wastewater",
+                "water_recycling",
+                "severity"
+            ),
         name: Joi.object({
             en: Joi.string().required(),
 
@@ -29,7 +35,7 @@ module.exports.add_housing_dropdown = async (req, res) => {
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    const data = await HousingDropdown.create({
+    const data = await WaterDropdown.create({
         ...value,
         name: {
             en: value.name.en,

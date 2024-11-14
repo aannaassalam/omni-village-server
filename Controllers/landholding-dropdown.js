@@ -22,7 +22,7 @@ module.exports.get_landholding_dropdown = async (req, res) => {
 
 module.exports.add_landholding_dropdown = async (req, res) => {
     const schema = Joi.object({
-        type: Joi.string().required().allow("purpose", "status"),
+        type: Joi.string().required().equal("purpose", "status"),
         name: Joi.object({
             en: Joi.string().required(),
 
