@@ -153,7 +153,7 @@ module.exports.add_water_usage_entry = async (req, res) => {
                     "others"
                 ),
             other_name: Joi.when("type", {
-                is: "other",
+                is: "others",
                 then: Joi.string().required(),
                 otherwise: Joi.string().optional().allow(""),
             }),
@@ -219,14 +219,14 @@ module.exports.add_water_usage_entry = async (req, res) => {
                   $push: {
                       others: {
                           water_id: water_data._id,
-                          isDrafted: false,
+                          isDrafted: true,
                       },
                   },
               }
             : {
                   [value.type]: {
                       water_id: water_data._id,
-                      isDrafted: false,
+                      isDrafted: true,
                   },
               };
 
@@ -476,8 +476,17 @@ module.exports.edit_water_usage_entry = async (req, res) => {
     if (req.body.status) {
         const schema = Joi.object({
             water_id: Joi.string().required(),
+            type: Joi.string()
+                .required()
+                .equal(
+                    "cooking_and_drinking",
+                    "sanitation_and_bathing",
+                    "cleaning",
+                    "irrigation",
+                    "others"
+                ),
             other_name: Joi.when("type", {
-                is: "other",
+                is: "others",
                 then: Joi.string().required(),
                 otherwise: Joi.string().optional().allow(""),
             }),
@@ -500,6 +509,20 @@ module.exports.edit_water_usage_entry = async (req, res) => {
             { new: true, runValidators: true }
         );
 
+        await WaterByUser.findOneAndUpdate(
+            { user_id: user._id },
+            {
+                [value.type]: {
+                    isDrafted: false,
+                },
+            },
+            {
+                runValidators: true,
+                new: true,
+                upsert: true,
+            }
+        );
+
         return res.json({
             message: "Water information updated successfully",
             ...water_data._doc,
@@ -512,6 +535,20 @@ module.exports.edit_water_usage_entry = async (req, res) => {
         {
             new: true,
             runValidators: true,
+        }
+    );
+
+    await WaterByUser.findOneAndUpdate(
+        { user_id: user._id },
+        {
+            [req.body.type]: {
+                isDrafted: true,
+            },
+        },
+        {
+            runValidators: true,
+            new: true,
+            upsert: true,
         }
     );
 
@@ -546,6 +583,20 @@ module.exports.edit_water_harvesting_capacity = async (req, res) => {
             { new: true, runValidators: true }
         );
 
+        await WaterByUser.findOneAndUpdate(
+            { user_id: user._id },
+            {
+                [value.type]: {
+                    isDrafted: false,
+                },
+            },
+            {
+                runValidators: true,
+                new: true,
+                upsert: true,
+            }
+        );
+
         return res.json({
             message: "Water information updated successfully",
             ...water_data._doc,
@@ -558,6 +609,20 @@ module.exports.edit_water_harvesting_capacity = async (req, res) => {
         {
             runValidators: true,
             new: true,
+        }
+    );
+
+    await WaterByUser.findOneAndUpdate(
+        { user_id: user._id },
+        {
+            [req.body.type]: {
+                isDrafted: true,
+            },
+        },
+        {
+            runValidators: true,
+            new: true,
+            upsert: true,
         }
     );
 
@@ -598,6 +663,20 @@ module.exports.edit_wastewater_disposal = async (req, res) => {
             { new: true, runValidators: true }
         );
 
+        await WaterByUser.findOneAndUpdate(
+            { user_id: user._id },
+            {
+                [value.type]: {
+                    isDrafted: false,
+                },
+            },
+            {
+                runValidators: true,
+                new: true,
+                upsert: true,
+            }
+        );
+
         return res.json({
             message: "Water information updated successfully",
             ...water_data._doc,
@@ -608,6 +687,20 @@ module.exports.edit_wastewater_disposal = async (req, res) => {
         req.body.water_id,
         req.body,
         { new: true, runValidators: true }
+    );
+
+    await WaterByUser.findOneAndUpdate(
+        { user_id: user._id },
+        {
+            [req.body.type]: {
+                isDrafted: true,
+            },
+        },
+        {
+            runValidators: true,
+            new: true,
+            upsert: true,
+        }
     );
 
     return res.json({
@@ -649,6 +742,20 @@ module.exports.edit_general_info = async (req, res) => {
             { runValidators: true, new: true }
         );
 
+        await WaterByUser.findOneAndUpdate(
+            { user_id: user._id },
+            {
+                [value.type]: {
+                    isDrafted: false,
+                },
+            },
+            {
+                runValidators: true,
+                new: true,
+                upsert: true,
+            }
+        );
+
         return res.json({
             message: "Water information updated successfully",
             ...water_data._doc,
@@ -659,6 +766,20 @@ module.exports.edit_general_info = async (req, res) => {
         req.body.water_id,
         req.body,
         { runValidators: true, new: true }
+    );
+
+    await WaterByUser.findOneAndUpdate(
+        { user_id: user._id },
+        {
+            [req.body.type]: {
+                isDrafted: true,
+            },
+        },
+        {
+            runValidators: true,
+            new: true,
+            upsert: true,
+        }
     );
 
     return res.json({
