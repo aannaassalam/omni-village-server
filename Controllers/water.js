@@ -473,6 +473,7 @@ module.exports.add_general_info = async (req, res) => {
 };
 
 module.exports.edit_water_usage_entry = async (req, res) => {
+    const { user } = res.locals;
     if (req.body.status) {
         const schema = Joi.object({
             water_id: Joi.string().required(),
@@ -559,6 +560,7 @@ module.exports.edit_water_usage_entry = async (req, res) => {
 };
 
 module.exports.edit_water_harvesting_capacity = async (req, res) => {
+    const { user } = res.locals;
     if (req.body.status) {
         const schema = Joi.object({
             water_id: Joi.string().required(),
@@ -633,6 +635,7 @@ module.exports.edit_water_harvesting_capacity = async (req, res) => {
 };
 
 module.exports.edit_wastewater_disposal = async (req, res) => {
+    const { user } = res.locals;
     if (req.body.status) {
         const schema = Joi.object({
             water_id: Joi.string().required(),
@@ -710,6 +713,7 @@ module.exports.edit_wastewater_disposal = async (req, res) => {
 };
 
 module.exports.edit_general_info = async (req, res) => {
+    const { user } = res.locals;
     if (req.body.status) {
         const schema = Joi.object({
             water_id: Joi.string().required(),
