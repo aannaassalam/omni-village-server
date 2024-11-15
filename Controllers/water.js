@@ -224,7 +224,7 @@ module.exports.add_water_usage_entry = async (req, res) => {
                   },
               }
             : {
-                  [value.type]: {
+                  [req.body.type]: {
                       water_id: water_data._id,
                       isDrafted: true,
                   },
