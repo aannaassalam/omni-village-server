@@ -91,7 +91,7 @@ module.exports.add_electricity_information = async (req, res) => {
             micorgrid_type: Joi.string().required(),
             usage: Joi.number().required(),
             installation_cost: Joi.number().required(),
-        });
+        }).options({ stripUnknown: true });
 
         const { value, error } = schema.validate(req.body);
         if (error) throw error;
@@ -105,7 +105,11 @@ module.exports.add_electricity_information = async (req, res) => {
         return res.json(response);
     }
 
-    const response = await Energy.create({ user_id: user._id, ...req.body });
+    const response = await Energy.create({
+        user_id: user._id,
+        type: "electricity",
+        ...req.body,
+    });
 
     return res.json(response);
 };
@@ -128,7 +132,7 @@ module.exports.add_petrol_diesel_information = async (req, res) => {
                 )
                 .required()
                 .min(1),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -157,7 +161,7 @@ module.exports.add_other_information = async (req, res) => {
                     capacity: Joi.number().required(),
                 },
             ],
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -186,7 +190,7 @@ module.exports.add_general_information = async (req, res) => {
         const schema = Joi.object({
             energy_sufficient: Joi.boolean().required(),
             extent: Joi.string().required(),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -221,7 +225,7 @@ module.exports.edit_electricity_information = async (req, res) => {
             micorgrid_type: Joi.string().required(),
             usage: Joi.number().required(),
             installation_cost: Joi.number().required(),
-        });
+        }).options({ stripUnknown: true });
 
         const { value, error } = schema.validate(req.body);
         if (error) throw error;
@@ -262,7 +266,7 @@ module.exports.edit_petrol_diesel_information = async (req, res) => {
                 )
                 .required()
                 .min(1),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -299,7 +303,7 @@ module.exports.edit_other_information = async (req, res) => {
                     capacity: Joi.number().required(),
                 },
             ],
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -328,7 +332,7 @@ module.exports.edit_general_information = async (req, res) => {
             energy_id: Joi.string().required(),
             energy_sufficient: Joi.boolean().required(),
             extent: Joi.string().required(),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
