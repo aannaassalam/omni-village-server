@@ -91,7 +91,7 @@ const energySchema = new mongoose.Schema(
                     type: Number,
                     default: null,
                 },
-                capacity: {
+                quantity: {
                     type: Number,
                     default: null,
                 },
