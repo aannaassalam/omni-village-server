@@ -18,7 +18,7 @@ module.exports.add_mobility_by_user = async (req, res) => {
             .items(Joi.string().required())
             .required()
             .min(1),
-        access_to_public_transport: Joi.boolean().required(),
+        access_to_public_transport: Joi.string().equal("yes", "no").required(),
         number_of_vehicles: Joi.number().required(),
     }).options({ stripUnknown: true });
 
