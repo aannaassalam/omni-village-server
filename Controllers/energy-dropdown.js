@@ -17,6 +17,8 @@ module.exports.add_energy_dropdown = async (req, res) => {
             .equal(
                 "microgrid_type",
                 "purpose_petrol",
+                "purpose_diesel",
+                "purpose_natural_gas",
                 "type_others",
                 "purpose_others",
                 "extent"
