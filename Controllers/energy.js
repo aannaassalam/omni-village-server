@@ -151,16 +151,19 @@ module.exports.add_other_information = async (req, res) => {
     const { user } = res.locals;
     if (req.body.status) {
         const schema = Joi.object({
-            source_of_fuels_used: [
-                {
-                    type: Joi.string().required(),
-                    purpose: Joi.array()
-                        .items(Joi.string().required())
-                        .required(),
-                    expenditures: Joi.number().required(),
-                    capacity: Joi.number().required(),
-                },
-            ],
+            source_of_fuels_used: Joi.array()
+                .items(
+                    Joi.object({
+                        type: Joi.string().required(),
+                        purpose: Joi.array()
+                            .items(Joi.string().required())
+                            .required(),
+                        expenditures: Joi.number().required(),
+                        capacity: Joi.number().required(),
+                    }).required()
+                )
+                .required()
+                .min(1),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
@@ -293,16 +296,18 @@ module.exports.edit_other_information = async (req, res) => {
     if (req.body.status) {
         const schema = Joi.object({
             energy_id: Joi.string().required(),
-            source_of_fuels_used: [
-                {
-                    type: Joi.string().required(),
-                    purpose: Joi.array()
-                        .items(Joi.string().required())
-                        .required(),
-                    expenditures: Joi.number().required(),
-                    capacity: Joi.number().required(),
-                },
-            ],
+            source_of_fuels_used: Joi.array()
+                .items(
+                    Joi.object({
+                        type: Joi.string().required(),
+                        purpose: Joi.array()
+                            .items(Joi.string().required())
+                            .required(),
+                        expenditures: Joi.number().required(),
+                        capacity: Joi.number().required(),
+                    }).required()
+                )
+                .min(1),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
