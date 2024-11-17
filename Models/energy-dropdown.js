@@ -7,6 +7,8 @@ const waterDropdownSchema = new mongoose.Schema(
             enum: [
                 "microgrid_type",
                 "purpose_petrol",
+                "purpose_diesel",
+                "purpose_natural_gas",
                 "type_others",
                 "purpose_others",
                 "extent",
