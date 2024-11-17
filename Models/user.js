@@ -149,6 +149,10 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        is_mobility_data: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

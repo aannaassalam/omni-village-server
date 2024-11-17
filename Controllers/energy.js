@@ -198,7 +198,7 @@ module.exports.add_general_information = async (req, res) => {
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
 
-        const response = await Energy.create({
+        let response = await Energy.create({
             user_id: user._id,
             type: "general_info",
             ...value,
