@@ -38,4 +38,4 @@ const waterDropdownSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("water_dropdown", waterDropdownSchema);
+module.exports = mongoose.model("energy_dropdown", waterDropdownSchema);
