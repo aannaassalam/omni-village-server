@@ -88,7 +88,7 @@ module.exports.add_electricity_information = async (req, res) => {
             yearly_expenditure_electricity: Joi.number().required(),
             electricity_stable: Joi.boolean().required(),
             microgrid_installed: Joi.boolean().required(),
-            micorgrid_type: Joi.string().required(),
+            microgrid_type: Joi.string().required(),
             usage: Joi.number().required(),
             installation_cost: Joi.number().required(),
         }).options({ stripUnknown: true });
@@ -222,7 +222,7 @@ module.exports.edit_electricity_information = async (req, res) => {
             yearly_expenditure_electricity: Joi.number().required(),
             electricity_stable: Joi.boolean().required(),
             microgrid_installed: Joi.boolean().required(),
-            micorgrid_type: Joi.string().required(),
+            microgrid_type: Joi.string().required(),
             usage: Joi.number().required(),
             installation_cost: Joi.number().required(),
         }).options({ stripUnknown: true });
