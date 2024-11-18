@@ -192,7 +192,11 @@ module.exports.add_general_information = async (req, res) => {
     if (req.body.status) {
         const schema = Joi.object({
             energy_sufficient: Joi.boolean().required(),
-            extent: Joi.string().required(),
+            extent: Joi.when({
+                is: true,
+                then: Joi.string().required(),
+                otherwise: Joi.string().optional(),
+            }),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
@@ -336,7 +340,11 @@ module.exports.edit_general_information = async (req, res) => {
         const schema = Joi.object({
             energy_id: Joi.string().required(),
             energy_sufficient: Joi.boolean().required(),
-            extent: Joi.string().required(),
+            extent: Joi.when({
+                is: true,
+                then: Joi.string().required(),
+                otherwise: Joi.string().optional(),
+            }),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);

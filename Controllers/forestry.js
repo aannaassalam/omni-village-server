@@ -70,7 +70,7 @@ module.exports.add_general_information = async (req, res) => {
                         .min(1),
                 }).required()
             ),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -105,7 +105,7 @@ module.exports.add_timber_needs = async (req, res) => {
             quantity: Joi.number().optional(),
             purpose: Joi.array().items(Joi.string().required()).optional(),
             urgency: Joi.string().optional().allow(""),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -149,7 +149,7 @@ module.exports.add_other_needs = async (req, res) => {
                     })
                 )
                 .optional(),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -194,7 +194,7 @@ module.exports.edit_general_information = async (req, res) => {
                         .min(1),
                 }).required()
             ),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -235,7 +235,7 @@ module.exports.edit_timber_needs = async (req, res) => {
             quantity: Joi.number().optional(),
             purpose: Joi.array().items(Joi.string().required()).optional(),
             urgency: Joi.string().optional().allow(""),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -285,7 +285,7 @@ module.exports.edit_other_needs = async (req, res) => {
                     })
                 )
                 .optional(),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
