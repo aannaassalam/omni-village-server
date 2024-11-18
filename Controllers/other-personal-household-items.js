@@ -57,7 +57,7 @@ module.exports.add_personal_household_items = async (req, res) => {
                     )
                     .optional(),
             }),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
@@ -115,7 +115,7 @@ module.exports.edit_personal_household_items = async (req, res) => {
                     )
                     .optional(),
             }),
-        });
+        }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
