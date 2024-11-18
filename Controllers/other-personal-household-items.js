@@ -19,7 +19,7 @@ module.exports.get_personal_household_items = async (req, res) => {
 
 module.exports.add_personal_household_items = async (req, res) => {
     const { user } = res.locals;
-    if (res.body.status) {
+    if (req.body.status) {
         const schema = Joi.object({
             type: Joi.string()
                 .required()
@@ -86,7 +86,7 @@ module.exports.add_personal_household_items = async (req, res) => {
 };
 
 module.exports.edit_personal_household_items = async (req, res) => {
-    if (res.body.status) {
+    if (req.body.status) {
         const schema = Joi.object({
             personal_household_id: Joi.string().required(),
             personal_care_item_use: Joi.array()
