@@ -1,6 +1,11 @@
 const Joi = require("joi");
 const LandholdingDropdown = require("../Models/landholding-dropdown");
 
+module.exports.get_all = async (req, res) => {
+    const data = await LandholdingDropdown.find({});
+    return res.json(data);
+};
+
 module.exports.get_landholding_dropdown = async (req, res) => {
     const data = await LandholdingDropdown.find({});
     const obj = {

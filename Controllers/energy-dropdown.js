@@ -1,6 +1,11 @@
 const Joi = require("joi");
 const EnergyDropdown = require("../Models/energy-dropdown");
 
+module.exports.get_all = async (req, res) => {
+    const data = await EnergyDropdown.find({});
+    return res.json(data);
+};
+
 module.exports.get_energy_dropdown = async (req, res) => {
     const data = await EnergyDropdown.find({});
     const obj = {};

@@ -9,6 +9,7 @@ router.get(
     // checkUser,
     ControllerWrapper(landholding_dropdown.get_landholding_dropdown)
 );
+router.get("/get_all", landholding_dropdown.get_all);
 
 router.post(
     "/add-landholding-dropdown",

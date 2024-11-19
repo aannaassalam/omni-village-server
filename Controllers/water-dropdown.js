@@ -1,6 +1,11 @@
 const Joi = require("joi");
 const WaterDropdown = require("../Models/water-dropdown");
 
+module.exports.get_all = async (req, res) => {
+    const data = await WaterDropdown.find({});
+    return res.json(data);
+};
+
 module.exports.get_water_dropdown = async (req, res) => {
     const data = await WaterDropdown.find({});
     const obj = {};

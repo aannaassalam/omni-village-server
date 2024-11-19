@@ -1,6 +1,11 @@
 const Joi = require("joi");
 const HousingDropdown = require("../Models/housing-dropdown");
 
+module.exports.get_all = async (req, res) => {
+    const data = await HousingDropdown.find({});
+    return res.json(data);
+};
+
 module.exports.get_housing_dropdown = async (req, res) => {
     const data = await HousingDropdown.find({});
     const obj = {
@@ -16,7 +21,14 @@ module.exports.add_housing_dropdown = async (req, res) => {
     const schema = Joi.object({
         type: Joi.string()
             .required()
-            .equal("type", "amenities", "urgency", "equipment", "furnishing"),
+            .equal(
+                "type",
+                "amenities",
+                "urgency",
+                "equipment",
+                "furnishing",
+                "purpose"
+            ),
         name: Joi.object({
             en: Joi.string().required(),
 

@@ -1,6 +1,11 @@
 const Joi = require("joi");
 const MobilityDropdown = require("../Models/mobility-dropdown");
 
+module.exports.get_all = async (req, res) => {
+    const data = await MobilityDropdown.find({});
+    return res.json(data);
+};
+
 module.exports.get_mobility_dropdown = async (req, res) => {
     const data = await MobilityDropdown.find({});
     const obj = {};

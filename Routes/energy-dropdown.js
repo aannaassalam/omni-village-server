@@ -9,6 +9,7 @@ router.get(
     // checkUser,
     ControllerWrapper(energy_dropdown.get_energy_dropdown)
 );
+router.get("/get_all", energy_dropdown.get_all);
 
 router.post(
     "/add-energy-dropdown",

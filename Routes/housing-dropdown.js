@@ -9,6 +9,7 @@ router.get(
     // checkUser,
     ControllerWrapper(housing_dropdown.get_housing_dropdown)
 );
+router.get("/get_all", housing_dropdown.get_all);
 
 router.post(
     "/add-housing-dropdown",

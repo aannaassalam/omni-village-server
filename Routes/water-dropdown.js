@@ -9,6 +9,7 @@ router.get(
     // checkUser,
     ControllerWrapper(water_dropdown.get_water_dropdown)
 );
+router.get("/get_all", water_dropdown.get_all);
 
 router.post(
     "/add-water-dropdown",

@@ -1,6 +1,11 @@
 const Joi = require("joi");
 const DemographicDropdown = require("../Models/demographic-dropdown");
 
+module.exports.get_all = async (req, res) => {
+    const data = await DemographicDropdown.find({});
+    return res.json(data);
+};
+
 module.exports.get_demographic_dropdowns = async (req, res) => {
     const { language = "en" } = req.query;
     const data = await DemographicDropdown.aggregate([

@@ -27,7 +27,7 @@ router.get(
     "/",
     ControllerWrapper(demographic_dropdown.get_demographic_dropdowns)
 );
-// router.get("/get_all", crop_controller.get_all);
+router.get("/get_all", demographic_dropdown.get_all);
 router.post(
     "/add_demographic_dropdown",
     // verifyToken,
