@@ -18,4 +18,14 @@ router.post(
     ControllerWrapper(water_dropdown.add_water_dropdown)
 );
 
+router.put(
+    "/edit-water-dropdown",
+    // verifyToken,
+    ControllerWrapper(water_dropdown.edit_water_data)
+);
+router.delete(
+    "/delete-water-dropdown",
+    ControllerWrapper(water_dropdown.delete_water_data)
+);
+
 module.exports = router;

@@ -18,4 +18,14 @@ router.post(
     ControllerWrapper(landholding_dropdown.add_landholding_dropdown)
 );
 
+router.put(
+    "/edit-landholding-dropdown",
+    // verifyToken,
+    ControllerWrapper(landholding_dropdown.edit_landholding_data)
+);
+router.delete(
+    "/delete-landholding-dropdown",
+    ControllerWrapper(landholding_dropdown.delete_landholding_data)
+);
+
 module.exports = router;

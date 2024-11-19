@@ -18,4 +18,14 @@ router.post(
     ControllerWrapper(mobility_dropdown.add_mobility_dropdown)
 );
 
+router.put(
+    "/edit-mobility-dropdown",
+    // verifyToken,
+    ControllerWrapper(mobility_dropdown.edit_mobility_data)
+);
+router.delete(
+    "/delete-mobility-dropdown",
+    ControllerWrapper(mobility_dropdown.delete_mobility_data)
+);
+
 module.exports = router;

@@ -39,11 +39,14 @@ router.post(
 //     // verifyToken,
 //     crop_controller.bulk_upload
 // );
-// router.post(
-//     "/edit_crop",
-//     // verifyToken,
-//     crop_controller.edit_crop
-// );
-// router.delete("/:id", crop_controller.delete_crop);
+router.put(
+    "/edit_demographic_dropdown",
+    // verifyToken,
+    ControllerWrapper(demographic_dropdown.edit_demographic_data)
+);
+router.delete(
+    "/delete_demographic_dropdown",
+    ControllerWrapper(demographic_dropdown.delete_demographic_data)
+);
 
 module.exports = router;

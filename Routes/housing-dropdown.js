@@ -18,4 +18,14 @@ router.post(
     ControllerWrapper(housing_dropdown.add_housing_dropdown)
 );
 
+router.put(
+    "/edit-housing-dropdown",
+    // verifyToken,
+    ControllerWrapper(housing_dropdown.edit_housing_data)
+);
+router.delete(
+    "/delete-housing-dropdown",
+    ControllerWrapper(housing_dropdown.delete_housing_data)
+);
+
 module.exports = router;

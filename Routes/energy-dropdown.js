@@ -18,4 +18,14 @@ router.post(
     ControllerWrapper(energy_dropdown.add_energy_dropdown)
 );
 
+router.put(
+    "/edit-energy-dropdown",
+    // verifyToken,
+    ControllerWrapper(energy_dropdown.edit_energy_data)
+);
+router.delete(
+    "/delete-energy-dropdown",
+    ControllerWrapper(energy_dropdown.delete_energy_data)
+);
+
 module.exports = router;
