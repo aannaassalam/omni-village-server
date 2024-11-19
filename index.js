@@ -49,7 +49,9 @@ const energy = require("./Routes/energy");
 const mobility_by_user = require("./Routes/mobility-by-user");
 const mobility_dropdown = require("./Routes/mobility-dropdown");
 const mobility = require("./Routes/mobility");
+const forestry_dropdown = require("./Routes/forestry-dropdown");
 const forestry = require("./Routes/forestry");
+const other_personal_household_items_dropdown = require("./Routes/other-personal-household-items-dropdown");
 const other_personal_household_items = require("./Routes/other-personal-household-items");
 const business_commercial = require("./Routes/business-commercial");
 const Crop = require("./Models/poultryCrop");
@@ -154,7 +156,12 @@ app.use("/api/energy", energy);
 app.use("/api/mobility-dropdown", mobility_dropdown);
 app.use("/api/mobility-by-user", mobility_by_user);
 app.use("/api/mobility", mobility);
+app.use("/api/forestry-dropdown", forestry_dropdown);
 app.use("/api/forestry", forestry);
+app.use(
+    "/api/other-personal-household-items-dropdown",
+    other_personal_household_items_dropdown
+);
 app.use("/api/other-personal-household-items", other_personal_household_items);
 app.use("/api/business-commercial", business_commercial);
 app.use("/api/webhook", webhook);
