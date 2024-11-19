@@ -9,7 +9,7 @@ router.get(
     // checkUser,
     ControllerWrapper(mobility_dropdown.get_mobility_dropdown)
 );
-router.get("/get_all", mobility_dropdown.get_all);
+router.get("/get-all", mobility_dropdown.get_all);
 
 router.post(
     "/add-mobility-dropdown",
