@@ -1,5 +1,6 @@
 const Joi = require("joi");
 const LandholdingDropdown = require("../Models/landholding-dropdown");
+const AppError = require("../AppError");
 
 module.exports.get_all = async (req, res) => {
     const data = await LandholdingDropdown.find({});
