@@ -33,12 +33,12 @@ const businessByUserSchema = new mongoose.Schema(
         },
         require_land: {
             type: String,
-            default: null,
+            default: "no",
             enum: ["yes", "no"],
         },
         land_already_owned: {
             type: String,
-            default: null,
+            default: "no",
             enum: ["yes", "no"],
         },
         purpose_of_business: {
