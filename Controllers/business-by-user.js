@@ -65,6 +65,7 @@ module.exports.add_business_by_user = async (req, res) => {
 
 module.exports.get_business_requirements = async (req, res) => {
     const { user } = res.locals;
+    console.log(user);
     const business_requirements_by_user = await BusinessByUser.findOne(
         {
             user_id: user._id,

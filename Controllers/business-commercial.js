@@ -74,6 +74,10 @@ module.exports.update_business = async (req, res) => {
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
 
+        console.log(JSON.stringify(req.body, null, 2));
+        console.log("------------------");
+        console.log(JSON.stringify(value, null, 2));
+
         const business = await BusinessCommercial.findByIdAndUpdate(
             value.business_id,
             value,
