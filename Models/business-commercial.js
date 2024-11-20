@@ -120,7 +120,7 @@ const businessCommercialSchema = new mongoose.Schema(
             },
         ],
         machine_equipment_installed: {
-            type: Number,
+            type: String,
             default: null,
         },
         skill_requirement: {
