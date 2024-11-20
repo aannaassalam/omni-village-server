@@ -2,6 +2,7 @@ const Joi = require("joi");
 const BusinessByUser = require("../Models/business-by-user");
 const BusinessCommercial = require("../Models/business-commercial");
 const User = require("../Models/user");
+const mongoose = require("mongoose");
 
 module.exports.get_business_by_user = async (req, res) => {
     const { user } = res.locals;
@@ -20,7 +21,7 @@ module.exports.get_business_by_user = async (req, res) => {
             },
         },
     ]);
-    return res.json(business_by_user);
+    return res.json(business_by_user[0] || null);
 };
 
 module.exports.add_business_by_user = async (req, res) => {
