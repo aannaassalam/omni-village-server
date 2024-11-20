@@ -23,6 +23,7 @@ module.exports.update_mobility_details = async (req, res) => {
                 .required()
                 .min(1),
             frequency_of_usage: Joi.string().required(),
+            status: Joi.number().allow(0, 1).required(),
         });
 
         const { error, value } = schema.validate(req.body);

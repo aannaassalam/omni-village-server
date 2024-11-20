@@ -153,6 +153,10 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        is_business_data: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

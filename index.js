@@ -53,11 +53,10 @@ const forestry_dropdown = require("./Routes/forestry-dropdown");
 const forestry = require("./Routes/forestry");
 const other_personal_household_items_dropdown = require("./Routes/other-personal-household-items-dropdown");
 const other_personal_household_items = require("./Routes/other-personal-household-items");
+const business_by_user = require("./Routes/business-by-user");
 const business_commercial = require("./Routes/business-commercial");
-const Crop = require("./Models/poultryCrop");
 
 const connection_url = require("./Enviroment");
-const demographicDropdown = require("./Models/demographic-dropdown");
 
 const app = express();
 
@@ -163,6 +162,7 @@ app.use(
     other_personal_household_items_dropdown
 );
 app.use("/api/other-personal-household-items", other_personal_household_items);
+app.use("/api/business-by-user", business_by_user);
 app.use("/api/business-commercial", business_commercial);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
