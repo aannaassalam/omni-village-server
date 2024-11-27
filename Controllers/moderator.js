@@ -195,10 +195,10 @@ module.exports.edit_user = async (req, res) => {
         last_name = "",
         village_name = "",
         address = "",
-        officer_proof = "",
     } = req.body;
 
     const address_proof = req.files?.address_proof?.[0];
+    const officer_proof = req.files?.officer_proof?.[0];
 
     try {
         const updatedUser = await Moderator.findByIdAndUpdate(
