@@ -46,6 +46,11 @@ const moderatorSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.String,
             required: [true, "Country is required!"],
         },
+        status: {
+            type: Number,
+            default: 0,
+            enum: [0, 1, 2],
+        },
     },
     {
         timestamps: true,
