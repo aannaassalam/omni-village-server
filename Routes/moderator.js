@@ -27,13 +27,13 @@ router.post("/register", moderator_controller.register);
 
 router.post("/send_otp", moderator_controller.send_otp);
 router.get(
-    "/current_user",
+    "/current_moderator",
     checkModerator,
     moderator_controller.get_current_user
 );
 router.post("/login", moderator_controller.login);
 router.post(
-    "/edit_user",
+    "/edit_moderator",
     upload.fields([
         { name: "address_proof", maxCount: 1 },
         { name: "officer_proof", maxCount: 1 },
@@ -42,7 +42,7 @@ router.post(
     moderator_controller.edit_user
 );
 router.delete(
-    "/delete_user",
+    "/delete_moderator",
     verifyModeratorToken,
     moderator_controller.delete_user
 );
