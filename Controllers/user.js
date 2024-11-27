@@ -975,7 +975,6 @@ module.exports.register = async (req, res) => {
                 social_security_number: "-",
                 address: "-",
                 address_proof: "-",
-                officer_proof: "-",
                 land_measurement: "-",
                 land_measurement_symbol: "-",
                 currency,
@@ -1083,11 +1082,9 @@ module.exports.edit_user = async (req, res) => {
         land_measurement_symbol = "",
         document_type = "",
         street_address = "",
-        type,
     } = req.body;
 
     const address_proof = req.files?.address_proof?.[0];
-    const officer_proof = req.files?.officer_proof?.[0];
 
     try {
         const new_members =
@@ -1119,9 +1116,6 @@ module.exports.edit_user = async (req, res) => {
                 address_proof: address_proof
                     ? address_proof?.path
                     : user.address_proof,
-                officer_proof: officer_proof
-                    ? officer_proof?.path
-                    : user.officer_proof,
                 land_measurement: land_measurement.trim().length
                     ? land_measurement.trim()
                     : user.land_measurement,
@@ -1131,14 +1125,13 @@ module.exports.edit_user = async (req, res) => {
                 street_address: street_address.trim().length
                     ? street_address.trim()
                     : user.street_address,
-                type: type,
             },
             { runValidators: true, new: true }
         );
         res.json({ msg: "User updated successfully!" });
     } catch (err) {
         console.log(err);
-        !req.body.edit && fs.unlinkSync("./" + req.file.path);
+        // !req.body.edit && fs.unlinkSync("./" + req.file.path);
         if (user._id) {
             res.status(400).json({ error: err });
         } else {

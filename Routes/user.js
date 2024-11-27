@@ -137,10 +137,7 @@ router.get("/current_user", checkUser, user_controller.get_current_user);
 router.post("/login", user_controller.login);
 router.post(
     "/edit_user",
-    upload.fields([
-        { name: "address_proof", maxCount: 1 },
-        { name: "officer_proof", maxCount: 1 },
-    ]),
+    upload.fields([{ name: "address_proof", maxCount: 1 }]),
     checkUser,
     user_controller.edit_user
 );

@@ -69,10 +69,6 @@ const userSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.String,
             required: [true, "Please upload an address proof!"],
         },
-        officer_proof: {
-            type: mongoose.Schema.Types.String,
-            required: [true, "Please upload an officer proof!"],
-        },
         total_land: {
             type: mongoose.Schema.Types.Number,
             default: 0,
@@ -130,11 +126,6 @@ const userSchema = new mongoose.Schema(
                 type: mongoose.Schema.Types.Number,
                 default: 0,
             },
-        },
-        type: {
-            type: String,
-            default: "villager",
-            enum: ["villager", "officer"],
         },
         street_address: {
             type: mongoose.Schema.Types.String,
