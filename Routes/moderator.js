@@ -34,7 +34,10 @@ router.get(
 router.post("/login", moderator_controller.login);
 router.post(
     "/edit_user",
-    upload.fields([{ name: "address_proof", maxCount: 1 }]),
+    upload.fields([
+        { name: "address_proof", maxCount: 1 },
+        { name: "officer_proof", maxCount: 1 },
+    ]),
     checkModerator,
     moderator_controller.edit_user
 );
