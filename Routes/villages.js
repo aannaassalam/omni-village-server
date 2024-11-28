@@ -1,6 +1,11 @@
 const router = require("express").Router();
 const villages_controller = require("../Controllers/villages");
-const { checkUser } = require("../Middlewares/user");
+const {
+    checkUser,
+    checkModerator,
+    verifyModeratorToken,
+} = require("../Middlewares/user");
+const ControllerWrapper = require("../utils/ControllerWrapper");
 
 /**
  * @swagger
@@ -29,8 +34,13 @@ const { checkUser } = require("../Middlewares/user");
  *          description: Internal Server Error
  */
 router.get("/:country_name", checkUser, villages_controller.get_villages);
-
 router.get("/", villages_controller.get_all_villages);
+router.get(
+    "/get-villages-for-moderator",
+    verifyModeratorToken,
+    checkModerator,
+    ControllerWrapper(villages_controller.get_villages_for_moderator)
+);
 
 /**
  * @swagger
@@ -68,10 +78,16 @@ router.get("/", villages_controller.get_all_villages);
  */
 router.post("/add_village", checkUser, villages_controller.add_village);
 router.post("/edit_village", checkUser, villages_controller.edit_village);
+
+router.post(
+    "/add-moderator-to-village",
+    ControllerWrapper(villages_controller.add_moderator_to_village)
+);
+
 router.delete(
-  "/delete_village/:village_id",
-  checkUser,
-  villages_controller.delete_village
+    "/delete_village/:village_id",
+    checkUser,
+    villages_controller.delete_village
 );
 
 module.exports = router;
