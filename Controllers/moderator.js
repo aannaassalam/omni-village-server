@@ -58,6 +58,11 @@ const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET_KEY);
 };
 
+module.exports.list_all = async (req, res) => {
+    const moderators = await Moderator.find({});
+    return res.json(moderators);
+};
+
 module.exports.send_otp = async (req, res) => {
     try {
         // console.log(authToken);

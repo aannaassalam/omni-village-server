@@ -23,6 +23,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+router.get("/list-all", moderator_controller.list_all);
+
 router.post("/register", moderator_controller.register);
 
 router.post("/send_otp", moderator_controller.send_otp);
