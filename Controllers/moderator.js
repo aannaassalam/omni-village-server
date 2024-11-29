@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const Moderator = require("../Models/moderator");
+const Joi = require("joi");
 
 const accountSid = "AC4d37b2cba30b46a0262ca0f7429c5fd0";
 const authToken = process.env.TWILIO_SECRET;
@@ -60,6 +61,11 @@ const createToken = (id) => {
 
 module.exports.list_all = async (req, res) => {
     const moderators = await Moderator.find({});
+    return res.json(moderators);
+};
+
+module.exports.list_all_approved = async (req, res) => {
+    const moderators = await Moderator.find({ status: 1 });
     return res.json(moderators);
 };
 
@@ -255,4 +261,28 @@ module.exports.delete_user = async (req, res) => {
     } catch (err) {
         res.status(400).json(handleErrors(err));
     }
+};
+
+module.exports.change_moderator_status = async (req, res) => {
+    const schema = Joi.object({
+        status: Joi.number().required(),
+        moderator_id: Joi.string().required(),
+    }).options({ stripUnknown: true });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    await Moderator.findByIdAndUpdate(
+        value.moderator_id,
+        {
+            $set: {
+                status: value.status,
+            },
+        },
+        { runValidators: true }
+    );
+
+    return res.json({
+        message: "Moderator status changes successfully",
+    });
 };

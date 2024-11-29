@@ -25,6 +25,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get("/list-all", ControllerWrapper(moderator_controller.list_all));
+router.get(
+    "/list-all-approved",
+    ControllerWrapper(moderator_controller.list_all_approved)
+);
 
 router.post("/register", moderator_controller.register);
 
@@ -44,6 +48,11 @@ router.post(
     checkModerator,
     moderator_controller.edit_user
 );
+router.put(
+    "/change-status",
+    ControllerWrapper(moderator_controller.change_moderator_status)
+);
+
 router.delete(
     "/delete_moderator",
     verifyModeratorToken,
