@@ -3,6 +3,7 @@ const multer = require("multer");
 const moderator_controller = require("../Controllers/moderator");
 const { checkModerator, verifyModeratorToken } = require("../Middlewares/user");
 const fs = require("fs");
+const ControllerWrapper = require("../utils/ControllerWrapper");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -23,7 +24,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/list-all", moderator_controller.list_all);
+router.get("/list-all", ControllerWrapper(moderator_controller.list_all));
 
 router.post("/register", moderator_controller.register);
 
