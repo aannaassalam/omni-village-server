@@ -79,7 +79,7 @@ router.get(
 router.post("/add_village", checkUser, villages_controller.add_village);
 router.post("/edit_village", checkUser, villages_controller.edit_village);
 
-router.post(
+router.put(
     "/add-moderator-to-village",
     ControllerWrapper(villages_controller.add_moderator_to_village)
 );
