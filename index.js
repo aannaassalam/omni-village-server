@@ -57,6 +57,7 @@ const other_personal_household_items = require("./Routes/other-personal-househol
 const business_dropdown = require("./Routes/business-dropdown");
 const business_by_user = require("./Routes/business-by-user");
 const business_commercial = require("./Routes/business-commercial");
+const demographic_officer = require("./Routes/demographic-officer");
 
 const connection_url = require("./Enviroment");
 
@@ -168,6 +169,7 @@ app.use("/api/other-personal-household-items", other_personal_household_items);
 app.use("/api/business-dropdown", business_dropdown);
 app.use("/api/business-by-user", business_by_user);
 app.use("/api/business-commercial", business_commercial);
+app.use("/api/demographic-officer", demographic_officer);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 
