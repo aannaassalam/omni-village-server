@@ -58,6 +58,10 @@ const business_dropdown = require("./Routes/business-dropdown");
 const business_by_user = require("./Routes/business-by-user");
 const business_commercial = require("./Routes/business-commercial");
 const demographic_officer = require("./Routes/demographic-officer");
+const energy_officer = require("./Routes/energy-officer");
+const landholding_officer = require("./Routes/landholding-officer");
+const mobility_officer = require("./Routes/mobility-officer");
+const water_officer = require("./Routes/water-officer");
 
 const connection_url = require("./Enviroment");
 
@@ -170,6 +174,10 @@ app.use("/api/business-dropdown", business_dropdown);
 app.use("/api/business-by-user", business_by_user);
 app.use("/api/business-commercial", business_commercial);
 app.use("/api/demographic-officer", demographic_officer);
+app.use("/api/energy-officer", energy_officer);
+app.use("/api/landholding-officer", landholding_officer);
+app.use("/api/mobility-officer", mobility_officer);
+app.use("/api/water-officer", water_officer);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 

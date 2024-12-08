@@ -41,9 +41,9 @@ const energyOfficerSchema = new mongoose.Schema({
                 type: Number,
                 default: 0,
             },
-            access_to_pumps: {
-                type: Boolean,
-                default: true,
+            distance_to_pumps: {
+                type: mongoose.Schema.Types.ObjectId,
+                default: null,
             },
         },
     ],
