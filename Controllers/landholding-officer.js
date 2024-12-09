@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const LandholdingOfficer = require("../Models/landholding-officer");
 
-module.exports.get_landholding_officer = async () => {
+module.exports.get_landholding_officer = async (req, res) => {
     const { user } = res.locals;
     const { village_id } = req.query;
     if (!village_id) throw new AppError(0, "Please provide village_id", 400);

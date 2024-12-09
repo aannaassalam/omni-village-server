@@ -3,6 +3,7 @@ const multer = require("multer");
 const demographic_controller = require("../Controllers/demographic-officer");
 const { checkModerator, verifyModeratorToken } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

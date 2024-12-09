@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const DemographicOfficer = require("../Models/demographic-officer");
 
-module.exports.get_demographic_officer = async () => {
+module.exports.get_demographic_officer = async (req, res) => {
     const { user } = res.locals;
     const { village_id } = req.query;
     if (!village_id) throw new AppError(0, "Please provide village_id", 400);
@@ -14,7 +14,7 @@ module.exports.get_demographic_officer = async () => {
 
 module.exports.add_demographic_officer = async (req, res) => {
     const { user } = res.locals;
-    const { upload_house_picture } = req.files;
+    const upload_house_picture = req.files;
     const schema = Joi.object({
         village_id: Joi.string().required(),
         average_population_growth_rate: Joi.number().required(),
@@ -40,7 +40,7 @@ module.exports.add_demographic_officer = async (req, res) => {
 };
 
 module.exports.edit_demographic_officer = async (req, res) => {
-    const { upload_house_picture } = req.files;
+    const upload_house_picture = req.files;
     const schema = Joi.object({
         demographic_id: Joi.string().required(),
         average_population_growth_rate: Joi.number().required(),
