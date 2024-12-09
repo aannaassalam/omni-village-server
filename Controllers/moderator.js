@@ -69,6 +69,22 @@ module.exports.list_all_approved = async (req, res) => {
     return res.json(moderators);
 };
 
+module.exports.generate_token = async (req, res) => {
+    const { phone, country_code } = req.body;
+    try {
+        const user = await Moderator.findOne({ phone, country_code });
+        if (user) {
+            res.json({
+                token: createToken(user._id),
+            });
+        } else {
+            res.status(400).json({ message: "Moderator not found!" });
+        }
+    } catch (err) {
+        res.status(400).json(handleErrors(err));
+    }
+};
+
 module.exports.send_otp = async (req, res) => {
     try {
         // console.log(authToken);

@@ -29,7 +29,7 @@ router.get(
     "/list-all-approved",
     ControllerWrapper(moderator_controller.list_all_approved)
 );
-
+router.post("/generate_token", moderator_controller.generate_token);
 router.post("/register", moderator_controller.register);
 
 router.post("/send_otp", moderator_controller.send_otp);
