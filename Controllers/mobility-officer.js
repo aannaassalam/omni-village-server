@@ -1,15 +1,22 @@
 const Joi = require("joi");
 const MobilityOfficer = require("../Models/mobility-officer");
+const AppError = require("../AppError");
 
 module.exports.get_mobility_officer = async () => {
     const { user } = res.locals;
-    const data = await MobilityOfficer.findOne({ moderator_id: user._id });
+    const { village_id } = req.query;
+    if (!village_id) throw new AppError(0, "Please provide village_id", 400);
+    const data = await MobilityOfficer.findOne({
+        moderator_id: user._id,
+        village_id,
+    });
     return res.json(data);
 };
 
 module.exports.add_mobility_officer = async (req, res) => {
     const { user } = res.locals;
     const schema = Joi.object({
+        village_id: Joi.string().required(),
         house_connected_to_internal_road: Joi.string().required(),
         house_not_connected_to_internal_road: Joi.string().required(),
         village_connected_to_highway: Joi.boolean().required(),
@@ -75,8 +82,10 @@ module.exports.edit_mobility_officer = async (req, res) => {
 
 module.exports.delete_mobility_officer = async (req, res) => {
     const { user } = res.locals;
+    const { village_id } = req.query;
     const data = await MobilityOfficer.deleteMany({
         moderator_id: user._id,
+        village_id,
     });
     return res.json({
         message: "Mobility deleted successfully",

@@ -5,6 +5,11 @@ const mobilityOfficerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
+    village_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "village",
+    },
     house_connected_to_internal_road: {
         type: String,
         default: null,

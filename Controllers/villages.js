@@ -1,4 +1,9 @@
 const Villages = require("../Models/villages");
+const MobilityOfficer = require("../Models/mobility-officer");
+const DemographicOfficer = require("../Models/demographic-officer");
+const EnergyOfficer = require("../Models/energy-officer");
+const LandholdingOfficer = require("../Models/landholding-officer");
+const WaterOfficer = require("../Models/water-officer");
 const AppError = require("../AppError");
 const Joi = require("joi");
 
@@ -93,15 +98,79 @@ module.exports.add_moderator_to_village = async (req, res) => {
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    await Villages.findByIdAndUpdate(
-        value.village_id,
-        {
-            $set: {
-                moderator_id: value.moderator_id,
+    const village = await Villages.findById(value.village_id);
+
+    await Promise.all([
+        Villages.findByIdAndUpdate(
+            value.village_id,
+            {
+                $set: {
+                    moderator_id: value.moderator_id,
+                },
             },
-        },
-        { runValidators: true }
-    );
+            { runValidators: true }
+        ),
+        MobilityOfficer.findOneAndUpdate(
+            {
+                moderator_id: village.moderator_id,
+                village_id: village._id,
+            },
+            {
+                $set: {
+                    moderator_id: value.moderator_id,
+                },
+            },
+            { runValidators: true }
+        ),
+        LandholdingOfficer.findOneAndUpdate(
+            {
+                moderator_id: village.moderator_id,
+                village_id: village._id,
+            },
+            {
+                $set: {
+                    moderator_id: value.moderator_id,
+                },
+            },
+            { runValidators: true }
+        ),
+        EnergyOfficer.findOneAndUpdate(
+            {
+                moderator_id: village.moderator_id,
+                village_id: village._id,
+            },
+            {
+                $set: {
+                    moderator_id: value.moderator_id,
+                },
+            },
+            { runValidators: true }
+        ),
+        DemographicOfficer.findOneAndUpdate(
+            {
+                moderator_id: village.moderator_id,
+                village_id: village._id,
+            },
+            {
+                $set: {
+                    moderator_id: value.moderator_id,
+                },
+            },
+            { runValidators: true }
+        ),
+        WaterOfficer.findOneAndUpdate(
+            {
+                moderator_id: village.moderator_id,
+                village_id: village._id,
+            },
+            {
+                $set: {
+                    moderator_id: value.moderator_id,
+                },
+            },
+            { runValidators: true }
+        ),
+    ]);
 
     res.json({ message: "Moderator added to village successfully" });
 };

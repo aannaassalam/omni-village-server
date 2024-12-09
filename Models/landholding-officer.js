@@ -5,6 +5,11 @@ const landholdingOfficerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
+    village_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "village",
+    },
     total_area_allocated_village: {
         type: Number,
         default: 0,
