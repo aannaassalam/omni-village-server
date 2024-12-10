@@ -53,14 +53,26 @@ module.exports.edit_demographic_officer = async (req, res) => {
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
+    if (upload_house_picture?.length) {
+        const data = await DemographicOfficer.findByIdAndUpdate(
+            value.demographic_id,
+            {
+                ...value,
+                upload_house_picture: upload_house_picture.map(
+                    (_file) => _file.path
+                ),
+            }
+        );
+
+        return res.json({
+            message: "Demographic edited successfully",
+            ...data._doc,
+        });
+    }
+
     const data = await DemographicOfficer.findByIdAndUpdate(
         value.demographic_id,
-        {
-            ...value,
-            upload_house_picture: upload_house_picture.map(
-                (_file) => _file.path
-            ),
-        }
+        value
     );
 
     return res.json({
