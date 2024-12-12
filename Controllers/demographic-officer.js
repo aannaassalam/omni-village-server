@@ -52,7 +52,9 @@ module.exports.edit_demographic_officer = async (req, res) => {
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
-    console.log(upload_house_picture);
+    console.log(req.files, "hgftf");
+    console.log(req.body, "tdrdt");
+    console.log(upload_house_picture, "lykmchgf");
     if (upload_house_picture?.length) {
         const data = await DemographicOfficer.findByIdAndUpdate(
             value.demographic_id,
