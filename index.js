@@ -63,6 +63,8 @@ const landholding_officer = require("./Routes/landholding-officer");
 const mobility_officer = require("./Routes/mobility-officer");
 const water_officer = require("./Routes/water-officer");
 const community_officer = require("./Routes/community-officer");
+const business_officer = require("./Routes/business-officer");
+const forestry_officer = require("./Routes/forestry-officer");
 
 const connection_url = require("./Enviroment");
 
@@ -180,6 +182,8 @@ app.use("/api/landholding-officer", landholding_officer);
 app.use("/api/mobility-officer", mobility_officer);
 app.use("/api/water-officer", water_officer);
 app.use("/api/community-officer", community_officer);
+app.use("/api/business-officer", business_officer);
+app.use("/api/forestry-officer", forestry_officer);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 
