@@ -27,7 +27,7 @@ module.exports.add_forestry_officer = async (req, res) => {
         any_incident_of_illegal_forest_activities: Joi.string()
             .optional()
             .allow(null),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
@@ -57,7 +57,7 @@ module.exports.edit_forestry_officer = async (req, res) => {
         any_incident_of_illegal_forest_activities: Joi.string()
             .optional()
             .allow(null),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;

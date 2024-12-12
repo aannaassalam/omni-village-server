@@ -25,7 +25,7 @@ module.exports.add_business_officer = async (req, res) => {
                 year_started: Joi.number().required(),
             }).required()
         ),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
@@ -53,7 +53,7 @@ module.exports.edit_business_officer = async (req, res) => {
                 year_started: Joi.number().required(),
             }).required()
         ),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;

@@ -79,7 +79,7 @@ module.exports.add_community_officer = async (req, res) => {
         children_playground_type: Joi.array().items(Joi.string().required()),
         senile_center: Joi.boolean().required(),
         senile_center_type: Joi.array().items(Joi.string().required()),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
@@ -161,7 +161,7 @@ module.exports.edit_community_officer = async (req, res) => {
         children_playground_type: Joi.array().items(Joi.string().required()),
         senile_center: Joi.boolean().required(),
         senile_center_type: Joi.array().items(Joi.string().required()),
-    });
+    }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
