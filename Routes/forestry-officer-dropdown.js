@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const business_officer_dropdown = require("../Controllers/business-officer-dropdown");
+const forestry_officer_dropdown = require("../Controllers/forestry-officer-dropdown");
 const { verifyToken, checkUser } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
@@ -7,25 +7,25 @@ router.get(
     "/",
     // verifyToken,
     // checkUser,
-    ControllerWrapper(business_officer_dropdown.get_business_officer_dropdown)
+    ControllerWrapper(forestry_officer_dropdown.get_forestry_officer_dropdown)
 );
-router.get("/get-all", business_officer_dropdown.get_all);
+router.get("/get-all", forestry_officer_dropdown.get_all);
 
 router.post(
     "/",
     // verifyToken,
     // checkUser,
-    ControllerWrapper(business_officer_dropdown.add_business_officer_dropdown)
+    ControllerWrapper(forestry_officer_dropdown.add_forestry_officer_dropdown)
 );
 
 router.put(
     "/",
     // verifyToken,
-    ControllerWrapper(business_officer_dropdown.edit_business_officer_data)
+    ControllerWrapper(forestry_officer_dropdown.edit_forestry_officer_data)
 );
 router.delete(
     "/",
-    ControllerWrapper(business_officer_dropdown.delete_business_officer_data)
+    ControllerWrapper(forestry_officer_dropdown.delete_forestry_officer_data)
 );
 
 module.exports = router;
