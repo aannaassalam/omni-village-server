@@ -65,6 +65,14 @@ const water_officer = require("./Routes/water-officer");
 const community_officer = require("./Routes/community-officer");
 const business_officer = require("./Routes/business-officer");
 const forestry_officer = require("./Routes/forestry-officer");
+const business_officer_dropdown = require("./Routes/business-officer-dropdown");
+const community_officer_dropdown = require("./Routes/community-officer-dropdown");
+const demographic_officer_dropdown = require("./Routes/demographic-officer-dropdown");
+const energy_officer_dropdown = require("./Routes/energy-officer-dropdown");
+const forestry_officer_dropdown = require("./Routes/forestry-officer-dropdown");
+const mobility_officer_dropdown = require("./Routes/mobility-officer-dropdown");
+const landholding_officer_dropdown = require("./Routes/landholding-officer-dropdown");
+const water_officer_dropdown = require("./Routes/water-officer-dropdown");
 
 const connection_url = require("./Enviroment");
 
@@ -184,6 +192,14 @@ app.use("/api/water-officer", water_officer);
 app.use("/api/community-officer", community_officer);
 app.use("/api/business-officer", business_officer);
 app.use("/api/forestry-officer", forestry_officer);
+app.use("/api/business-officer-dropdown", business_officer_dropdown);
+app.use("/api/community-officer-dropdown", community_officer_dropdown);
+app.use("/api/demographic-officer-dropdown", demographic_officer_dropdown);
+app.use("/api/energy-officer-dropdown", energy_officer_dropdown);
+app.use("/api/forestry-officer-dropdown", forestry_officer_dropdown);
+app.use("/api/landholding-officer-dropdown", landholding_officer_dropdown);
+app.use("/api/mobility-officer-dropdown", mobility_officer_dropdown);
+app.use("/api/water-officer-dropdown", water_officer_dropdown);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
 

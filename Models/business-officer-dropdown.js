@@ -1,24 +1,19 @@
 const mongoose = require("mongoose");
 
-const energyDropdownSchema = new mongoose.Schema(
+const businessOfficerDropdownSchema = new mongoose.Schema(
     {
         type: {
             type: String,
-            enum: [
-                "microgrid_type",
-                "purpose_petrol",
-                "purpose_diesel",
-                "purpose_natural_gas",
-                "type_others",
-                "purpose_others",
-                "extent",
-            ],
+            enum: ["loan_lending_organizations", "main_use_of_loans"],
             required: true,
         },
         name: {
             en: {
                 type: mongoose.Schema.Types.String,
-                required: [true, "Please Enter a Energy dropdown name!"],
+                required: [
+                    true,
+                    "Please Enter a Business officer dropdown name!",
+                ],
                 set: (value) => value.toLowerCase(),
             },
 
@@ -40,4 +35,7 @@ const energyDropdownSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-module.exports = mongoose.model("energy_dropdown", energyDropdownSchema);
+module.exports = mongoose.model(
+    "business_officer_dropdown",
+    businessOfficerDropdownSchema
+);
