@@ -114,26 +114,26 @@ module.exports.send_otp = async (req, res) => {
                 );
             }
 
-            // res.send(otp_keeper[`${phone}`]);
+            res.send(otp_keeper[`${country_code}${phone}`]);
 
-            client.messages
-                .create({
-                    body: `Your login OTP for Omni Village - ${
-                        otp_keeper[`${country_code}${phone}`]
-                    }`,
-                    messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
-                    to: `${country_code}${phone}`,
-                    statusCallback:
-                        "https://omnivillage.azurewebsites.net/api/webhook/",
-                })
-                .then((message) => res.send(message))
-                .catch((err) => {
-                    if (err.code === 21211)
-                        res.status(400).json({
-                            message: "Please enter a valid phone number!",
-                        });
-                    console.log(err, "message");
-                });
+            // client.messages
+            //     .create({
+            //         body: `Your login OTP for Omni Village - ${
+            //             otp_keeper[`${country_code}${phone}`]
+            //         }`,
+            //         messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
+            //         to: `${country_code}${phone}`,
+            //         statusCallback:
+            //             "https://omnivillage.azurewebsites.net/api/webhook/",
+            //     })
+            //     .then((message) => res.send(message))
+            //     .catch((err) => {
+            //         if (err.code === 21211)
+            //             res.status(400).json({
+            //                 message: "Please enter a valid phone number!",
+            //             });
+            //         console.log(err, "message");
+            //     });
         }
     } catch (err) {
         console.log(err);
