@@ -4,7 +4,11 @@ const mobilityOfficerDropdownSchema = new mongoose.Schema(
     {
         type: {
             type: String,
-            enum: ["mobility_requirements", "frequency_of_road_damage"],
+            enum: [
+                "mobility_requirements",
+                "frequency_of_road_damage",
+                "connectivity_to_healthcare_facilities",
+            ],
             required: true,
         },
         name: {

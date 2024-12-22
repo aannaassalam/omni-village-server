@@ -20,7 +20,11 @@ module.exports.add_mobility_officer_dropdown = async (req, res) => {
     const schema = Joi.object({
         type: Joi.string()
             .required()
-            .equal("mobility_requirements", "frequency_of_road_damage"),
+            .equal(
+                "mobility_requirements",
+                "frequency_of_road_damage",
+                "connectivity_to_healthcare_facilities"
+            ),
         name: Joi.object({
             en: Joi.string().required(),
 
@@ -60,7 +64,11 @@ module.exports.edit_mobility_officer_data = async (req, res) => {
         }).required(),
         type: Joi.string()
             .required()
-            .equal("mobility_requirements", "frequency_of_road_damage"),
+            .equal(
+                "mobility_requirements",
+                "frequency_of_road_damage",
+                "connectivity_to_healthcare_facilities"
+            ),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
