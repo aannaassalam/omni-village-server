@@ -16,6 +16,7 @@ const businessCommercialSchema = new mongoose.Schema(
             ref: "business_dropdown",
             default: null,
         },
+
         year_started: {
             type: Number,
             default: null,

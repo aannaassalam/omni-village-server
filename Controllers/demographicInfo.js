@@ -104,6 +104,12 @@ exports.add_demographic_info = async (req, res) => {
             unfulfilled_needs: Joi.string().optional().allow(null, ""),
             wishes: Joi.string().optional().allow(null, ""),
             status: Joi.number().required().allow(0, 1),
+            other_occupation: Joi.string().optional().allow(""),
+            other_chronic: Joi.string().optional().allow(""),
+            other_motor: Joi.string().optional().allow(""),
+            other_habit: Joi.string().optional().allow(""),
+            other_education_status: Joi.string().optional().allow(""),
+            other_education_seeking: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
@@ -847,6 +853,12 @@ exports.update_demographic_info_by_user_id = async (req, res) => {
             unfulfilled_needs: Joi.string().optional().allow(null, ""),
             wishes: Joi.string().optional().allow(null, ""),
             status: Joi.number().required().allow(0, 1),
+            other_occupation: Joi.string().optional().allow(""),
+            other_chronic: Joi.string().optional().allow(""),
+            other_motor: Joi.string().optional().allow(""),
+            other_habit: Joi.string().optional().allow(""),
+            other_education_status: Joi.string().optional().allow(""),
+            other_education_seeking: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);

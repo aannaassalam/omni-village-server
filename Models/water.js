@@ -55,6 +55,10 @@ const waterSchema = new mongoose.Schema(
                 },
             },
         ],
+        other_harvesting: {
+            type: String,
+            default: null,
+        },
         wastewater_disposal_methods: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -71,6 +75,10 @@ const waterSchema = new mongoose.Schema(
                 default: null,
             },
         ],
+        other_recycling: {
+            type: String,
+            default: null,
+        },
         water_meter: {
             type: Boolean,
             default: false,

@@ -70,6 +70,10 @@ const demograhicSchema = new mongoose.Schema({
         ref: "demographic_dropdown",
         default: null,
     },
+    other_occupation: {
+        type: String,
+        default: null,
+    },
     yearly_income: {
         type: mongoose.Schema.Types.ObjectId,
         required: function () {
@@ -106,12 +110,20 @@ const demograhicSchema = new mongoose.Schema({
             default: null,
         },
     ],
+    other_chronic: {
+        type: String,
+        default: null,
+    },
     motor_disablity: {
         type: mongoose.Schema.Types.ObjectId,
         required: function () {
             return this.status === 1;
         },
         ref: "demographic_dropdown",
+        default: null,
+    },
+    other_motor: {
+        type: String,
         default: null,
     },
     currently_feeling: {
@@ -164,6 +176,10 @@ const demograhicSchema = new mongoose.Schema({
         ref: "demographic_dropdown",
         default: null,
     },
+    other_habit: {
+        type: String,
+        default: null,
+    },
     education_status: {
         type: mongoose.Schema.Types.ObjectId,
         required: function () {
@@ -172,12 +188,20 @@ const demograhicSchema = new mongoose.Schema({
         ref: "demographic_dropdown",
         default: null,
     },
+    other_education_status: {
+        type: String,
+        default: null,
+    },
     education_seeking_to_gain: {
         type: mongoose.Schema.Types.ObjectId,
         required: function () {
             return this.status === 1;
         },
         ref: "demographic_dropdown",
+        default: null,
+    },
+    other_education_seeking: {
+        type: String,
         default: null,
     },
     cultural_traditional_hobbies: [

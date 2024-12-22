@@ -55,9 +55,11 @@ module.exports.get_water_usage_info = async (req, res) => {
             },
             {
                 type_of_harvesting: 0,
+                other_harvesting: 0,
                 wastewater_disposal_methods: 0,
                 water_recycle: 0,
                 water_recycling_methods: 0,
+                other_recycling: 0,
                 water_meter: 0,
                 water_scarcity: 0,
                 water_scarcity_severity: 0,
@@ -83,6 +85,7 @@ module.exports.get_water_harvesting_capacity = async (req, res) => {
                 wastewater_disposal_methods: 0,
                 water_recycle: 0,
                 water_recycling_methods: 0,
+                other_recycling: 0,
                 water_meter: 0,
                 water_scarcity: 0,
                 water_scarcity_severity: 0,
@@ -106,6 +109,7 @@ module.exports.get_wastewater_disposal = async (req, res) => {
                 expense: 0,
                 other_name: 0,
                 type_of_harvesting: 0,
+                other_harvesting: 0,
                 water_meter: 0,
                 water_scarcity: 0,
                 water_scarcity_severity: 0,
@@ -129,9 +133,11 @@ module.exports.get_general_info = async (req, res) => {
                 expense: 0,
                 other_name: 0,
                 type_of_harvesting: 0,
+                other_harvesting: 0,
                 wastewater_disposal_methods: 0,
                 water_recycle: 0,
                 water_recycling_methods: 0,
+                other_recycling: 0,
             }
         );
         return res.json(water);
@@ -256,6 +262,7 @@ module.exports.add_water_harvesting_capacity = async (req, res) => {
                 )
                 .required()
                 .min(1),
+            other_harvesting: Joi.string().optional().allow(""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
@@ -334,6 +341,7 @@ module.exports.add_wastewater_disposal = async (req, res) => {
                     .items(Joi.string().required())
                     .optional(),
             }),
+            other_recycling: Joi.string().optional().allow(""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
@@ -573,6 +581,7 @@ module.exports.edit_water_harvesting_capacity = async (req, res) => {
                 )
                 .required()
                 .min(1),
+            other_harvesting: Joi.string().optional().allow(""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
@@ -654,6 +663,7 @@ module.exports.edit_wastewater_disposal = async (req, res) => {
                     .items(Joi.string().required())
                     .optional(),
             }),
+            other_recycling: Joi.string().optional().allow(""),
             status: Joi.number().required().allow(0, 1),
         }).options({ stripUnknown: true });
 
