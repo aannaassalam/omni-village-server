@@ -17,6 +17,7 @@ module.exports.update_business = async (req, res) => {
             business_id: Joi.string().required(),
             business_name: Joi.string().required(),
             business_type: Joi.string().required(),
+            other_type: Joi.string().optional().allow(""),
             year_started: Joi.number().required(),
             brief_description: Joi.string().required(),
             segment_served: Joi.string().required(),
