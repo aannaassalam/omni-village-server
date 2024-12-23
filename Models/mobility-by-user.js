@@ -39,9 +39,9 @@ const mobilitySchema = new mongoose.Schema(
         vehicles_needed: [
             {
                 purpose: {
-                    type: mongoose.Schema.Types.ObjectId,
+                    type: String,
                     default: null,
-                    ref: "mobility_dropdown",
+                    // ref: "mobility_dropdown",
                 },
                 vehicle_type: {
                     type: String,
