@@ -38,38 +38,46 @@ const demograhicSchema = new mongoose.Schema({
         ref: "demographic_dropdown",
         default: null,
     },
-    language_speak: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    language_speak: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    language_read: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    language_read: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    language_write: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    language_write: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
-    occupation: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
+    ],
+    occupation: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            required: function () {
+                return this.status === 1;
+            },
+            ref: "demographic_dropdown",
+            default: null,
         },
-        ref: "demographic_dropdown",
-        default: null,
-    },
+    ],
     other_occupation: {
         type: String,
         default: null,

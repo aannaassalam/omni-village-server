@@ -12,10 +12,22 @@ exports.add_demographic_info = async (req, res) => {
             diet: Joi.string().required(),
             height: Joi.number().required(),
             weight: Joi.number().required(),
-            language_speak: Joi.string().required(),
-            language_read: Joi.string().required(),
-            language_write: Joi.string().required(),
-            occupation: Joi.string().required(),
+            language_speak: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            language_read: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            language_write: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            occupation: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
             yearly_income: Joi.string().required(),
             bank_account: Joi.boolean().required(),
             savings_investment: Joi.boolean().required(),
@@ -761,10 +773,22 @@ exports.update_demographic_info_by_user_id = async (req, res) => {
             diet: Joi.string().required(),
             height: Joi.number().required(),
             weight: Joi.number().required(),
-            language_speak: Joi.string().required(),
-            language_read: Joi.string().required(),
-            language_write: Joi.string().required(),
-            occupation: Joi.string().required(),
+            language_speak: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            language_read: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            language_write: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
+            occupation: Joi.array()
+                .items(Joi.string().required())
+                .required()
+                .min(1),
             yearly_income: Joi.string().required(),
             bank_account: Joi.boolean().required(),
             savings_investment: Joi.boolean().required(),
