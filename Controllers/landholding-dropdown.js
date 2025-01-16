@@ -20,7 +20,7 @@ module.exports.get_landholding_dropdown = async (req, res) => {
             obj[_data.type] = [...obj[_data.type], _data];
             obj[_data._id] = [];
         } else {
-            obj[_data.parent] = [...obj[_data.parent], _data];
+            obj[_data.parent] = [...(obj[_data.parent] || []), _data];
         }
     });
     return res.json(obj);
