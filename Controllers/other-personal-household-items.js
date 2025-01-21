@@ -31,10 +31,7 @@ module.exports.add_personal_household_items = async (req, res) => {
                     "kitchen_items",
                     "other_items"
                 ),
-            personal_care_item_use: Joi.array()
-                .items(Joi.string().required())
-                .required()
-                .min(1),
+            personal_care_item_use: Joi.array().items(Joi.string()).optional(),
             yearly_expense_for_personal_care: Joi.number().required(),
             items_produced_locally: Joi.boolean().required(),
             items_produces: Joi.when("items_produced_locally", {
