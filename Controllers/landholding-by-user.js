@@ -3,33 +3,17 @@ const Landholding = require("../Models/landholding");
 const LandholdingByUser = require("../Models/landholding-by-user");
 const User = require("../Models/user");
 
-module.exports.get_landholding_by_user = async (req, res) => {
-    const { user } = res.locals;
-    const landholding_by_user = await LandholdingByUser.findOne({
-        user_id: user._id,
-    });
-    return res.json(landholding_by_user);
-};
-
 module.exports.add_landholding_by_user_data = async (req, res) => {
     const { user } = res.locals;
     const schema = Joi.object({
-        total_numbers_of_lands: Joi.number().required(),
         land_requirements: Joi.boolean().required(),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    const landholdings = await Landholding.insertMany(
-        Array.from({ length: value.total_numbers_of_lands }, () => ({
-            user_id: user._id,
-        }))
-    );
-
     const landholding_by_user = await LandholdingByUser.create({
         user_id: user._id,
-        landholdings: landholdings.map((_land) => _land._id),
         ...value,
     });
 
@@ -41,6 +25,26 @@ module.exports.add_landholding_by_user_data = async (req, res) => {
 
     return res.json({
         message: "Landholding info submitted successfully",
+        ...landholding_by_user._doc,
+    });
+};
+
+module.exports.edit_landholding_by_user_data = async (req, res) => {
+    const schema = Joi.object({
+        landholding_by_user_id: Joi.string().required(),
+        land_requirements: Joi.boolean().required(),
+    }).options({ stripUnknown: true });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const landholding_by_user = await LandholdingByUser.findByIdAndUpdate(
+        value.landholding_by_user_id,
+        value
+    );
+
+    return res.json({
+        message: "Landholding info updated successfully",
         ...landholding_by_user._doc,
     });
 };

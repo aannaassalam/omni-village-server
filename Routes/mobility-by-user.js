@@ -4,12 +4,6 @@ const { verifyToken, checkUser } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 router.get(
-    "/",
-    verifyToken,
-    checkUser,
-    ControllerWrapper(mobilityByUser.get_mobility_by_user)
-);
-router.get(
     "/mobility-requirements",
     verifyToken,
     checkUser,
@@ -21,6 +15,13 @@ router.post(
     verifyToken,
     checkUser,
     ControllerWrapper(mobilityByUser.add_mobility_by_user)
+);
+
+router.put(
+    "/edit-mobility-by-user",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(mobilityByUser.edit_mobility_by_user)
 );
 
 router.put(

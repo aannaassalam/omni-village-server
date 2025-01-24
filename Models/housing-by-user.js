@@ -7,21 +7,10 @@ const housingByUserSchema = new mongoose.Schema(
             required: true,
             ref: "user",
         },
-        total_numbers_of_house: {
-            type: Number,
-            default: null,
-        },
         house_requirements: {
             type: Boolean,
             default: false,
         },
-        housings: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                default: null,
-                ref: "housing",
-            },
-        ],
         need_new_unit: {
             type: Boolean,
             default: false,

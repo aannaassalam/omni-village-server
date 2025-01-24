@@ -21,21 +21,10 @@ const mobilitySchema = new mongoose.Schema(
             default: "yes",
             set: (value) => value.toLowerCase(),
         },
-        number_of_vehicles: {
-            type: Number,
-            default: 0,
-        },
         vehicle_requirement: {
             type: Boolean,
             default: false,
         },
-        mobilities: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                default: null,
-                ref: "mobility",
-            },
-        ],
         vehicles_needed: [
             {
                 purpose: {

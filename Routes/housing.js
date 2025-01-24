@@ -24,7 +24,48 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/", verifyToken, checkUser, ControllerWrapper(housing.get_housing));
+router.get(
+    "/",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(housing.get_housing_by_user)
+);
+
+router.get(
+    "/get-housing",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(housing.get_housing)
+);
+
+router.post(
+    "/add-housing",
+    verifyToken,
+    checkUser,
+    upload.fields([
+        {
+            name: "front_photo",
+            maxCount: 1,
+        },
+        {
+            name: "back_photo",
+            maxCount: 1,
+        },
+        {
+            name: "neighbourhood_photo",
+            maxCount: 1,
+        },
+        {
+            name: "inside_living_photo",
+            maxCount: 1,
+        },
+        {
+            name: "kitchen_photo",
+            maxCount: 1,
+        },
+    ]),
+    ControllerWrapper(housing.add_housing)
+);
 
 router.put(
     "/update-housing",
@@ -53,6 +94,13 @@ router.put(
         },
     ]),
     ControllerWrapper(housing.update_housing)
+);
+
+router.delete(
+    "/delete-housing",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(housing.delete_housing)
 );
 
 module.exports = router;

@@ -7,21 +7,10 @@ const landholdingByUserSchema = new mongoose.Schema(
             required: true,
             ref: "user",
         },
-        total_numbers_of_lands: {
-            type: Number,
-            default: null,
-        },
         land_requirements: {
             type: Boolean,
             default: false,
         },
-        landholdings: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                default: null,
-                ref: "landholding",
-            },
-        ],
         required_area: {
             type: Number,
             default: null,

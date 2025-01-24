@@ -11,17 +11,6 @@ const businessByUserSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        number_of_business: {
-            type: Number,
-            default: null,
-        },
-        businesses: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "business_commercial",
-                default: null,
-            },
-        ],
         plan_to_start_business: {
             type: Boolean,
             default: false,

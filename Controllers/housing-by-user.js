@@ -4,45 +4,17 @@ const HousingByUser = require("../Models/housing-by-user");
 const User = require("../Models/user");
 const mongoose = require("mongoose");
 
-module.exports.get_housing_by_user = async (req, res) => {
-    const { user } = res.locals;
-    const housing_by_user = await HousingByUser.aggregate([
-        {
-            $match: {
-                user_id: new mongoose.Types.ObjectId(user._id),
-            },
-        },
-        {
-            $lookup: {
-                from: "housings",
-                foreignField: "_id",
-                localField: "housings",
-                as: "housings",
-            },
-        },
-    ]);
-    return res.json(housing_by_user);
-};
-
 module.exports.add_housing_by_user_data = async (req, res) => {
     const { user } = res.locals;
     const schema = Joi.object({
-        total_numbers_of_house: Joi.number().required(),
         house_requirements: Joi.boolean().required(),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    const housings = await Housing.insertMany(
-        Array.from({ length: value.total_numbers_of_house }, () => ({
-            user_id: user._id,
-        }))
-    );
-
     const housing_by_user = await HousingByUser.create({
         user_id: user._id,
-        housings: housings.map((_land) => _land._id),
         ...value,
     });
 
@@ -54,6 +26,26 @@ module.exports.add_housing_by_user_data = async (req, res) => {
 
     return res.json({
         message: "Housing info submitted successfully",
+        ...housing_by_user._doc,
+    });
+};
+
+module.exports.edit_housing_by_user_data = async (req, res) => {
+    const schema = Joi.object({
+        housing_by_user_id: Joi.string().required(),
+        house_requirements: Joi.boolean().required(),
+    }).options({ stripUnknown: true });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const housing_by_user = await HousingByUser.findByIdAndUpdate(
+        value.housing_by_user_id,
+        value
+    );
+
+    return res.json({
+        message: "Housing info updated successfully",
         ...housing_by_user._doc,
     });
 };
