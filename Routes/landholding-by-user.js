@@ -4,17 +4,17 @@ const { verifyToken, checkUser } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 router.get(
-    "/landholding-requirements",
-    verifyToken,
-    checkUser,
-    ControllerWrapper(landholding_by_user.get_landholding_requirements)
-);
-
-router.get(
     "/",
     verifyToken,
     checkUser,
     ControllerWrapper(landholding_by_user.get_landholding_by_user_data)
+);
+
+router.get(
+    "/landholding-requirements",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(landholding_by_user.get_landholding_requirements)
 );
 
 router.post(
