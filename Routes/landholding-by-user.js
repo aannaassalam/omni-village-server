@@ -10,6 +10,13 @@ router.get(
     ControllerWrapper(landholding_by_user.get_landholding_requirements)
 );
 
+router.get(
+    "/",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(landholding_by_user.get_landholding_by_user_data)
+);
+
 router.post(
     "/add-landholding-by-user",
     verifyToken,

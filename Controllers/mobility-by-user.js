@@ -3,6 +3,21 @@ const Mobility = require("../Models/mobility");
 const MobilityByUser = require("../Models/mobility-by-user");
 const User = require("../Models/user");
 
+module.exports.get_mobility_by_user = async (req, res) => {
+    const { user } = res.locals;
+    const response = await MobilityByUser.findOne(
+        {
+            user_id: user._id,
+        },
+        {
+            methods_of_mobility: 1,
+            access_to_public_transport: 1,
+        }
+    );
+
+    return res.json(response);
+};
+
 module.exports.add_mobility_by_user = async (req, res) => {
     const { user } = res.locals;
     const schema = Joi.object({

@@ -4,6 +4,13 @@ const { verifyToken, checkUser } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 router.get(
+    "/",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(housing_by_user.get_housing_by_user_data)
+);
+
+router.get(
     "/housing-requirements",
     verifyToken,
     checkUser,

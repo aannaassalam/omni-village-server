@@ -4,6 +4,22 @@ const BusinessCommercial = require("../Models/business-commercial");
 const User = require("../Models/user");
 const mongoose = require("mongoose");
 
+module.exports.get_business_by_user = async (req, res) => {
+    const { user } = res.locals;
+
+    const business_by_user = await BusinessByUser.findOne(
+        {
+            user_id: user._id,
+        },
+        {
+            other_business_apart_farming: 1,
+            plan_to_start_business: 1,
+        }
+    );
+
+    return res.json(business_by_user);
+};
+
 module.exports.add_business_by_user = async (req, res) => {
     const { user } = res.locals;
     const schema = Joi.object({

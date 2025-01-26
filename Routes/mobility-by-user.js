@@ -4,6 +4,13 @@ const { verifyToken, checkUser } = require("../Middlewares/user");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 router.get(
+    "/",
+    verifyToken,
+    checkUser,
+    ControllerWrapper(mobilityByUser.get_mobility_by_user)
+);
+
+router.get(
     "/mobility-requirements",
     verifyToken,
     checkUser,

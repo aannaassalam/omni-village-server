@@ -4,6 +4,21 @@ const HousingByUser = require("../Models/housing-by-user");
 const User = require("../Models/user");
 const mongoose = require("mongoose");
 
+module.exports.get_housing_by_user_data = async (req, res) => {
+    const { user } = res.locals;
+
+    const housing_by_user = await HousingByUser.findOne(
+        {
+            user_id: user._id,
+        },
+        {
+            house_requirements: 1,
+        }
+    );
+
+    return res.json(housing_by_user);
+};
+
 module.exports.add_housing_by_user_data = async (req, res) => {
     const { user } = res.locals;
     const schema = Joi.object({

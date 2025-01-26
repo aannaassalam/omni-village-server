@@ -162,7 +162,7 @@ app.use("/api/consumption", consumption);
 app.use("/api/demographic_dropdown", demographic_dropdown);
 app.use("/api/demographic", demographic);
 app.use("/api/landholding-dropdown", landholding_dropdown);
-app.use("/api/landholding-by-user", landholding_by_user);
+app.use("/api/-by-landholdinguser", landholding_by_user);
 app.use("/api/landholding", landholding);
 app.use("/api/housing-dropdown", housing_dropdown);
 app.use("/api/housing-by-user", housing_by_user);
