@@ -67,7 +67,7 @@ module.exports.add_landholding = async (req, res) => {
             message: "Landholding added successfully",
         });
     }
-    await Landholding.findByIdAndUpdate({ user_id: user._id, ...req.body });
+    await Landholding.create({ user_id: user._id, ...req.body });
 
     return res.json({
         message: "Landholding added successfully",
