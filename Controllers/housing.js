@@ -61,9 +61,9 @@ module.exports.add_housing = async (req, res) => {
                 .required()
                 .min(1),
             renovation_requirement: Joi.boolean().required(),
-            renovation_urgency: Joi.string().required(),
+            renovation_urgency: Joi.string().optional().allow(""),
             expansion_requirement: Joi.boolean().required(),
-            expansion_urgency: Joi.string().required(),
+            expansion_urgency: Joi.string().optional().allow(""),
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
@@ -144,9 +144,9 @@ module.exports.update_housing = async (req, res) => {
                 .required()
                 .min(1),
             renovation_requirement: Joi.boolean().required(),
-            renovation_urgency: Joi.string().required(),
+            renovation_urgency: Joi.string().optional().allow(""),
             expansion_requirement: Joi.boolean().required(),
-            expansion_urgency: Joi.string().required(),
+            expansion_urgency: Joi.string().optional().allow(""),
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
