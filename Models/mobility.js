@@ -30,6 +30,10 @@ const mobilitySchema = new mongoose.Schema(
             type: String,
             default: null,
         },
+        status: {
+            type: Number,
+            default: 1,
+        },
     },
     { timestamps: true }
 );
