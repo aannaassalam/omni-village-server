@@ -12,6 +12,7 @@ module.exports.get_mobility_by_user = async (req, res) => {
         {
             methods_of_mobility: 1,
             access_to_public_transport: 1,
+            vehicle_requirement: 1,
         }
     );
 
@@ -79,7 +80,6 @@ module.exports.get_mobility_requirements = async (req, res) => {
             user_id: user._id,
         },
         {
-            vehicle_requirement: 1,
             vehicles_needed: 1,
         }
     );
