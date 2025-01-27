@@ -79,6 +79,7 @@ module.exports.get_mobility_requirements = async (req, res) => {
             user_id: user._id,
         },
         {
+            vehicle_requirement: 1,
             vehicles_needed: 1,
         }
     );
