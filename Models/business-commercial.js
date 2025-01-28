@@ -101,6 +101,10 @@ const businessCommercialSchema = new mongoose.Schema(
                     type: Number,
                     default: null,
                 },
+                raw_consumption_unit: {
+                    type: String,
+                    default: null,
+                },
             },
         ],
         fuel_source: [
@@ -112,6 +116,10 @@ const businessCommercialSchema = new mongoose.Schema(
                 },
                 quantity: {
                     type: Number,
+                    default: null,
+                },
+                fuel_source_unit: {
+                    type: String,
                     default: null,
                 },
             },

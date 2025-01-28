@@ -196,7 +196,7 @@ module.exports.add_general_information = async (req, res) => {
             extent: Joi.when("energy_sufficient", {
                 is: true,
                 then: Joi.string().required(),
-                otherwise: Joi.string().optional(),
+                otherwise: Joi.string().optional().allow(""),
             }),
         }).options({ stripUnknown: true });
 
@@ -345,7 +345,7 @@ module.exports.edit_general_information = async (req, res) => {
             extent: Joi.when("energy_sufficient", {
                 is: true,
                 then: Joi.string().required(),
-                otherwise: Joi.string().optional(),
+                otherwise: Joi.string().optional().allow(""),
             }),
         }).options({ stripUnknown: true });
 

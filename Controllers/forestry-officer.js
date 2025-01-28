@@ -21,12 +21,12 @@ module.exports.add_forestry_officer = async (req, res) => {
         do_you_have_flora_fauna: Joi.boolean().required(),
         link_of_the_doc: Joi.string().required(),
         condition_of_forest_accessible: Joi.string().required(),
-        incident_of_forest_fire: Joi.string().optional().allow(null),
+        incident_of_forest_fire: Joi.string().optional().allow(null, ""),
         incident_of_wildlife_conflict: Joi.boolean().required(),
         describe: Joi.string().required(),
         any_incident_of_illegal_forest_activities: Joi.string()
             .optional()
-            .allow(null),
+            .allow(null, ""),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
@@ -51,12 +51,12 @@ module.exports.edit_forestry_officer = async (req, res) => {
         do_you_have_flora_fauna: Joi.boolean().required(),
         link_of_the_doc: Joi.string().required(),
         condition_of_forest_accessible: Joi.string().required(),
-        incident_of_forest_fire: Joi.string().optional().allow(null),
+        incident_of_forest_fire: Joi.string().optional().allow(null, ""),
         incident_of_wildlife_conflict: Joi.boolean().required(),
         describe: Joi.string().required(),
         any_incident_of_illegal_forest_activities: Joi.string()
             .optional()
-            .allow(null),
+            .allow(null, ""),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);

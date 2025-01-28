@@ -48,6 +48,7 @@ module.exports.add_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        raw_consumption_unit: Joi.string().required(),
                     }).required()
                 )
                 .required()
@@ -57,6 +58,7 @@ module.exports.add_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        fuel_source_unit: Joi.string().required(),
                     }).required()
                 )
                 .required()
@@ -67,16 +69,16 @@ module.exports.add_business = async (req, res) => {
                 .min(1),
             machine_equipment_installed: Joi.string().required(),
             skill_requirement: Joi.boolean().required(),
-            type_of_skill: Joi.string().optional(),
-            skill_urgency: Joi.string().optional(),
+            type_of_skill: Joi.string().optional().allow(""),
+            skill_urgency: Joi.string().optional().allow(""),
             manpower_requirement: Joi.boolean().required(),
-            number_of_manpower: Joi.number().optional(),
-            manpower_urgency: Joi.string().optional(),
+            number_of_manpower: Joi.number().optional().allow(""),
+            manpower_urgency: Joi.string().optional().allow(""),
             equipment_requirement: Joi.boolean().required(),
-            equipment_type: Joi.string().optional(),
-            equipment_urgency: Joi.string().optional(),
-            other: Joi.string().optional(),
-            urgency: Joi.string().optional(),
+            equipment_type: Joi.string().optional().allow(""),
+            equipment_urgency: Joi.string().optional().allow(""),
+            other: Joi.string().optional().allow(""),
+            urgency: Joi.string().optional().allow(""),
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
@@ -134,6 +136,7 @@ module.exports.update_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        raw_consumption_unit: Joi.string().required(),
                     }).required()
                 )
                 .required()
@@ -143,6 +146,7 @@ module.exports.update_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        fuel_source_unit: Joi.string().required(),
                     }).required()
                 )
                 .required()
@@ -153,16 +157,16 @@ module.exports.update_business = async (req, res) => {
                 .min(1),
             machine_equipment_installed: Joi.string().required(),
             skill_requirement: Joi.boolean().required(),
-            type_of_skill: Joi.string().optional(),
-            skill_urgency: Joi.string().optional(),
+            type_of_skill: Joi.string().optional().allow(""),
+            skill_urgency: Joi.string().optional().allow(""),
             manpower_requirement: Joi.boolean().required(),
-            number_of_manpower: Joi.number().optional(),
-            manpower_urgency: Joi.string().optional(),
+            number_of_manpower: Joi.number().optional().allow(""),
+            manpower_urgency: Joi.string().optional().allow(""),
             equipment_requirement: Joi.boolean().required(),
-            equipment_type: Joi.string().optional(),
-            equipment_urgency: Joi.string().optional(),
-            other: Joi.string().optional(),
-            urgency: Joi.string().optional(),
+            equipment_type: Joi.string().optional().allow(""),
+            equipment_urgency: Joi.string().optional().allow(""),
+            other: Joi.string().optional().allow(""),
+            urgency: Joi.string().optional().allow(""),
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
