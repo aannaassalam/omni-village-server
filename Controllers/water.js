@@ -338,7 +338,7 @@ module.exports.add_wastewater_disposal = async (req, res) => {
                     .required()
                     .min(1),
                 otherwise: Joi.array()
-                    .items(Joi.string().required())
+                    .items(Joi.string().optional())
                     .optional(),
             }),
             other_recycling: Joi.string().optional().allow(""),
@@ -419,7 +419,7 @@ module.exports.add_general_info = async (req, res) => {
                     .required()
                     .min(1),
                 otherwise: Joi.array()
-                    .items(Joi.string().required())
+                    .items(Joi.string().optional())
                     .optional(),
             }),
             status: Joi.number().required().allow(0, 1),
@@ -660,7 +660,7 @@ module.exports.edit_wastewater_disposal = async (req, res) => {
                     .required()
                     .min(1),
                 otherwise: Joi.array()
-                    .items(Joi.string().required())
+                    .items(Joi.string().optional())
                     .optional(),
             }),
             other_recycling: Joi.string().optional().allow(""),
@@ -741,7 +741,7 @@ module.exports.edit_general_info = async (req, res) => {
                     .required()
                     .min(1),
                 otherwise: Joi.array()
-                    .items(Joi.string().required())
+                    .items(Joi.string().optional())
                     .optional(),
             }),
             status: Joi.number().required().allow(0, 1),

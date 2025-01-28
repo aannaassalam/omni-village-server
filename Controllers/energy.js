@@ -160,6 +160,7 @@ module.exports.add_other_information = async (req, res) => {
                             .required(),
                         expenditures: Joi.number().required(),
                         quantity: Joi.number().required(),
+                        quantity_unit: Joi.string().required(),
                     }).required()
                 )
                 .required()
@@ -309,6 +310,7 @@ module.exports.edit_other_information = async (req, res) => {
                             .required(),
                         expenditures: Joi.number().required(),
                         quantity: Joi.number().required(),
+                        quantity_unit: Joi.string().required(),
                     }).required()
                 )
                 .min(1),

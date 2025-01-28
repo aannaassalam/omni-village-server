@@ -104,7 +104,7 @@ module.exports.add_timber_needs = async (req, res) => {
             timber_needs: Joi.boolean().required(),
             quantity: Joi.number().optional(),
             purpose: Joi.array().items(Joi.string().required()).optional(),
-            urgency: Joi.string().optional().allow(""),
+            // urgency: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
@@ -142,6 +142,7 @@ module.exports.add_other_needs = async (req, res) => {
                     Joi.object({
                         type: Joi.string().optional().allow(""),
                         quantity: Joi.number().optional(),
+                        quantity_unit: Joi.string().optional(),
                         purpose: Joi.array()
                             .items(Joi.string().required())
                             .optional(),
@@ -234,7 +235,7 @@ module.exports.edit_timber_needs = async (req, res) => {
             timber_needs: Joi.boolean().required(),
             quantity: Joi.number().optional(),
             purpose: Joi.array().items(Joi.string().required()).optional(),
-            urgency: Joi.string().optional().allow(""),
+            // urgency: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
@@ -278,6 +279,7 @@ module.exports.edit_other_needs = async (req, res) => {
                     Joi.object({
                         type: Joi.string().optional().allow(""),
                         quantity: Joi.number().optional(),
+                        quantity_unit: Joi.string().optional(),
                         purpose: Joi.array()
                             .items(Joi.string().required())
                             .optional(),

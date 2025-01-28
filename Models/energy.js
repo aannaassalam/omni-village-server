@@ -95,6 +95,10 @@ const energySchema = new mongoose.Schema(
                     type: Number,
                     default: null,
                 },
+                quantity_unit: {
+                    type: String,
+                    default: null,
+                },
             },
         ],
         energy_sufficient: {
