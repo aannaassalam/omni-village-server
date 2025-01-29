@@ -67,10 +67,10 @@ const forestrySchema = new mongoose.Schema(
                 default: null,
             },
         ],
-        // urgency: {
-        //     type: String,
-        //     default: null,
-        // },
+        urgency: {
+            type: String,
+            default: null,
+        },
         unfulfilled_forest_needs: {
             type: Boolean,
             default: false,
