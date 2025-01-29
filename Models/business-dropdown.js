@@ -11,6 +11,7 @@ const businessDropdownSchema = new mongoose.Schema(
                 "raw_materials",
                 "fuel_sources",
                 "type_of_infrastructure",
+                "dropdown",
             ],
             required: true,
         },

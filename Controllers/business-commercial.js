@@ -48,6 +48,7 @@ module.exports.add_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        quantity_unit: Joi.string().required(),
                         raw_consumption_unit: Joi.string().required(),
                     }).required()
                 )
@@ -58,6 +59,7 @@ module.exports.add_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        quantity_unit: Joi.string().required(),
                         fuel_source_unit: Joi.string().required(),
                     }).required()
                 )
@@ -136,6 +138,7 @@ module.exports.update_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        quantity_unit: Joi.string().required(),
                         raw_consumption_unit: Joi.string().required(),
                     }).required()
                 )
@@ -146,6 +149,7 @@ module.exports.update_business = async (req, res) => {
                     Joi.object({
                         item: Joi.string().required(),
                         quantity: Joi.number().required(),
+                        quantity_unit: Joi.string().required(),
                         fuel_source_unit: Joi.string().required(),
                     }).required()
                 )
