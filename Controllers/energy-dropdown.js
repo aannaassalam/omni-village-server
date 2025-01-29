@@ -26,6 +26,7 @@ module.exports.add_energy_dropdown = async (req, res) => {
                 "purpose_diesel",
                 "purpose_natural_gas",
                 "type_others",
+                "source_of_fuels_used",
                 "purpose_others",
                 "extent",
                 "dropdown"
@@ -74,6 +75,7 @@ module.exports.edit_energy_data = async (req, res) => {
                 "purpose_petrol",
                 "purpose_diesel",
                 "purpose_natural_gas",
+                "source_of_fuels_used",
                 "type_others",
                 "purpose_others",
                 "extent",

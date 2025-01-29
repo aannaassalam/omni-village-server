@@ -9,6 +9,7 @@ const energyDropdownSchema = new mongoose.Schema(
                 "purpose_petrol",
                 "purpose_diesel",
                 "purpose_natural_gas",
+                "source_of_fuels_used",
                 "type_others",
                 "purpose_others",
                 "extent",
