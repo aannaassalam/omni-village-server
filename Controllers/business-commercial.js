@@ -12,7 +12,7 @@ module.exports.get_business_by_user = async (req, res) => {
 
 module.exports.get_business = async (req, res) => {
     const { business_id } = req.query;
-    if (business_id) {
+    if (business_id || business_id !== "null") {
         const business = await BusinessCommercial.findById(business_id);
         return res.json(business);
     }

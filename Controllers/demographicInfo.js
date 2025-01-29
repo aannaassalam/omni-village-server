@@ -123,7 +123,6 @@ exports.add_demographic_info = async (req, res) => {
             other_education_status: Joi.string().optional().allow(""),
             other_education_seeking: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
-
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
         const demographic_info = await Demographic.create({
@@ -215,12 +214,12 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             as: "occupation",
                         },
                     },
-                    {
-                        $unwind: {
-                            path: "$occupation",
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
+                    // {
+                    //     $unwind: {
+                    //         path: "$occupation",
+                    //         preserveNullAndEmptyArrays: true,
+                    //     },
+                    // },
 
                     {
                         $lookup: {
@@ -335,12 +334,12 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             as: "language_speak",
                         },
                     },
-                    {
-                        $unwind: {
-                            path: "$language_speak",
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
+                    // {
+                    //     $unwind: {
+                    //         path: "$language_speak",
+                    //         preserveNullAndEmptyArrays: true,
+                    //     },
+                    // },
                     {
                         $lookup: {
                             from: "demographic_dropdowns",
@@ -349,12 +348,12 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             as: "language_read",
                         },
                     },
-                    {
-                        $unwind: {
-                            path: "$language_read",
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
+                    // {
+                    //     $unwind: {
+                    //         path: "$language_read",
+                    //         preserveNullAndEmptyArrays: true,
+                    //     },
+                    // },
                     {
                         $lookup: {
                             from: "demographic_dropdowns",
@@ -363,12 +362,12 @@ exports.get_demographic_info_by_user_id = async (req, res) => {
                             as: "language_write",
                         },
                     },
-                    {
-                        $unwind: {
-                            path: "$language_write",
-                            preserveNullAndEmptyArrays: true,
-                        },
-                    },
+                    // {
+                    //     $unwind: {
+                    //         path: "$language_write",
+                    //         preserveNullAndEmptyArrays: true,
+                    //     },
+                    // },
                     {
                         $project: {
                             language_read: 1,
@@ -889,7 +888,12 @@ exports.update_demographic_info_by_user_id = async (req, res) => {
         if (error) throw error;
         const demographic_info = await Demographic.findByIdAndUpdate(
             value.demographic_id,
-            value
+            value,
+            {
+                new: true,
+                runValidators: true,
+                upsert: true,
+            }
         );
         return res.status(200).json({
             success: true,

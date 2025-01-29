@@ -220,7 +220,7 @@ module.exports.add_water_usage_entry = async (req, res) => {
     });
 
     const update_document =
-        value.type === "others"
+        req.body.type === "others"
             ? {
                   $push: {
                       others: {
@@ -518,13 +518,26 @@ module.exports.edit_water_usage_entry = async (req, res) => {
             { new: true, runValidators: true }
         );
 
+        const water_by_user = await WaterByUser.findOne({ user_id: user._id });
+
+        const update_query =
+            value.type === "others"
+                ? {
+                      others: water_by_user.others.map((_others) => {
+                          if (_others.water_id === water_data._id)
+                              _others.isDrafted = true;
+                          return _others;
+                      }),
+                  }
+                : {
+                      [value.type]: {
+                          isDrafted: true,
+                      },
+                  };
+
         await WaterByUser.findOneAndUpdate(
             { user_id: user._id },
-            {
-                [value.type]: {
-                    isDrafted: false,
-                },
-            },
+            update_query,
             {
                 runValidators: true,
                 new: true,
@@ -547,19 +560,28 @@ module.exports.edit_water_usage_entry = async (req, res) => {
         }
     );
 
-    await WaterByUser.findOneAndUpdate(
-        { user_id: user._id },
-        {
-            [req.body.type]: {
-                isDrafted: true,
-            },
-        },
-        {
-            runValidators: true,
-            new: true,
-            upsert: true,
-        }
-    );
+    const water_by_user = await WaterByUser.findOne({ user_id: user._id });
+
+    const update_query =
+        req.body.type === "others"
+            ? {
+                  others: water_by_user.others.map((_others) => {
+                      if (_others.water_id === water_data._id)
+                          _others.isDrafted = true;
+                      return _others;
+                  }),
+              }
+            : {
+                  [req.body.type]: {
+                      isDrafted: true,
+                  },
+              };
+
+    await WaterByUser.findOneAndUpdate({ user_id: user._id }, update_query, {
+        runValidators: true,
+        new: true,
+        upsert: true,
+    });
 
     return res.json({
         message: "Water information updated successfully",

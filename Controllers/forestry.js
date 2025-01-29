@@ -104,7 +104,7 @@ module.exports.add_timber_needs = async (req, res) => {
         const schema = Joi.object({
             timber_needs: Joi.boolean().required(),
             quantity: Joi.number().optional(),
-            purpose: Joi.array().items(Joi.string().allow("")()).optional(),
+            purpose: Joi.array().items(Joi.string().allow("")).optional(),
             urgency: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
 
