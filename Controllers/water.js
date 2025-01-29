@@ -730,7 +730,7 @@ module.exports.edit_general_info = async (req, res) => {
             water_scarcity_severity: Joi.when("water_scarcity", {
                 is: true,
                 then: Joi.string().required(),
-                otherwise: Joi.string().optional().allow(""),
+                otherwise: Joi.string().optional().allow(null),
             }),
             months_of_year_of_scarcity: Joi.when("water_scarcity", {
                 is: true,

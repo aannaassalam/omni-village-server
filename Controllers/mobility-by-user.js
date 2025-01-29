@@ -106,9 +106,9 @@ module.exports.edit_mobility_requirements = async (req, res) => {
                 .min(1),
             otherwise: Joi.array().items(
                 Joi.object({
-                    purpose: Joi.string().required(),
-                    vehicle_type: Joi.string().required(),
-                    urgency: Joi.string().required(),
+                    purpose: Joi.string().optional().allow(""),
+                    vehicle_type: Joi.string().optional().allow(""),
+                    urgency: Joi.string().optional().allow(""),
                 })
             ),
         }),

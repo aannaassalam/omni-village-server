@@ -51,10 +51,10 @@ module.exports.add_personal_household_items = async (req, res) => {
                 otherwise: Joi.array()
                     .items(
                         Joi.object({
-                            type: Joi.string().required(),
-                            quantity: Joi.number().required(),
-                            quantity_unit: Joi.string().required(),
-                        }).required()
+                            type: Joi.string().optional().allow(""),
+                            quantity: Joi.number().optional(),
+                            quantity_unit: Joi.string().optional().allow(""),
+                        }).optional()
                     )
                     .optional(),
             }),
@@ -111,10 +111,10 @@ module.exports.edit_personal_household_items = async (req, res) => {
                 otherwise: Joi.array()
                     .items(
                         Joi.object({
-                            type: Joi.string().required(),
-                            quantity: Joi.number().required(),
-                            quantity_unit: Joi.string().required(),
-                        }).required()
+                            type: Joi.string().optional().allow(""),
+                            quantity: Joi.number().optional(),
+                            quantity_unit: Joi.string().optional().allow(""),
+                        }).optional()
                     )
                     .optional(),
             }),
