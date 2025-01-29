@@ -12,6 +12,7 @@ const forestryDropdownSchema = new mongoose.Schema(
                 "other_needs_purpose",
                 "other_needs_urgency",
                 "other_needs_type",
+                "dropdown",
             ],
             required: true,
         },

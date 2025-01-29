@@ -17,6 +17,7 @@ const PersonalHouseholdDropdownSchema = new mongoose.Schema(
                 "kitchen_items_produce",
                 "other_items",
                 "other_items_produce",
+                "dropdown",
             ],
             required: true,
         },

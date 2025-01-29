@@ -39,6 +39,10 @@ const forestrySchema = new mongoose.Schema(
                     type: Number,
                     default: null,
                 },
+                quantity_unit: {
+                    type: String,
+                    default: null,
+                },
                 purpose: [
                     {
                         type: mongoose.Schema.Types.ObjectId,
@@ -80,6 +84,10 @@ const forestrySchema = new mongoose.Schema(
                 },
                 quantity: {
                     type: Number,
+                    default: null,
+                },
+                quantity_unit: {
+                    type: String,
                     default: null,
                 },
                 purpose: [

@@ -27,7 +27,8 @@ module.exports.add_energy_dropdown = async (req, res) => {
                 "purpose_natural_gas",
                 "type_others",
                 "purpose_others",
-                "extent"
+                "extent",
+                "dropdown"
             ),
         name: Joi.object({
             en: Joi.string().required(),
@@ -75,7 +76,8 @@ module.exports.edit_energy_data = async (req, res) => {
                 "purpose_natural_gas",
                 "type_others",
                 "purpose_others",
-                "extent"
+                "extent",
+                "dropdown"
             ),
     }).options({ stripUnknown: true });
 

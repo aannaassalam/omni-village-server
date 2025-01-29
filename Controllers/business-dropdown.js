@@ -26,7 +26,9 @@ module.exports.add_business_dropdown = async (req, res) => {
                 "legal_structure",
                 "raw_materials",
                 "fuel_sources",
-                "type_of_infrastructure"
+                "type_of_infrastructure",
+                "raw_consumption_unit",
+                "fuel_source_unit"
             ),
         name: Joi.object({
             en: Joi.string().required(),
@@ -73,7 +75,9 @@ module.exports.edit_business_data = async (req, res) => {
                 "legal_structure",
                 "raw_materials",
                 "fuel_sources",
-                "type_of_infrastructure"
+                "type_of_infrastructure",
+                "raw_consumption_unit",
+                "fuel_source_unit"
             ),
     }).options({ stripUnknown: true });
 

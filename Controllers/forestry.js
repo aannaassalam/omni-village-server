@@ -64,6 +64,7 @@ module.exports.add_general_information = async (req, res) => {
                 Joi.object({
                     type: Joi.string().required(),
                     quantity: Joi.number().required(),
+                    quantity_unit: Joi.string().required(),
                     purpose: Joi.array()
                         .items(Joi.string().required())
                         .required()
@@ -189,6 +190,7 @@ module.exports.edit_general_information = async (req, res) => {
                 Joi.object({
                     type: Joi.string().required(),
                     quantity: Joi.number().required(),
+                    quantity_unit: Joi.string().required(),
                     purpose: Joi.array()
                         .items(Joi.string().required())
                         .required()

@@ -32,7 +32,8 @@ module.exports.add_personal_household_dropdown = async (req, res) => {
                 "kitchen_items",
                 "kitchen_items_produce",
                 "other_items",
-                "other_items_produce"
+                "other_items_produce",
+                "dropdown"
             ),
         name: Joi.object({
             en: Joi.string().required(),
@@ -85,7 +86,8 @@ module.exports.edit_personal_household_data = async (req, res) => {
                 "kitchen_items",
                 "kitchen_items_produce",
                 "other_items",
-                "other_items_produce"
+                "other_items_produce",
+                "dropdown"
             ),
     }).options({ stripUnknown: true });
 

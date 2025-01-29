@@ -12,6 +12,7 @@ const energyDropdownSchema = new mongoose.Schema(
                 "type_others",
                 "purpose_others",
                 "extent",
+                "dropdown",
             ],
             required: true,
         },

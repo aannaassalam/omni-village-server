@@ -27,7 +27,8 @@ module.exports.add_forestry_dropdown = async (req, res) => {
                 "timber_needs_urgency",
                 "other_needs_purpose",
                 "other_needs_urgency",
-                "other_needs_type"
+                "other_needs_type",
+                "dropdown"
             ),
         name: Joi.object({
             en: Joi.string().required(),
@@ -75,7 +76,8 @@ module.exports.edit_forestry_data = async (req, res) => {
                 "timber_needs_urgency",
                 "other_needs_purpose",
                 "other_needs_urgency",
-                "other_needs_type"
+                "other_needs_type",
+                "dropdown"
             ),
     }).options({ stripUnknown: true });
 
