@@ -999,6 +999,7 @@ module.exports.register = async (req, res) => {
 
 module.exports.login = async (req, res) => {
     const { country_code, phone, otp } = req.body;
+    console.log(otp_keeper);
     try {
         if (otp.trim() == otp_keeper[`${country_code}${phone}`]) {
             if (`${phone}` !== "1234567890") {
