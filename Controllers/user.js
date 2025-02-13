@@ -928,7 +928,7 @@ module.exports.send_otp = async (req, res) => {
                 );
             }
 
-            console.log(otp_keeper[`${country_code}${phone}`]);
+            console.log(otp_keeper);
 
             client.messages
                 .create({
