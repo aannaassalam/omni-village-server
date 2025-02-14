@@ -19,6 +19,10 @@ const landholdingByUserSchema = new mongoose.Schema(
             type: String,
             default: "",
         },
+        other_purpose_of_land: {
+            type: String,
+            default: "",
+        },
         urgency_required_land: {
             type: String,
             default: "",

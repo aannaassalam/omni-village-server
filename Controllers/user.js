@@ -987,7 +987,7 @@ module.exports.register = async (req, res) => {
                 },
                 process.env.JWT_SECRET_KEY
             );
-            res.json({ token: createToken(user._id), refreshToken });
+            res.json({ token: createToken(user._id), refreshToken, user });
         } else {
             res.status(401).send({ message: "Incorrect OTP" });
         }
@@ -999,7 +999,6 @@ module.exports.register = async (req, res) => {
 
 module.exports.login = async (req, res) => {
     const { country_code, phone, otp } = req.body;
-    console.log(otp_keeper);
     try {
         if (otp.trim() == otp_keeper[`${country_code}${phone}`]) {
             if (`${phone}` !== "1234567890") {
@@ -1016,7 +1015,7 @@ module.exports.login = async (req, res) => {
                     },
                     process.env.JWT_SECRET_KEY
                 );
-                res.json({ token: createToken(user._id), refreshToken });
+                res.json({ token: createToken(user._id), refreshToken, user });
             } else {
                 res.status(401).json({ message: "User doesn't exists!" });
             }

@@ -73,6 +73,7 @@ module.exports.get_landholding_requirements = async (req, res) => {
         {
             required_area: 1,
             purpose_for_required_land: 1,
+            other_purpose_of_land: 1,
             urgency_required_land: 1,
         }
     );
@@ -84,6 +85,7 @@ module.exports.edit_landholding_requirements = async (req, res) => {
     const schema = Joi.object({
         required_area: Joi.number().required(),
         purpose_for_required_land: Joi.string().required().allow(""),
+        other_purpose_of_land: Joi.string().optional().allow("", null),
         urgency_required_land: Joi.string().required().allow(""),
     }).options({ stripUnknown: true });
 
