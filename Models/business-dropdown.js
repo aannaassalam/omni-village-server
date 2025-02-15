@@ -13,6 +13,7 @@ const businessDropdownSchema = new mongoose.Schema(
                 "type_of_infrastructure",
                 "raw_consumption_unit",
                 "fuel_source_unit",
+                "urgency",
             ],
             required: true,
         },
