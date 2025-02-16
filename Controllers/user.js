@@ -908,11 +908,11 @@ module.exports.send_otp = async (req, res) => {
             country_code,
         });
         if (user?._id && type === "register") {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User already exists, Please Login!",
             });
         } else if (!user && type === "login") {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User doesn't exists, Please Register!",
             });
         } else {
@@ -951,7 +951,7 @@ module.exports.send_otp = async (req, res) => {
         }
     } catch (err) {
         console.log(err);
-        res.status(400).json({ message: "Bad request" });
+        return res.status(400).json({ message: "Bad request" });
     }
 };
 

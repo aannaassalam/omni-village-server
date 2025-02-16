@@ -144,30 +144,54 @@ module.exports.update_housing = async (req, res) => {
                 .required()
                 .min(1),
             renovation_requirement: Joi.boolean().required(),
-            renovation_urgency: Joi.string().optional().allow(""),
+            renovation_urgency: Joi.string().optional().allow("", null),
             expansion_requirement: Joi.boolean().required(),
-            expansion_urgency: Joi.string().optional().allow(""),
+            expansion_urgency: Joi.string().optional().allow("", null),
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
 
-        const housing = await Housing.findByIdAndUpdate(
-            value.housing_id,
-            {
-                ...value,
-                front_photo,
-                back_photo,
-                neighbourhood_photo,
-                inside_living_photo,
-                kitchen_photo,
-            },
-            {
-                runValidators: true,
-                new: true,
-            }
-        );
+        let housing;
+
+        if (!value.renovation_urgency || !value.expansion_urgency) {
+            housing = await Housing.findByIdAndUpdate(
+                value.housing_id,
+                {
+                    $unset: {
+                        renovation_urgency: !value.renovation_urgency ? 1 : 0,
+                        expansion_urgency: !value.expansion_urgency ? 1 : 0,
+                    },
+                    ...value,
+                    front_photo,
+                    back_photo,
+                    neighbourhood_photo,
+                    inside_living_photo,
+                    kitchen_photo,
+                },
+                {
+                    runValidators: true,
+                    new: true,
+                }
+            );
+        } else {
+            housing = await Housing.findByIdAndUpdate(
+                value.housing_id,
+                {
+                    ...value,
+                    front_photo,
+                    back_photo,
+                    neighbourhood_photo,
+                    inside_living_photo,
+                    kitchen_photo,
+                },
+                {
+                    runValidators: true,
+                    new: true,
+                }
+            );
+        }
 
         return res.json({
             message: "Housing updated successfully",
