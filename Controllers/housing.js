@@ -67,18 +67,53 @@ module.exports.add_housing = async (req, res) => {
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
+        console.log(req.body);
+
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
 
-        const housing = await Housing.create({
-            user_id: user._id,
-            ...value,
-            front_photo,
-            back_photo,
-            neighbourhood_photo,
-            inside_living_photo,
-            kitchen_photo,
-        });
+        console.log(value);
+
+        let housing;
+
+        if (
+            !value.renovation_urgency ||
+            value.renovation_urgency === "null" ||
+            value.expansion_urgency === "null" ||
+            !value.expansion_urgency
+        ) {
+            housing = await Housing.create(
+                {
+                    user_id: user._id,
+                    ...value,
+                    front_photo,
+                    back_photo,
+                    neighbourhood_photo,
+                    inside_living_photo,
+                    kitchen_photo,
+                },
+                {
+                    runValidators: true,
+                    new: true,
+                }
+            );
+        } else {
+            housing = await Housing.create(
+                {
+                    user_id: user._id,
+                    ...value,
+                    front_photo,
+                    back_photo,
+                    neighbourhood_photo,
+                    inside_living_photo,
+                    kitchen_photo,
+                },
+                {
+                    runValidators: true,
+                    new: true,
+                }
+            );
+        }
 
         return res.json({
             message: "Housing added successfully",
