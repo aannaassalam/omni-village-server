@@ -257,7 +257,7 @@ module.exports.add_water_harvesting_capacity = async (req, res) => {
                 .items(
                     Joi.object({
                         type: Joi.string().required(),
-                        capacity: Joi.number().optional(),
+                        capacity: Joi.number().optional().allow(null),
                     }).required()
                 )
                 .required()
@@ -598,7 +598,7 @@ module.exports.edit_water_harvesting_capacity = async (req, res) => {
                 .items(
                     Joi.object({
                         type: Joi.string().required(),
-                        capacity: Joi.number().optional(),
+                        capacity: Joi.number().optional().allow(null),
                     }).required()
                 )
                 .required()

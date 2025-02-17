@@ -103,7 +103,7 @@ module.exports.add_timber_needs = async (req, res) => {
     if (req.body.status) {
         const schema = Joi.object({
             timber_needs: Joi.boolean().required(),
-            quantity: Joi.number().optional(),
+            quantity: Joi.number().optional().allow(null),
             purpose: Joi.array().items(Joi.string().allow("")).optional(),
             urgency: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
@@ -142,7 +142,7 @@ module.exports.add_other_needs = async (req, res) => {
                 .items(
                     Joi.object({
                         type: Joi.string().optional().allow(""),
-                        quantity: Joi.number().optional(),
+                        quantity: Joi.number().optional().allow(null),
                         quantity_unit: Joi.string().optional().allow(""),
                         purpose: Joi.array()
                             .items(Joi.string().allow(""))
@@ -235,7 +235,7 @@ module.exports.edit_timber_needs = async (req, res) => {
         const schema = Joi.object({
             forestry_id: Joi.string().required(),
             timber_needs: Joi.boolean().required(),
-            quantity: Joi.number().optional(),
+            quantity: Joi.number().optional().allow(null),
             purpose: Joi.array().items(Joi.string().allow("")).optional(),
             urgency: Joi.string().optional().allow(""),
         }).options({ stripUnknown: true });
@@ -280,7 +280,7 @@ module.exports.edit_other_needs = async (req, res) => {
                 .items(
                     Joi.object({
                         type: Joi.string().optional().allow(""),
-                        quantity: Joi.number().optional(),
+                        quantity: Joi.number().optional().allow(null),
                         quantity_unit: Joi.string().optional().allow(""),
                         purpose: Joi.array()
                             .items(Joi.string().allow(""))

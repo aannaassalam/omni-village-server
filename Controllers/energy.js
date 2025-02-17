@@ -84,8 +84,8 @@ module.exports.add_electricity_information = async (req, res) => {
     if (req.body.status) {
         const schema = Joi.object({
             electric_grid: Joi.boolean().required(),
-            yearly_electricity_consumption: Joi.number().required(),
-            yearly_expenditure_electricity: Joi.number().required(),
+            yearly_electricity_consumption: Joi.number().optional().allow(null),
+            yearly_expenditure_electricity: Joi.number().optional().allow(null),
             electricity_stable: Joi.boolean().required(),
             microgrid_installed: Joi.boolean().required(),
             microgrid_type: Joi.string().required(),

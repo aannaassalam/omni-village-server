@@ -52,7 +52,7 @@ module.exports.add_personal_household_items = async (req, res) => {
                     .items(
                         Joi.object({
                             type: Joi.string().optional().allow(""),
-                            quantity: Joi.number().optional(),
+                            quantity: Joi.number().optional().allow(null),
                             quantity_unit: Joi.string().optional().allow(""),
                         }).optional()
                     )
@@ -112,7 +112,7 @@ module.exports.edit_personal_household_items = async (req, res) => {
                     .items(
                         Joi.object({
                             type: Joi.string().optional().allow(""),
-                            quantity: Joi.number().optional(),
+                            quantity: Joi.number().optional().allow(null),
                             quantity_unit: Joi.string().optional().allow(""),
                         }).optional()
                     )

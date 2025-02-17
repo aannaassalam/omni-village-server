@@ -23,7 +23,7 @@ module.exports.add_landholding_officer = async (req, res) => {
         fallow: Joi.number().required(),
         under_forest: Joi.number().required(),
         under_grassland: Joi.number().required(),
-        others: Joi.number().optional(),
+        others: Joi.number().optional().allow(null),
         land_owned_by_non_resident: Joi.number().required(),
         total_area_privately_owned: Joi.number().required(),
     }).options({ stripUnknown: true });
@@ -52,7 +52,7 @@ module.exports.edit_landholding_officer = async (req, res) => {
         fallow: Joi.number().required(),
         under_forest: Joi.number().required(),
         under_grassland: Joi.number().required(),
-        others: Joi.number().optional(),
+        others: Joi.number().optional().allow(null),
         land_owned_by_non_resident: Joi.number().required(),
         total_area_privately_owned: Joi.number().required(),
     }).options({ stripUnknown: true });

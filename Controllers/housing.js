@@ -67,12 +67,8 @@ module.exports.add_housing = async (req, res) => {
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
-        console.log(req.body);
-
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
-
-        console.log(value);
 
         let housing;
 
@@ -82,37 +78,35 @@ module.exports.add_housing = async (req, res) => {
             value.expansion_urgency === "null" ||
             !value.expansion_urgency
         ) {
-            housing = await Housing.create(
-                {
-                    user_id: user._id,
-                    ...value,
-                    front_photo,
-                    back_photo,
-                    neighbourhood_photo,
-                    inside_living_photo,
-                    kitchen_photo,
-                },
-                {
-                    runValidators: true,
-                    new: true,
-                }
-            );
+            housing = await Housing.create({
+                user_id: user._id,
+                ...value,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+                expansion_urgency:
+                    value.expansion_urgency &&
+                    value.expansion_urgency !== "null"
+                        ? value.expansion_urgency
+                        : null,
+                renovation_urgency:
+                    value.renovation_urgency &&
+                    value.renovation_urgency !== "null"
+                        ? value.renovation_urgency
+                        : null,
+            });
         } else {
-            housing = await Housing.create(
-                {
-                    user_id: user._id,
-                    ...value,
-                    front_photo,
-                    back_photo,
-                    neighbourhood_photo,
-                    inside_living_photo,
-                    kitchen_photo,
-                },
-                {
-                    runValidators: true,
-                    new: true,
-                }
-            );
+            housing = await Housing.create({
+                user_id: user._id,
+                ...value,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+            });
         }
 
         return res.json({
@@ -121,15 +115,56 @@ module.exports.add_housing = async (req, res) => {
         });
     }
 
-    const housing = await Housing.create({
-        user_id: user._id,
-        ...req.body,
-        front_photo,
-        back_photo,
-        neighbourhood_photo,
-        inside_living_photo,
-        kitchen_photo,
-    });
+    let housing;
+
+    if (
+        !req.body.renovation_urgency ||
+        req.body.renovation_urgency === "null" ||
+        req.body.expansion_urgency === "null" ||
+        !req.body.expansion_urgency
+    ) {
+        housing = await Housing.create(
+            {
+                user_id: user._id,
+                ...req.body,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+                expansion_urgency:
+                    req.body.expansion_urgency &&
+                    req.body.expansion_urgency !== "null"
+                        ? req.body.expansion_urgency
+                        : null,
+                renovation_urgency:
+                    req.body.renovation_urgency &&
+                    req.body.renovation_urgency !== "null"
+                        ? req.body.renovation_urgency
+                        : null,
+            },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+    } else {
+        housing = await Housing.create(
+            {
+                user_id: user._id,
+                ...req.body,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+            },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+    }
 
     return res.json({
         message: "Housing added successfully",
@@ -185,11 +220,8 @@ module.exports.update_housing = async (req, res) => {
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
-        console.log(req.body);
-
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
-        console.log(value);
 
         let housing;
 
@@ -202,16 +234,22 @@ module.exports.update_housing = async (req, res) => {
             housing = await Housing.findByIdAndUpdate(
                 value.housing_id,
                 {
-                    $unset: {
-                        renovation_urgency: !value.renovation_urgency ? 1 : 0,
-                        expansion_urgency: !value.expansion_urgency ? 1 : 0,
-                    },
                     ...value,
                     front_photo,
                     back_photo,
                     neighbourhood_photo,
                     inside_living_photo,
                     kitchen_photo,
+                    renovation_urgency:
+                        !value.renovation_urgency &&
+                        value.renovation_urgency === "null"
+                            ? value.renovation_urgency
+                            : null,
+                    expansion_urgency:
+                        !value.expansion_urgency &&
+                        value.expansion_urgency === "null"
+                            ? value.expansion_urgency
+                            : null,
                 },
                 {
                     runValidators: true,
@@ -242,18 +280,56 @@ module.exports.update_housing = async (req, res) => {
         });
     }
 
-    const housing = await Housing.findByIdAndUpdate(
-        req.body.housing_id,
-        {
-            ...req.body,
-            front_photo,
-            back_photo,
-            neighbourhood_photo,
-            inside_living_photo,
-            kitchen_photo,
-        },
-        { runValidators: true, new: true }
-    );
+    let housing;
+
+    if (
+        !req.body.renovation_urgency ||
+        req.body.renovation_urgency === "null" ||
+        req.body.expansion_urgency === "null" ||
+        !req.body.expansion_urgency
+    ) {
+        housing = await Housing.findByIdAndUpdate(
+            req.body.housing_id,
+            {
+                ...req.body,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+                renovation_urgency:
+                    !req.body.renovation_urgency &&
+                    req.body.renovation_urgency === "null"
+                        ? req.body.renovation_urgency
+                        : null,
+                expansion_urgency:
+                    !req.body.expansion_urgency &&
+                    req.body.expansion_urgency === "null"
+                        ? req.body.expansion_urgency
+                        : null,
+            },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+    } else {
+        housing = await Housing.findByIdAndUpdate(
+            req.body.housing_id,
+            {
+                ...req.body,
+                front_photo,
+                back_photo,
+                neighbourhood_photo,
+                inside_living_photo,
+                kitchen_photo,
+            },
+            {
+                runValidators: true,
+                new: true,
+            }
+        );
+    }
 
     return res.json({
         message: "Housing updated successfully",
