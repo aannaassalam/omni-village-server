@@ -155,7 +155,12 @@ module.exports.update_housing = async (req, res) => {
 
         let housing;
 
-        if (!value.renovation_urgency || !value.expansion_urgency) {
+        if (
+            !value.renovation_urgency ||
+            value.renovation_urgency === "null" ||
+            value.expansion_urgency === "null" ||
+            !value.expansion_urgency
+        ) {
             housing = await Housing.findByIdAndUpdate(
                 value.housing_id,
                 {
