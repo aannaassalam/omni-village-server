@@ -150,8 +150,11 @@ module.exports.update_housing = async (req, res) => {
             status: Joi.number().allow(0, 1).required(),
         }).options({ stripUnknown: true });
 
+        console.log(req.body);
+
         const { error, value } = schema.validate(req.body);
         if (error) throw error;
+        console.log(value);
 
         let housing;
 
