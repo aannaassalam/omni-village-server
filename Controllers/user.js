@@ -1164,12 +1164,12 @@ module.exports.delete_individual_user = async (req, res) => {
             returnDocument: true,
         });
         if (deleted_user._id) {
-            res.send("User deleted successfully!");
+            return res.send("User deleted successfully!");
         } else {
-            res.status(400).json({ msg: "User doesn't exists!" });
+            return res.status(400).json({ msg: "User doesn't exists!" });
         }
     } catch (err) {
-        res.status(400).json(handleErrors(err));
+        return res.status(400).json(handleErrors(err));
     }
 };
 
