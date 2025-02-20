@@ -1156,6 +1156,23 @@ module.exports.delete_user = async (req, res) => {
     }
 };
 
+module.exports.delete_individual_user = async (req, res) => {
+    const { id } = req.query;
+
+    try {
+        const deleted_user = await User.findByIdAndDelete(id, {
+            returnDocument: true,
+        });
+        if (deleted_user._id) {
+            res.send("User deleted successfully!");
+        } else {
+            res.status(400).json({ msg: "User doesn't exists!" });
+        }
+    } catch (err) {
+        res.status(400).json(handleErrors(err));
+    }
+};
+
 module.exports.land_allocation = async (req, res) => {
     const { user } = res.locals;
     const { total_land, cultivation, trees, poultry, fishery, storage } =

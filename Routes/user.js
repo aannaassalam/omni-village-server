@@ -143,6 +143,10 @@ router.post(
 );
 router.post("/refresh", user_controller.refresh);
 router.delete("/delete_user", verifyToken, user_controller.delete_user);
+router.delete(
+    "/delete_individual_user",
+    user_controller.delete_individual_user
+);
 router.post(
     "/land_allocation",
     verifyToken,
