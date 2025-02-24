@@ -122,6 +122,8 @@ module.exports.land_allocated_category_data = async (req, res) => {
             trees: 0,
         };
 
+        console.log(data);
+
         data.forEach((_data) => {
             aggregated_data.cultivation += landMeaurementConverter(
                 _data.cultivation,
@@ -154,6 +156,7 @@ module.exports.land_allocated_category_data = async (req, res) => {
 module.exports.land_used_category_data = async (req, res) => {
     let { village } = req.query;
     village = typeof village === "string" ? [village] : village;
+    console.log(village, "2");
     try {
         const cultivation_data = await Cultivation.aggregate([
             {
@@ -539,6 +542,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
                 },
             },
         ]);
+
         const poultry_data = await Poultry.aggregate([
             {
                 $lookup: {
@@ -673,6 +677,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
                 },
             },
         ]);
+
         const tree_data = await Tree.aggregate([
             {
                 $lookup: {
@@ -809,6 +814,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
                 },
             },
         ]);
+
         const hunting_data = await Hunting.aggregate([
             {
                 $lookup: {
@@ -993,6 +999,7 @@ module.exports.bifurcated_chart_label = async (req, res) => {
         // const pesticide_used_none = [];
 
         processed_grouped_data.forEach((_data) => {
+            if (!_data.name) return;
             if (_data.land_allocated) {
                 land_allocated.push({
                     name: _data.name,
