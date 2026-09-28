@@ -1,0 +1,54 @@
+const mongoose = require("mongoose");
+const {
+    localisedField,
+    optionalLocalisedField,
+} = require("../utils/localised");
+
+/**
+ * A tree: category -> subcategory -> screen. Only `is_screen` nodes carry
+ * questions and produce response documents; everything above is navigation.
+ *
+ * `path` is a materialised path (ancestors, root-first, excluding self) so
+ * "everything under X" is one indexed $match instead of a $graphLookup.
+ */
+const categorySchema = new mongoose.Schema(
+    {
+        // Display copy — deliberately NOT lowercased, unlike dropdown names.
+        title: localisedField("Category title"),
+        description: optionalLocalisedField(),
+        parentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "category",
+            default: null,
+        },
+        path: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "category",
+            },
+        ],
+        depth: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+        },
+        is_screen: {
+            type: mongoose.Schema.Types.Boolean,
+            default: false,
+        },
+        order: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+        },
+        active: {
+            type: mongoose.Schema.Types.Boolean,
+            default: true,
+        },
+    },
+    { timestamps: true }
+);
+
+categorySchema.index({ parentId: 1, order: 1 });
+categorySchema.index({ path: 1 });
+categorySchema.index({ active: 1, is_screen: 1 });
+
+module.exports = mongoose.model("category", categorySchema);

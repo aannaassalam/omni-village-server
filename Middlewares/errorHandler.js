@@ -11,6 +11,19 @@ const ErrorHandler = (error, req, res, next) => {
         });
     }
 
+    // A malformed id (`?id=nope`) is the caller's mistake, not a server fault.
+    // Mongoose raises CastError when casting a query/body value; the bson
+    // driver raises BSONError from `new ObjectId(...)`. Both used to fall
+    // through to 500.
+    if (error.name === "CastError" || error.name === "BSONError") {
+        return res.status(400).json({
+            name: "InvalidValue",
+            message: error.path
+                ? `"${error.path}" has an invalid value`
+                : "An id in the request is not valid",
+        });
+    }
+
     if (error instanceof AppError) {
         console.log(error);
         return res.status(error.statusCode).json({

@@ -74,6 +74,12 @@ const mobility_officer_dropdown = require("./Routes/mobility-officer-dropdown");
 const landholding_officer_dropdown = require("./Routes/landholding-officer-dropdown");
 const water_officer_dropdown = require("./Routes/water-officer-dropdown");
 
+// Dynamic questionnaire
+const countries = require("./Routes/countries");
+const categories = require("./Routes/categories");
+const questions = require("./Routes/questions");
+const responses = require("./Routes/responses");
+
 const connection_url = require("./Enviroment");
 
 const app = express();
@@ -202,6 +208,12 @@ app.use("/api/mobility-officer-dropdown", mobility_officer_dropdown);
 app.use("/api/water-officer-dropdown", water_officer_dropdown);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
+
+// Dynamic questionnaire
+app.use("/api/countries", countries);
+app.use("/api/categories", categories);
+app.use("/api/questions", questions);
+app.use("/api/responses", responses);
 
 app.get("/", async (req, res) => {
     // for await (const _item of Object.entries(object_of_arrays)) {
