@@ -2,7 +2,6 @@ const Trees = require("../Models/trees");
 const TreeProducts = require("../Models/treeProducts");
 const TreeCrop = require("../Models/treeCrop");
 const mongoose = require("mongoose");
-const Logger = require("../Logger");
 const moment = require("moment");
 
 const handleErrors = (err) => {
