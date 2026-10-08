@@ -4,6 +4,7 @@ const moderator_controller = require("../Controllers/moderator");
 const { checkModerator, verifyModeratorToken } = require("../Middlewares/user");
 const fs = require("fs");
 const ControllerWrapper = require("../utils/ControllerWrapper");
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -29,7 +30,14 @@ router.get(
     "/list-all-approved",
     ControllerWrapper(moderator_controller.list_all_approved)
 );
-router.post("/generate_token", moderator_controller.generate_token);
+// As /user/generate_token: an officer's token for a phone number, with no
+// OTP. A super admin's only; neither client calls it.
+router.post(
+    "/generate_token",
+    verifyAdmin,
+    requireRole("admin"),
+    moderator_controller.generate_token
+);
 router.post("/register", moderator_controller.register);
 
 router.post("/send_otp", moderator_controller.send_otp);

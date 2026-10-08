@@ -1,8 +1,5 @@
 const Joi = require("joi");
 const Countries = require("../Models/countries");
-const Villages = require("../Models/villages");
-const Questions = require("../Models/questions");
-const Responses = require("../Models/responses");
 const AppError = require("../AppError");
 
 module.exports.get_countries = async (req, res) => {
@@ -71,31 +68,4 @@ module.exports.edit_country = async (req, res) => {
     if (!country) throw new AppError(0, "Country not found", 404);
 
     return res.json(country);
-};
-
-module.exports.delete_country = async (req, res) => {
-    const { id } = req.query;
-    if (!id) throw new AppError(0, "Please provide id", 400);
-
-    // Deleting a country would orphan village links, orphan the countryId
-    // denormalised onto every response submitted from it, and silently widen
-    // the reach of every question that excludes it. Deactivating is the safe verb.
-    const [villageCount, questionCount, responseCount] = await Promise.all([
-        Villages.countDocuments({ countryId: id }),
-        Questions.countDocuments({ "targeting.excludedCountries": id }),
-        Responses.countDocuments({ countryId: id }),
-    ]);
-
-    if (villageCount > 0 || questionCount > 0 || responseCount > 0) {
-        throw new AppError(
-            0,
-            `Country is in use by ${villageCount} village(s), ${questionCount} question(s) and ${responseCount} response(s) — deactivate it instead.`,
-            409
-        );
-    }
-
-    const country = await Countries.findByIdAndDelete(id);
-    if (!country) throw new AppError(0, "Country not found", 404);
-
-    return res.json({ message: "Country deleted successfully" });
 };

@@ -13,6 +13,9 @@
  *
  * --reset refuses to run once any responses exist, because deleting a question
  * that has been answered breaks the questionId binding those answers rely on.
+ * It also refuses once the questionnaire has been edited in the dashboard —
+ * anything published (history), drafted, unpublished, added by a place, or
+ * changed by a place for itself (place_overrides).
  */
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -21,6 +24,8 @@ const connection_url = require("../Enviroment");
 const Categories = require("../Models/categories");
 const Questions = require("../Models/questions");
 const Responses = require("../Models/responses");
+const History = require("../Models/questionnaireHistory");
+const PlaceOverrides = require("../Models/placeOverrides");
 const {
     SKIP_FIELDS,
     SCREEN_SPLITS,
@@ -481,6 +486,41 @@ const run = async () => {
             await mongoose.disconnect();
             process.exit(1);
         }
+
+        // Work that exists nowhere else and cannot be rebuilt from the
+        // schemas: what was published and by whom, drafts and questions
+        // still waiting to be published, and anything a place added.
+        const edited = {
+            $or: [
+                { hasDraft: true },
+                { unpublished: true },
+                { ownerPlaceId: { $ne: null } },
+            ],
+        };
+        // …and what places changed about the Master's questions: every
+        // override points at a question or category this would delete.
+        const [historyCount, editedQuestions, editedCategories, overrideCount] =
+            await Promise.all([
+                History.countDocuments(),
+                Questions.countDocuments(edited),
+                Categories.countDocuments(edited),
+                PlaceOverrides.countDocuments(),
+            ]);
+        if (
+            historyCount + editedQuestions + editedCategories + overrideCount >
+            0
+        ) {
+            console.error(
+                `Refusing to reset: ${historyCount} published change(s) in the history, ` +
+                    `${editedQuestions} question(s) and ${editedCategories} categor(ies) ` +
+                    "with a draft, unpublished, or owned by a place, " +
+                    `and ${overrideCount} change(s) places made for themselves.\n` +
+                    "The questionnaire has been edited in the dashboard; a reset would discard that work."
+            );
+            await mongoose.disconnect();
+            process.exit(1);
+        }
+
         await Promise.all([Categories.deleteMany({}), Questions.deleteMany({})]);
         console.log("reset: cleared categories and questions\n");
     }

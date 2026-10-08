@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const countries_controller = require("../Controllers/countries");
+const places_controller = require("../Controllers/places");
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 /**
@@ -9,7 +11,7 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *      tags:
  *        - Countries
  *      summary: List countries.
- *      description: Master list of countries used for questionnaire targeting and village linkage.
+ *      description: Master list of countries - the top level of the tree of places - and what villages are linked to.
  *      produces:
  *        - application/json
  *
@@ -67,7 +69,12 @@ router.get("/", ControllerWrapper(countries_controller.get_countries));
  *        500:
  *          description: Internal Server Error
  */
-router.post("/add-country", ControllerWrapper(countries_controller.add_country));
+router.post(
+    "/add-country",
+    verifyAdmin,
+    requireRole("admin"),
+    ControllerWrapper(countries_controller.add_country)
+);
 
 /**
  * @swagger
@@ -104,7 +111,12 @@ router.post("/add-country", ControllerWrapper(countries_controller.add_country))
  *        500:
  *          description: Internal Server Error
  */
-router.put("/edit-country", ControllerWrapper(countries_controller.edit_country));
+router.put(
+    "/edit-country",
+    verifyAdmin,
+    requireRole("admin"),
+    ControllerWrapper(countries_controller.edit_country)
+);
 
 /**
  * @swagger
@@ -113,7 +125,7 @@ router.put("/edit-country", ControllerWrapper(countries_controller.edit_country)
  *      tags:
  *        - Countries
  *      summary: Delete a country.
- *      description: Refused with 409 when any village or question still references it.
+ *      description: The same guarded delete as DELETE /places/{id} - refused with 409 while it has places inside it, a team, responses or questionnaire changes of its own.
  *      produces:
  *        - application/json
  *
@@ -135,7 +147,12 @@ router.put("/edit-country", ControllerWrapper(countries_controller.edit_country)
  */
 router.delete(
     "/delete-country",
-    ControllerWrapper(countries_controller.delete_country)
+    verifyAdmin,
+    requireRole("admin"),
+    ControllerWrapper((req, res) => {
+        req.params.id = req.query.id;
+        return places_controller.delete_place(req, res);
+    })
 );
 
 module.exports = router;

@@ -79,6 +79,8 @@ const countries = require("./Routes/countries");
 const categories = require("./Routes/categories");
 const questions = require("./Routes/questions");
 const responses = require("./Routes/responses");
+const places = require("./Routes/places");
+const questionnaire = require("./Routes/questionnaire");
 
 const connection_url = require("./Enviroment");
 
@@ -214,6 +216,8 @@ app.use("/api/countries", countries);
 app.use("/api/categories", categories);
 app.use("/api/questions", questions);
 app.use("/api/responses", responses);
+app.use("/api/places", places);
+app.use("/api/questionnaire", questionnaire);
 
 app.get("/", async (req, res) => {
     // for await (const _item of Object.entries(object_of_arrays)) {

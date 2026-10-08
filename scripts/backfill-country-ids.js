@@ -4,9 +4,10 @@
  *
  * Idempotent — safe to re-run. Run with:  node scripts/backfill-country-ids.js
  *
- * Also prints a diagnostic (no writes) for the two weak joins the questionnaire
- * targeting depends on, so their blast radius is known before anyone trusts
- * village-level targeting.
+ * Also prints a diagnostic (no writes) for the two weak joins that decide
+ * which place a villager belongs to (and so which questionnaire they are
+ * asked), so their blast radius is known before anyone trusts a village-level
+ * change.
  */
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -128,13 +129,13 @@ const run = async () => {
         return !digits || !countryCodes.has(digits);
     }).length;
 
-    console.log("\n--- targeting join diagnostics -------------------------");
+    console.log("\n--- villager-to-place join diagnostics -----------------");
     console.log(`users total                                : ${users.length}`);
     console.log(`users whose village_name matches no village: ${villageMismatch}`);
     console.log(`users whose country_code maps to no country: ${codeMismatch}`);
     console.log(
-        "Village-level targeting is best-effort. A high village mismatch means\n" +
-            "treat it as advisory until user.village_id exists."
+        "A villager whose village matches nothing is asked their country's\n" +
+            "questionnaire, not their village's, until user.village_id exists."
     );
 
     await mongoose.disconnect();

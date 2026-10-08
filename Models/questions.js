@@ -30,6 +30,11 @@ const optionSchema = new mongoose.Schema(
             required: [true, "Option value is required!"],
         },
         label: localisedField("Option label"),
+        // No longer offered, but kept: answers already saved on it stay
+        // readable and keep validating. Absent means "offered".
+        archived: {
+            type: mongoose.Schema.Types.Boolean,
+        },
     },
     { _id: false }
 );
@@ -93,21 +98,51 @@ const questionSchema = new mongoose.Schema(
             ref: "question",
             default: null,
         },
-        // Exclusion-based: empty arrays mean "applies everywhere". A named
-        // sub-object so excludedDistricts can be added later with no migration.
-        targeting: {
-            excludedCountries: [
-                {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "country",
-                },
-            ],
-            excludedVillages: [
-                {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "village",
-                },
-            ],
+
+        /* ---- Drafts and ownership. Additive: a document without these is
+           the Master's and published, as every one was before them. See
+           utils/drafts.js ---- */
+
+        // null = the Master's own. A place's own question has its place here.
+        ownerPlaceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            default: null,
+        },
+        // Never published: the document itself is the draft, and nothing
+        // outside the editor reads it.
+        unpublished: {
+            type: mongoose.Schema.Types.Boolean,
+        },
+        // What the next publish changes on a PUBLISHED document: only the
+        // fields that differ. An empty draft is removed, never stored as {}
+        // (Mongoose drops empty objects on save), so `hasDraft` is the one
+        // thing that says a draft exists.
+        draft: {
+            type: mongoose.Schema.Types.Mixed,
+        },
+        hasDraft: {
+            type: mongoose.Schema.Types.Boolean,
+            default: false,
+        },
+        // Raised by every write. An edit sends the one it was shown, so two
+        // people editing the same question cannot silently overwrite each other.
+        rev: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+        },
+        draftBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "admin",
+        },
+        draftAt: {
+            type: mongoose.Schema.Types.Date,
+        },
+        // The published question this one takes over from when it is
+        // published (that one then gets active:false + replacedBy).
+        replaces: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "question",
+            default: null,
         },
     },
     { timestamps: true }
@@ -116,6 +151,7 @@ const questionSchema = new mongoose.Schema(
 questionSchema.index({ categoryId: 1, active: 1, order: 1 });
 questionSchema.index({ parentQuestionId: 1 });
 questionSchema.index({ replacedBy: 1 });
+questionSchema.index({ ownerPlaceId: 1 });
 
 module.exports = mongoose.model("question", questionSchema);
 module.exports.QUESTION_TYPES = QUESTION_TYPES;

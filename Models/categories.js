@@ -43,6 +43,35 @@ const categorySchema = new mongoose.Schema(
             type: mongoose.Schema.Types.Boolean,
             default: true,
         },
+
+        /* ---- Drafts and ownership: the same fields, with the same meaning,
+           as Models/questions.js. See utils/drafts.js ---- */
+
+        ownerPlaceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            default: null,
+        },
+        unpublished: {
+            type: mongoose.Schema.Types.Boolean,
+        },
+        draft: {
+            type: mongoose.Schema.Types.Mixed,
+        },
+        hasDraft: {
+            type: mongoose.Schema.Types.Boolean,
+            default: false,
+        },
+        rev: {
+            type: mongoose.Schema.Types.Number,
+            default: 0,
+        },
+        draftBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "admin",
+        },
+        draftAt: {
+            type: mongoose.Schema.Types.Date,
+        },
     },
     { timestamps: true }
 );

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const responses_controller = require("../Controllers/responses");
 const { verifyToken, checkUser } = require("../Middlewares/user");
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 /**
@@ -81,7 +82,12 @@ router.post(
  *        500:
  *          description: Internal Server Error
  */
-router.get("/stats", ControllerWrapper(responses_controller.response_stats));
+router.get(
+    "/stats",
+    verifyAdmin,
+    requireRole("admin", "regional"),
+    ControllerWrapper(responses_controller.response_stats)
+);
 
 /**
  * @swagger
@@ -119,7 +125,12 @@ router.get("/stats", ControllerWrapper(responses_controller.response_stats));
  *        500:
  *          description: Internal Server Error
  */
-router.get("/rows", ControllerWrapper(responses_controller.list_response_rows));
+router.get(
+    "/rows",
+    verifyAdmin,
+    requireRole("admin", "regional"),
+    ControllerWrapper(responses_controller.list_response_rows)
+);
 
 /**
  * @swagger
@@ -131,7 +142,9 @@ router.get("/rows", ControllerWrapper(responses_controller.list_response_rows));
  *      description: >
  *        Returns dynamic columns (including retired questions, so historical
  *        answers keep a column) alongside the page of rows. Filtering, sorting
- *        and pagination are all server-side.
+ *        and pagination are all server-side. Each row carries the questions
+ *        that were on offer when it was saved (asked), the questionnaire
+ *        version, and with each answer only the options it chose.
  *      produces:
  *        - application/json
  *
@@ -148,15 +161,15 @@ router.get("/rows", ControllerWrapper(responses_controller.list_response_rows));
  *         required: false
  *         schema:
  *           type: string
- *       - name: country
+ *       - name: place
  *         in: query
- *         description:
+ *         description: A place id of any level - matches every village inside it, and decides which questions are columns (the Master's, those of the places above, and those added in it or inside it). A regional account is always held to its own place, and may only name one inside it.
  *         required: false
  *         schema:
  *           type: string
- *       - name: village
+ *       - name: user
  *         in: query
- *         description: Repeatable.
+ *         description: Search by villager - every word must be found in the first name, last name or phone number.
  *         required: false
  *         schema:
  *           type: string
@@ -199,6 +212,11 @@ router.get("/rows", ControllerWrapper(responses_controller.list_response_rows));
  *        500:
  *          description: Internal Server Error
  */
-router.get("/", ControllerWrapper(responses_controller.list_responses));
+router.get(
+    "/",
+    verifyAdmin,
+    requireRole("admin", "regional"),
+    ControllerWrapper(responses_controller.list_responses)
+);
 
 module.exports = router;

@@ -21,14 +21,48 @@ const bad = (message) => {
  *
  * `children` is the group's child questions, keyed by id — only used for
  * repeatable_group. `depth` guards against nesting beyond MAX_GROUP_DEPTH.
+ *
+ * `ctx` is what a resubmission needs; a first answer has none:
+ *   saved — the value already stored for THIS question. The app resends every
+ *           answer on every save, so what was valid when it was saved has to
+ *           stay valid after an option is removed.
+ *   known — id strings of every question of the screen, live or not. A row
+ *           answer for one of them that is not in `children` (hidden after
+ *           the form was opened) is ignored instead of refused.
+ *   complete — false for "Save as draft" and for a list page saving itself.
+ *           Only then is a top-level group let off its minimum number of
+ *           rows, as the app lets it off. Rows are never let off anything.
+ *   carried — id strings of the row fields this response is carrying for a
+ *           form that was not served them (see keptFor below). A required
+ *           one of those is held by the entry although this save omits it.
  */
-const validateAnswer = (question, value, children = new Map(), depth = 1) => {
+/**
+ * What a select may hold. When the caller knows every key that was ever valid
+ * here (`knownValues`, from utils/effectiveQuestionnaire.js: the Master's
+ * options, archived ones included, plus what the places above added), that is
+ * the list — an option switched off a minute ago must not fail a form that
+ * was already open. Otherwise today's options. Always plus what this answer
+ * already was.
+ */
+const allowedValues = (question, ctx) =>
+    (question.knownValues
+        ? [...question.knownValues]
+        : (question.options || []).map((o) => o.value)
+    ).concat(ctx.saved ?? []);
+
+const validateAnswer = (question, value, children = new Map(), depth = 1, ctx = {}) => {
     const label = localise(question.label);
 
     // Depth is checked before the empty-value shortcut below: an over-nested
     // group that happens to have no rows is still an over-nested group.
     if (question.type === "repeatable_group" && depth > MAX_GROUP_DEPTH) {
         bad(`"${label}" is nested deeper than ${MAX_GROUP_DEPTH} levels`);
+    }
+
+    // Before the empty-value shortcut: a section holds no value at all, and
+    // a blank one must not be stored as its answer either.
+    if (question.type === "section") {
+        bad(`"${label}" is a section and cannot be answered directly`);
     }
 
     if (question.required && isEmpty(value)) {
@@ -51,6 +85,9 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
             if (typeof value !== "number" || !Number.isFinite(value)) {
                 bad(`"${label}" must be a number`);
             }
+            // As for options: what was valid when it was saved stays valid
+            // after the range is changed, until it is edited.
+            if (value === ctx.saved) return;
             if (question.min !== null && question.min !== undefined && value < question.min) {
                 bad(`"${label}" must be at least ${question.min}`);
             }
@@ -69,13 +106,17 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
         }
 
         case "date": {
-            const parsed = new Date(value);
+            // Text only: `new Date(0)` and `new Date(false)` are dates too.
+            const parsed = typeof value === "string" ? new Date(value) : new Date(NaN);
             if (Number.isNaN(parsed.getTime())) bad(`"${label}" must be a valid date`);
             return;
         }
 
         case "single_select": {
-            const allowed = (question.options || []).map((o) => o.value);
+            // Today's options plus what this answer already was: an unchanged
+            // answer on a since-removed option must not fail every later save,
+            // while a fresh choice of that option still does.
+            const allowed = allowedValues(question, ctx);
             if (!allowed.includes(value)) {
                 bad(`"${value}" is not an option for "${label}"`);
             }
@@ -84,7 +125,8 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
 
         case "multi_select": {
             if (!Array.isArray(value)) bad(`"${label}" must be a list`);
-            const allowed = (question.options || []).map((o) => o.value);
+            // As for single_select: today's options plus the saved selections.
+            const allowed = allowedValues(question, ctx);
             value.forEach((entry) => {
                 if (!allowed.includes(entry)) {
                     bad(`"${entry}" is not an option for "${label}"`);
@@ -96,22 +138,18 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
             return;
         }
 
-        case "section": {
-            // A section is presentational: it groups its children in the UI but
-            // holds no value, and never appears in a stored response.
-            bad(`"${label}" is a section and cannot be answered directly`);
-            return;
-        }
-
         case "repeatable_group": {
             if (!Array.isArray(value)) bad(`"${label}" must be a list of rows`);
 
             const minRows = question.min ?? 0;
             const maxRows = question.max ?? DEFAULT_MAX_ROWS;
-            if (value.length < minRows) bad(`"${label}" needs at least ${minRows} row(s)`);
+            if ((ctx.complete ?? true) && value.length < minRows) {
+                bad(`"${label}" needs at least ${minRows} row(s)`);
+            }
             if (value.length > maxRows) bad(`"${label}" allows at most ${maxRows} row(s)`);
 
             const seenRowIds = new Set();
+            const mentioned = mentionedIn(value);
             value.forEach((row) => {
                 if (!row || typeof row !== "object") bad(`"${label}" has an invalid row`);
                 if (!Array.isArray(row.answers)) bad(`"${label}" row is missing answers`);
@@ -125,10 +163,29 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
                     seenRowIds.add(row.rowId);
                 }
 
+                // A row finds its saved self by rowId, never by position; one
+                // sent without a rowId is new.
+                const savedRow =
+                    row.rowId && (ctx.saved || []).find((old) => old.rowId === row.rowId);
+
                 // Rows bind to children by questionId ONLY — never by position.
+                const answeredInRow = new Set();
                 row.answers.forEach((answer) => {
+                    if (!answer || typeof answer !== "object") {
+                        bad(`"${label}" row has an invalid answer`);
+                    }
+                    const id = String(answer.questionId);
+                    if (answeredInRow.has(id)) {
+                        bad(`"${label}" row answers one question twice`);
+                    }
+                    answeredInRow.add(id);
+
                     const child = children.get(String(answer.questionId));
                     if (!child) {
+                        // Unserved is not unknown: a field of this screen that
+                        // was hidden after the form was opened. It is skipped
+                        // here and snapshotAnswer keeps what the row had saved.
+                        if (ctx.known?.has(String(answer.questionId))) return;
                         bad(
                             `Unknown question ${answer.questionId} in "${label}" row`
                         );
@@ -137,18 +194,46 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
                         child,
                         answer.value,
                         child.childMap || new Map(),
-                        depth + 1
+                        depth + 1,
+                        {
+                            saved: (savedRow?.answers || []).find(
+                                (old) => String(old.questionId) === String(child._id)
+                            )?.value,
+                            known: ctx.known,
+                            carried: ctx.carried,
+                        }
                     );
                 });
 
                 // Required children missing from the row are caught here rather
                 // than silently stored as absent.
+                //
+                // Except in an entry that was saved without that field — it
+                // was hidden then, or became required since, or a place
+                // added it. The app resends every entry on every save, so one
+                // old entry would otherwise fail them all: it keeps its pass
+                // until the field is filled in. A NEW entry, and a field the
+                // saved entry did have, are checked as ever.
                 children.forEach((child) => {
                     if (!child.required) return;
-                    const present = row.answers.some(
-                        (a) => String(a.questionId) === String(child._id)
-                    );
-                    if (!present) bad(`"${localise(child.label)}" is required in "${label}"`);
+                    const has = (answers) =>
+                        answers.some(
+                            (a) =>
+                                String(a.questionId) === String(child._id) &&
+                                !isEmpty(a.value)
+                        );
+                    if (has(row.answers)) return;
+                    if (savedRow && !has(savedRow.answers || [])) return;
+                    // This form was never served the field (keptFor): an
+                    // entry that holds it keeps its saved value, and a new
+                    // entry cannot have it — neither can be asked for it.
+                    if (
+                        ctx.carried?.has(String(child._id)) &&
+                        !mentioned.has(String(child._id))
+                    ) {
+                        return;
+                    }
+                    bad(`"${localise(child.label)}" is required in "${label}"`);
                 });
             });
             return;
@@ -159,12 +244,61 @@ const validateAnswer = (question, value, children = new Map(), depth = 1) => {
     }
 };
 
+/** The ids answered in ANY row of one group's value, as sent. */
+const mentionedIn = (rows) =>
+    new Set(
+        (Array.isArray(rows) ? rows : []).flatMap((row) =>
+            (Array.isArray(row?.answers) ? row.answers : [])
+                .filter((answer) => answer && typeof answer === "object")
+                .map((answer) => String(answer.questionId))
+        )
+    );
+
+/**
+ * What a saved row keeps although this save did not send it.
+ *
+ * The app rebuilds each row from the fields it was served and resends the
+ * whole group; inside a row it sends no blanks, so "not sent" is how a
+ * cleared field arrives. Two kinds of field must not be read that way:
+ *
+ *   - one that is not served any more (hidden after villagers filled it in):
+ *     its values ride along, exactly as they were stored;
+ *   - one that is served AGAIN after that, to a form that was opened while
+ *     it was hidden and so still cannot send it. Such a form mentions the
+ *     field in none of its rows — a form that was served it resends it with
+ *     every entry that holds it — so the values keep riding along until a
+ *     save mentions the field somewhere.
+ *
+ * `carry` is `{ was, now }`, two Sets of field ids: what the response was
+ * carrying before this save, and (filled in here) what it carries after it.
+ *
+ * ponytail: the second rule cannot tell that stale form from a villager who
+ * blanks the field in every entry at once right after it came back: their
+ * blank is kept as the old value until one save sends the field in some
+ * entry. The real fix is the app sending a cleared row field as null, as it
+ * does at the top level (QUESTIONNAIRE_PLAN.md, phase 8).
+ */
+const keptFor = (savedAnswers, sent, children, mentioned, carry) =>
+    savedAnswers.filter((answer) => {
+        const id = String(answer.questionId);
+        if (sent.has(id) && children.has(id)) return false;
+        const unserved = !children.has(id);
+        const unseen = Boolean(carry?.was.has(id)) && !mentioned.has(id);
+        if (!unserved && !unseen) return false;
+        carry?.now.add(id);
+        return true;
+    });
+
 /**
  * Freezes the answer: label/type/options are copied in, recursively, so each
  * child answer inside a row carries its OWN snapshot. Nothing in a stored row
  * references a child by position.
+ *
+ * `saved` is the snapshot already stored for this question, if any. It keeps
+ * a removed option readable and gives each row back its hidden fields
+ * (`carry`: see keptFor).
  */
-const snapshotAnswer = (question, value, children = new Map()) => {
+const snapshotAnswer = (question, value, children = new Map(), saved, carry) => {
     // label/options keep their full localised objects so a stored answer can be
     // read back in any language it was offered in.
     const base = {
@@ -175,7 +309,32 @@ const snapshotAnswer = (question, value, children = new Map()) => {
             value: o.value,
             label: o.label,
         })),
+        // Whose wording `label` is, when it is not the Master's: the place
+        // the resolver took it from (`from.label`). Left out otherwise, so a
+        // missing `changedIn` reads as "nobody changed it" — on every
+        // response saved before places could, too. An ObjectId at every
+        // depth: inside a row nothing casts it.
+        ...(question.from?.label
+            ? { changedIn: new mongoose.Types.ObjectId(question.from.label) }
+            : {}),
     };
+
+    // An unchanged answer may sit on an option that has since been removed
+    // (validateAnswer lets it through). Its entry comes from the earlier
+    // snapshot, so the stored answer still says what was chosen.
+    const chosen = [].concat(value ?? []);
+    (saved?.options || []).forEach((old) => {
+        const current = base.options.some((o) => o.value === old.value);
+        if (!current && chosen.includes(old.value)) base.options.push(old);
+    });
+    // …or on one switched off for this place after the form was opened: the
+    // resolver's full list (`allOptions`) still knows what it was called.
+    (question.allOptions || []).forEach((option) => {
+        const current = base.options.some((o) => o.value === option.value);
+        if (!current && chosen.includes(option.value)) {
+            base.options.push({ value: option.value, label: option.label });
+        }
+    });
 
     if (question.type !== "repeatable_group") {
         return {
@@ -184,45 +343,77 @@ const snapshotAnswer = (question, value, children = new Map()) => {
         };
     }
 
-    const rows = (value || []).map((row) => ({
-        rowId: row.rowId || new mongoose.Types.ObjectId().toString(),
-        answers: row.answers.map((answer) => {
-            const child = children.get(String(answer.questionId));
-            return snapshotAnswer(child, answer.value, child.childMap || new Map());
-        }),
-    }));
+    const mentioned = mentionedIn(value);
+    // A form that sends a field was served it: nothing is carried for that
+    // field any more (keptFor puts back what is still not served).
+    mentioned.forEach((id) => carry?.now.delete(id));
+    const rows = (value || []).map((row) => {
+        // Matched by rowId, as in validateAnswer. A row with no saved self
+        // gets nothing carried, and a saved row that was not sent is gone.
+        const savedRow =
+            row.rowId && (saved?.value || []).find((old) => old.rowId === row.rowId);
+        const savedAnswers = savedRow?.answers || [];
+        const sent = new Set(
+            row.answers
+                .filter((answer) => !isEmpty(answer.value))
+                .map((answer) => String(answer.questionId))
+        );
+
+        return {
+            rowId: row.rowId || new mongoose.Types.ObjectId().toString(),
+            answers: row.answers
+                .flatMap((answer) => {
+                    const child = children.get(String(answer.questionId));
+                    // Not served: validateAnswer ignored it, so it is not stored.
+                    // Nor is a blank: inside a row, as at the top level, an
+                    // empty value is no answer.
+                    if (!child || isEmpty(answer.value)) return [];
+                    return [
+                        snapshotAnswer(
+                            child,
+                            answer.value,
+                            child.childMap || new Map(),
+                            // A nested group gets its own saved rows this way,
+                            // so the same carry happens one level down.
+                            savedAnswers.find(
+                                (old) => String(old.questionId) === String(child._id)
+                            ),
+                            carry
+                        ),
+                    ];
+                })
+                .concat(keptFor(savedAnswers, sent, children, mentioned, carry)),
+        };
+    });
 
     return { ...base, value: rows };
 };
 
 /**
- * Mechanically-detectable structural changes only. The judgement case — an
- * option label whose MEANING shifted ("3-5 people" -> "3-4 people") keeps the
- * same `value` and is invisible here by design; the dashboard asks the human.
+ * Every question id a stored `answers` array holds, at ANY depth: top level,
+ * inside rows, inside nested rows. Kept on the response as `answeredIds`, so
+ * "is this question answered anywhere?" is one indexed match instead of a
+ * guess at how deep to look.
  */
-const diffIsStructural = (oldQuestion, patch) => {
-    if (patch.type !== undefined && patch.type !== oldQuestion.type) {
-        return "Changing a question's type is always structural";
-    }
-    if (patch.options !== undefined) {
-        const oldValues = (oldQuestion.options || []).map((o) => o.value);
-        const newValues = patch.options.map((o) => o.value);
-        // Adding and removing options is cosmetic (responses snapshot their
-        // options). Renaming an option's identity key is not.
-        const renamed =
-            oldValues.some((v) => !newValues.includes(v)) &&
-            newValues.some((v) => !oldValues.includes(v));
-        if (renamed) {
-            return "An option's value key changed — that is a new question";
-        }
-    }
-    return null;
+const collectAnsweredIds = (answers) => {
+    const ids = new Set();
+    const walk = (list) =>
+        (list || []).forEach((answer) => {
+            ids.add(String(answer.questionId));
+            // Only a group's value is a list of rows; a multi_select's entries
+            // have no answers and fall straight through.
+            if (Array.isArray(answer.value)) {
+                answer.value.forEach((row) => walk(row?.answers));
+            }
+        });
+    walk(answers);
+    return [...ids];
 };
 
 module.exports = {
     validateAnswer,
     snapshotAnswer,
-    diffIsStructural,
+    collectAnsweredIds,
     MAX_GROUP_DEPTH,
 };
 
@@ -392,35 +583,6 @@ function demo() {
     );
     assert.strictEqual(snapSelect.options.length, 2, "options are snapshotted");
 
-    // structural vs cosmetic
-    assert.ok(
-        diffIsStructural({ type: "single_select", options: opts }, { type: "multi_select" }),
-        "type change is structural"
-    );
-    assert.strictEqual(
-        diffIsStructural(
-            { type: "single_select", options: opts },
-            { options: [{ value: "well", label: "Borewell" }, { value: "tap", label: "Tap" }] }
-        ),
-        null,
-        "renaming an option label is cosmetic"
-    );
-    assert.strictEqual(
-        diffIsStructural(
-            { type: "single_select", options: opts },
-            { options: [{ value: "well", label: "Well" }] }
-        ),
-        null,
-        "removing an option is cosmetic"
-    );
-    assert.ok(
-        diffIsStructural(
-            { type: "single_select", options: opts },
-            { options: [{ value: "borewell", label: "Borewell" }, { value: "tap", label: "Tap" }] }
-        ),
-        "changing an option's value key is structural"
-    );
-
     // a section can never be answered
     throws(
         () => validateAnswer(q({ type: "section", label: { en: "Utilisation" } }), "x"),
@@ -436,6 +598,369 @@ function demo() {
     const multiSnap = snapshotAnswer(multi, "well");
     assert.strictEqual(multiSnap.label.ms, "Sumber air");
     assert.strictEqual(multiSnap.options[0].label.ms, "Perigi");
+
+    /* ---- safer saving: what is already saved shapes what is accepted ---- */
+
+    // An answer as it sits in a stored response — what `saved` is made of.
+    const stored = (question, value, options = []) => ({
+        questionId: question._id,
+        label: question.label,
+        type: question.type,
+        options,
+        value,
+    });
+
+    // A removed option: unchanged, the answer still validates; chosen afresh
+    // it does not; and its entry survives in the snapshot, once.
+    const lake = { value: "lake", label: { en: "Lake" } };
+    const source = q({ type: "single_select", label: { en: "Source" }, options: opts });
+    const savedSource = stored(source, "lake", [...opts, lake]);
+    validateAnswer(source, "lake", new Map(), 1, { saved: "lake" });
+    throws(
+        () => validateAnswer(source, "lake", new Map(), 1, { saved: "well" }),
+        "fresh choice of a removed option"
+    );
+    assert.deepStrictEqual(
+        snapshotAnswer(source, "lake", new Map(), savedSource).options,
+        [...opts, lake],
+        "a removed option that is still chosen keeps its entry"
+    );
+    assert.strictEqual(
+        snapshotAnswer(source, "well", new Map(), savedSource).options.length,
+        2,
+        "an option no longer chosen is not kept, and none is duplicated"
+    );
+    const sources = q({ type: "multi_select", options: opts });
+    validateAnswer(sources, ["lake", "tap"], new Map(), 1, { saved: ["well", "lake"] });
+    throws(
+        () => validateAnswer(sources, ["pond"], new Map(), 1, { saved: ["well", "lake"] }),
+        "multi_select entry that is neither an option nor saved"
+    );
+
+    // A group whose `area` field was hidden after rows were filled in: still a
+    // question of the screen (known), no longer one of the served children.
+    const rice = { value: "rice", label: { en: "Rice" } };
+    const millet = { value: "millet", label: { en: "Millet" } };
+    const crop = q({ type: "single_select", label: { en: "Crop" }, options: [rice] });
+    const area = q({ type: "number", label: { en: "Area" } });
+    const crops = q({ type: "repeatable_group", label: { en: "Crops" } });
+    const served = new Map([[String(crop._id), crop]]);
+    const known = new Set([crops, crop, area].map((x) => String(x._id)));
+    const savedR1 = {
+        rowId: "r1",
+        answers: [stored(crop, "millet", [rice, millet]), stored(area, 5)],
+    };
+    // r2 sits first on purpose: matching rows by position would pair it with
+    // the r1 that is resent first below.
+    const savedCrops = stored(crops, [
+        { rowId: "r2", answers: [stored(crop, "rice", [rice]), stored(area, 7)] },
+        savedR1,
+    ]);
+    const ctx = { saved: savedCrops.value, known };
+    // r1 as a form opened before the change resends it; r2 removed; r3 new.
+    const resent = [
+        {
+            rowId: "r1",
+            answers: [
+                { questionId: crop._id, value: "millet" },
+                { questionId: area._id, value: 99 },
+            ],
+        },
+        { rowId: "r3", answers: [{ questionId: crop._id, value: "rice" }] },
+    ];
+    validateAnswer(crops, resent, served, 1, ctx);
+    throws(
+        () => validateAnswer(crops, resent, served, 1, { saved: savedCrops.value }),
+        "an unserved field, with no list of known questions to excuse it"
+    );
+    throws(
+        () =>
+            validateAnswer(
+                crops,
+                [{ rowId: "r1", answers: [{ questionId: id(), value: 1 }] }],
+                served,
+                1,
+                ctx
+            ),
+        "a row answer for a question that is not of this screen"
+    );
+    throws(
+        () =>
+            validateAnswer(
+                crops,
+                [{ rowId: "r3", answers: [{ questionId: crop._id, value: "millet" }] }],
+                served,
+                1,
+                ctx
+            ),
+        "a removed option chosen in a new row"
+    );
+
+    const kept = snapshotAnswer(crops, resent, served, savedCrops).value;
+    assert.deepStrictEqual(
+        kept.map((row) => row.rowId),
+        ["r1", "r3"],
+        "a row the villager removed stays removed"
+    );
+    assert.deepStrictEqual(
+        kept[0].answers[0].options,
+        [rice, millet],
+        "a row answer keeps its removed option's entry"
+    );
+    assert.strictEqual(
+        kept[0].answers.length,
+        2,
+        "r1 holds what was served plus what was carried"
+    );
+    assert.strictEqual(
+        kept[0].answers[1],
+        savedR1.answers[1],
+        "a hidden field's saved answer is carried forward, unchanged"
+    );
+    assert.strictEqual(kept[1].answers.length, 1, "a new row gets nothing carried");
+
+    // The same one level down (Livestock -> Products): `output` is hidden and
+    // the saved product row sits on the removed "millet".
+    const product = q({ type: "text", label: { en: "Product" } });
+    const output = q({ type: "number", label: { en: "Output" } });
+    const products = q({ type: "repeatable_group", label: { en: "Products" } });
+    products.childMap = new Map([product, crop].map((x) => [String(x._id), x]));
+    const livestock = q({ type: "repeatable_group", label: { en: "Livestock" } });
+    const inLivestock = new Map([[String(products._id), products]]);
+    const savedOutput = stored(output, 9);
+    const savedLivestock = stored(livestock, [
+        {
+            rowId: "l1",
+            answers: [
+                stored(products, [
+                    {
+                        rowId: "p1",
+                        answers: [
+                            stored(product, "Eggs"),
+                            stored(crop, "millet", [rice, millet]),
+                            savedOutput,
+                        ],
+                    },
+                ]),
+            ],
+        },
+    ]);
+    const resentLivestock = [
+        {
+            rowId: "l1",
+            answers: [
+                {
+                    questionId: products._id,
+                    value: [
+                        {
+                            rowId: "p1",
+                            answers: [
+                                { questionId: product._id, value: "Eggs" },
+                                { questionId: crop._id, value: "millet" },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+    ];
+    validateAnswer(livestock, resentLivestock, inLivestock, 1, {
+        saved: savedLivestock.value,
+    });
+    throws(
+        () => validateAnswer(livestock, resentLivestock, inLivestock),
+        "a removed option in a nested row, with nothing saved to allow it"
+    );
+    assert.ok(
+        snapshotAnswer(livestock, resentLivestock, inLivestock, savedLivestock)
+            .value[0].answers[0].value[0].answers.includes(savedOutput),
+        "a hidden field inside a nested group is carried forward too"
+    );
+
+    // answeredIds: two levels of nesting, and crop/area sit in two rows.
+    assert.deepStrictEqual(
+        collectAnsweredIds([savedSource, savedCrops, savedLivestock]).sort(),
+        [source, crops, crop, area, livestock, products, product, output]
+            .map((x) => String(x._id))
+            .sort(),
+        "answered ids are collected at every depth, once each"
+    );
+
+    // knownValues widens what validates (never what is offered): "b" was
+
+    // switched off for this place, "z" was never an option.
+
+    const narrowed = {
+
+        _id: "narrowed",
+
+        label: { en: "Narrowed" },
+
+        type: "single_select",
+
+        options: [{ value: "a", label: { en: "A" } }],
+
+        knownValues: new Set(["a", "b"]),
+
+        allOptions: [
+
+            { value: "a", label: { en: "A" } },
+
+            { value: "b", label: { en: "B" } },
+
+        ],
+
+    };
+
+    validateAnswer(narrowed, "b");
+
+    assert.throws(() => validateAnswer(narrowed, "z"));
+
+    assert.deepStrictEqual(
+
+        snapshotAnswer(narrowed, "b").options.map((o) => o.value),
+
+        ["a", "b"]
+
+    );
+
+    // changedIn: the place whose wording was shown, at every depth, as an
+    // ObjectId. A question nobody reworded has no such key at all — that is
+    // what keeps the app's saved response as it was before places existed.
+    const ladakh = id();
+    const reworded = q({ type: "text", from: { label: String(ladakh), asked: String(id()) } });
+    const plain = q({ type: "text", from: {} });
+    assert.ok(snapshotAnswer(reworded, "x").changedIn.equals(ladakh));
+    assert.ok(snapshotAnswer(reworded, "x").changedIn instanceof mongoose.Types.ObjectId);
+    assert.strictEqual("changedIn" in snapshotAnswer(plain, "x"), false);
+    assert.strictEqual("changedIn" in snapshotAnswer(q({ type: "text" }), "x"), false);
+    const entries = q({ type: "repeatable_group", from: {} });
+    const inRow = snapshotAnswer(
+        entries,
+        [
+            {
+                rowId: "r1",
+                answers: [
+                    { questionId: reworded._id, value: "x" },
+                    { questionId: plain._id, value: "y" },
+                ],
+            },
+        ],
+        new Map([reworded, plain].map((x) => [String(x._id), x]))
+    ).value[0].answers;
+    assert.ok(inRow[0].changedIn.equals(ladakh));
+    assert.strictEqual("changedIn" in inRow[1], false);
+
+    {
+        /* ---- rules that arrive after an entry was saved ---- */
+
+        const crop = q({ type: "text", required: true });
+        const area = q({ type: "number", required: true, min: 1 });
+        const crops = q({ type: "repeatable_group" });
+        const fields = new Map([crop, area].map((x) => [String(x._id), x]));
+        const row = (rowId, ...answers) => ({ rowId, answers });
+        const says = (question, value) => ({ questionId: question._id, value });
+        const check = (rows, saved, complete) =>
+            validateAnswer(crops, rows, fields, 1, { saved, complete });
+
+        // Saved while "area" was not asked of it (hidden then, or added since):
+        // the entry is resent as it is on every save and must not fail them all.
+        const before = [row("r1", says(crop, "Rice"))];
+        assert.doesNotThrow(() => check([row("r1", says(crop, "Rice"))], before));
+        // A new entry is checked in full, and so is a field the entry did have.
+        assert.throws(() => check([row("r2", says(crop, "Maize"))], before), /is required/);
+        assert.throws(
+            () => check([row("r1", says(area, 3))], [row("r1", says(crop, "Rice"), says(area, 3))]),
+            /is required/
+        );
+        // A number saved before the range was tightened stays valid as it is,
+        // and is checked again the moment it is changed.
+        const low = [row("r1", says(crop, "Rice"), says(area, 0))];
+        assert.doesNotThrow(() => check([row("r1", says(crop, "Rice"), says(area, 0))], low));
+        assert.throws(() => check([row("r1", says(crop, "Rice"), says(area, 0.5))], low), /at least 1/);
+        assert.throws(() => check([row("r3", says(crop, "Tea"), says(area, 0))], low), /at least 1/);
+
+        // What only a hand-made request holds: an entry that is not an object, a
+        // question answered twice in one row, a section "answered" with a blank.
+        assert.throws(() => check([row("r1", null)]), /invalid answer/);
+        assert.throws(
+            () => check([row("r1", says(crop, "Rice"), says(crop, "Tea"), says(area, 2))]),
+            /twice/
+        );
+        assert.throws(() => validateAnswer(q({ type: "section" }), ""), /is a section/);
+        assert.throws(() => validateAnswer(q({ type: "date" }), 0), /valid date/);
+        assert.throws(() => validateAnswer(q({ type: "date" }), false), /valid date/);
+        assert.doesNotThrow(() => validateAnswer(q({ type: "date" }), "2026-10-08"));
+
+        // A field hidden, then shown again, while a form opened in between
+        // is still on screen: that form cannot send it, and must not erase it.
+        const hiddenNow = new Map([[String(crop._id), crop]]);
+        const carry1 = { was: new Set(), now: new Set() };
+        const full = [row("r1", says(crop, "Rice"), says(area, 5))];
+        const whileHidden = snapshotAnswer(
+            crops,
+            [row("r1", says(crop, "Rice"))],
+            hiddenNow,
+            { value: snapshotAnswer(crops, full, fields).value },
+            carry1
+        );
+        const areaOf = (snapshot, index = 0) =>
+            snapshot.value[index].answers.find(
+                (answer) => String(answer.questionId) === String(area._id)
+            )?.value;
+        assert.strictEqual(areaOf(whileHidden), 5);
+        assert.deepStrictEqual([...carry1.now], [String(area._id)]);
+        // Shown again; the stale form adds an entry and still sends no area.
+        const carry2 = { was: carry1.now, now: new Set(carry1.now) };
+        const staleRows = [row("r1", says(crop, "Rice")), row("r2", says(crop, "Tea"))];
+        assert.doesNotThrow(() =>
+            validateAnswer(crops, staleRows, fields, 1, {
+                saved: whileHidden.value,
+                carried: carry2.was,
+            })
+        );
+        const afterStale = snapshotAnswer(crops, staleRows, fields, whileHidden, carry2);
+        assert.strictEqual(areaOf(afterStale), 5);
+        assert.strictEqual(areaOf(afterStale, 1), undefined);
+        assert.deepStrictEqual([...carry2.now], [String(area._id)]);
+        // A form that WAS served the field sends it; from then on leaving it
+        // out of an entry clears it there, as ever.
+        const carry3 = { was: carry2.now, now: new Set(carry2.now) };
+        const fresh = snapshotAnswer(
+            crops,
+            [row("r1", says(crop, "Rice")), row("r2", says(crop, "Tea"), says(area, 2))],
+            new Map([[String(crop._id), crop], [String(area._id), { ...area, required: false }]]),
+            afterStale,
+            carry3
+        );
+        assert.strictEqual(areaOf(fresh), undefined);
+        assert.strictEqual(areaOf(fresh, 1), 2);
+        assert.deepStrictEqual([...carry3.now], []);
+        // Never carried, simply left out: cleared, and nothing is recorded.
+        const carry4 = { was: new Set(), now: new Set() };
+        assert.strictEqual(
+            areaOf(snapshotAnswer(crops, [row("r1", says(crop, "Rice"))], new Map([[String(crop._id), crop], [String(area._id), { ...area, required: false }]]), { value: snapshotAnswer(crops, full, fields).value }, carry4)),
+            undefined
+        );
+        assert.deepStrictEqual([...carry4.now], []);
+
+        // The minimum number of rows is asked for on Submit, not on a draft save
+        // or by a list page saving itself.
+        const atLeastTwo = q({ type: "repeatable_group", min: 2 });
+        const one = [row("r1", says(crop, "Rice"), says(area, 2))];
+        assert.throws(() => validateAnswer(atLeastTwo, one, fields, 1, {}), /at least 2 row/);
+        assert.throws(() => validateAnswer(atLeastTwo, one, fields, 1, { complete: true }), /at least 2 row/);
+        assert.doesNotThrow(() => validateAnswer(atLeastTwo, one, fields, 1, { complete: false }));
+
+        // A blank inside a row is no answer: not stored, so it locks nothing.
+        const note = q({ type: "text" });
+        const withNote = new Map([crop, note].map((x) => [String(x._id), x]));
+        assert.deepStrictEqual(
+            snapshotAnswer(crops, [row("r1", says(crop, "Rice"), says(note, ""))], withNote)
+                .value[0].answers.map((answer) => String(answer.questionId)),
+            [String(crop._id)]
+        );
+    }
 
     console.log("answerValidator: all checks passed");
 }

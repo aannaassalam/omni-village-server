@@ -51,10 +51,16 @@ const optionalLocalisedField = () => ({
     },
 });
 
+// What may be a key of a localised object: "en", "dz", "fil", "zh-Hans".
+// Anything else is not a language — and some keys ("$ref", "_bsontype",
+// "a.b") change what Mongo stores or reads back, so none is ever kept.
+const LANGUAGE_CODE = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/i;
+
 /**
  * Accepts either a plain string (treated as English) or an object, and returns
  * a clean localised object. Blank translations are dropped rather than stored,
- * so "missing" and "deliberately empty" never look the same.
+ * so "missing" and "deliberately empty" never look the same. So is an entry
+ * whose key is not a language code.
  */
 const normaliseLocalised = (input) => {
     if (input === null || input === undefined) return undefined;
@@ -65,7 +71,11 @@ const normaliseLocalised = (input) => {
 
     const out = {};
     Object.entries(input).forEach(([language, text]) => {
-        if (typeof text === "string" && text.trim()) {
+        if (
+            LANGUAGE_CODE.test(language) &&
+            typeof text === "string" &&
+            text.trim()
+        ) {
             out[language] = text.trim();
         }
     });

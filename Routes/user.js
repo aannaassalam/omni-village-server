@@ -2,6 +2,7 @@ const router = require("express").Router();
 const multer = require("multer");
 const user_controller = require("../Controllers/user");
 const { verifyToken, checkUser } = require("../Middlewares/user");
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 const fs = require("fs");
 const sharp = require("sharp");
 
@@ -53,7 +54,12 @@ const upload = multer({ storage });
  *        500:
  *          description: Internal Server Error
  */
-router.get("/list-all", user_controller.list_all);
+router.get(
+    "/list-all",
+    verifyAdmin,
+    requireRole("admin"),
+    user_controller.list_all
+);
 
 router.get("/download-pdf", user_controller.download_pdf);
 
@@ -131,7 +137,14 @@ router.post("/register", user_controller.register);
  *        500:
  *          description: Internal Server Error
  */
-router.post("/generate_token", user_controller.generate_token);
+// Hands out a villager's token for a phone number, with no OTP: a support
+// tool, so a super admin's only. (Neither the app nor the dashboard calls it.)
+router.post(
+    "/generate_token",
+    verifyAdmin,
+    requireRole("admin"),
+    user_controller.generate_token
+);
 router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", checkUser, user_controller.get_current_user);
 router.post("/login", user_controller.login);
@@ -145,6 +158,8 @@ router.post("/refresh", user_controller.refresh);
 router.delete("/delete_user", verifyToken, user_controller.delete_user);
 router.delete(
     "/delete_individual_user",
+    verifyAdmin,
+    requireRole("admin"),
     user_controller.delete_individual_user
 );
 router.post(

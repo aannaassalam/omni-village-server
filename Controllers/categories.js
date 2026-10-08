@@ -3,13 +3,34 @@ const Categories = require("../Models/categories");
 const Questions = require("../Models/questions");
 const Responses = require("../Models/responses");
 const AppError = require("../AppError");
-const { resolveUserGeo, targetingMatch } = require("../utils/geoResolver");
+const { resolveUserGeo } = require("../utils/geoResolver");
+const { loadEffective, loadPlaceView } = require("../utils/liveQuestionnaire");
+const { visibleCategoryIds } = require("../utils/effectiveQuestionnaire");
 const { isTopLevel } = require("../utils/questionTree");
 const {
     DEFAULT_LANGUAGE,
     localise,
     normaliseLocalised,
 } = require("../utils/localised");
+const {
+    PLACE_CANNOT_ARCHIVE,
+    WITHOUT_DRAFT,
+    applied,
+    assertRev,
+    ancestors,
+    requiredText,
+    writeDraft,
+    writeOrder,
+    overrideUpdate,
+    writeOverride,
+    removeUnpublished,
+} = require("../utils/drafts");
+const {
+    PLACE_ORDER_BASE,
+    assertMaster,
+    assertCanChange,
+    readScope,
+} = require("../utils/places");
 
 const localisedSchema = Joi.alternatives().try(
     Joi.string(),
@@ -41,24 +62,48 @@ const buildTree = (categories) => {
 
 /** Resolves a parent into the child's `path` and `depth`. */
 const pathFor = async (parentId) => {
-    if (!parentId) return { path: [], depth: 0 };
+    if (!parentId) return { path: [], depth: 0, parent: null };
     const parent = await Categories.findById(parentId).lean();
     if (!parent) throw new AppError(0, "Parent category not found", 404);
     const path = [...(parent.path || []), parent._id];
-    return { path, depth: path.length };
+    return { path, depth: path.length, parent };
 };
 
+/**
+ * The categories the Responses page lists: what is PUBLISHED, as it is
+ * published. Never-published categories and questions are left out and
+ * drafts are not applied — the editor has its own endpoint
+ * (GET /questionnaire/editor).
+ *
+ * `place` holds the list to one place: the Master's categories, those the
+ * places above it added and those added in it or inside it. A regional
+ * account is always held to a place — its own unless it names one inside it
+ * (utils/places.js readScope).
+ */
 module.exports.get_categories = async (req, res) => {
     const { tree, includeInactive } = req.query;
-    const query = includeInactive === "true" ? {} : { active: true };
+    const { owners } = await readScope(res.locals.admin, req.query.place);
+    const readable = owners ? { ownerPlaceId: { $in: owners } } : {};
+    const query = {
+        unpublished: { $ne: true },
+        ...readable,
+        ...(includeInactive === "true" ? {} : { active: true }),
+    };
 
     const categories = await Categories.find(query)
+        .select(WITHOUT_DRAFT)
         .sort({ depth: 1, order: 1 })
         .lean();
 
     // Question counts are only meaningful on screen nodes.
     const counts = await Questions.aggregate([
-        { $match: { parentQuestionId: null } },
+        {
+            $match: {
+                parentQuestionId: null,
+                unpublished: { $ne: true },
+                ...readable,
+            },
+        },
         { $group: { _id: "$categoryId", count: { $sum: 1 } } },
     ]);
     const countByCategory = new Map(
@@ -75,98 +120,214 @@ module.exports.get_categories = async (req, res) => {
     return res.json(tree === "true" ? buildTree(decorated) : decorated);
 };
 
+/**
+ * Creates the category UNPUBLISHED: the editor shows it, the app does not,
+ * until a publish puts it out. Whether it is a page (`is_screen`) is chosen
+ * here and cannot be changed afterwards.
+ *
+ * With `ownerPlaceId` it is that place's own category, shown there and in
+ * the places inside it only: at the top level or inside one of the Master's
+ * groups, after what the place can see there. Without, it is the Master's.
+ */
 module.exports.add_category = async (req, res) => {
     const schema = Joi.object({
         title: localisedSchema.required(),
         description: localisedSchema.optional(),
         parentId: Joi.string().allow(null).optional(),
-        is_screen: Joi.boolean().optional(),
-        order: Joi.number().optional(),
+        is_screen: Joi.boolean().required(),
         active: Joi.boolean().optional(),
+        ownerPlaceId: Joi.string()
+            .hex()
+            .length(24)
+            .lowercase()
+            .allow(null)
+            .optional(),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    const { path, depth } = await pathFor(value.parentId);
+    const { admin } = res.locals;
+    const { ownerPlaceId, active, ...definition } = value;
 
-    const category = await Categories.create({
-        ...value,
-        title: normaliseLocalised(value.title),
-        description: normaliseLocalised(value.description) || {},
-        parentId: value.parentId || null,
-        path,
-        depth,
-    });
+    // Refused here unless the caller manages that place — or, for the
+    // Master, is a super admin.
+    const view = ownerPlaceId ? await loadPlaceView(admin, ownerPlaceId) : null;
+    if (!view) assertMaster(admin);
 
-    return res.json(category);
-};
-
-module.exports.edit_category = async (req, res) => {
-    const schema = Joi.object({
-        category_id: Joi.string().required(),
-        title: localisedSchema.optional(),
-        description: localisedSchema.optional(),
-        is_screen: Joi.boolean().optional(),
-        order: Joi.number().optional(),
-        active: Joi.boolean().optional(),
-    }).options({ stripUnknown: true });
-
-    const { error, value } = schema.validate(req.body);
-    if (error) throw error;
-
-    const { category_id, ...patch } = value;
-
-    if (patch.title !== undefined) patch.title = normaliseLocalised(patch.title);
-    if (patch.description !== undefined) {
-        patch.description = normaliseLocalised(patch.description) || {};
-    }
-
-    // Demoting a screen that already holds data would strand its questions and
-    // responses under a node that can no longer own them.
-    if (patch.is_screen === false) {
-        const [questionCount, responseCount] = await Promise.all([
-            Questions.countDocuments({ categoryId: category_id }),
-            Responses.countDocuments({ categoryId: category_id }),
-        ]);
-        if (questionCount > 0 || responseCount > 0) {
+    // `path` and `depth` are what they would be in the published tree. A
+    // publish works them out again for every category, so they only have to
+    // be right from then on.
+    const { path, depth, parent } = await pathFor(definition.parentId);
+    if (view && parent) {
+        // As the place sees the tree: a group of the Master's, and one that
+        // is published, since the Master's unpublished work is not shown to
+        // a place.
+        const seen = view.resolved.categories.get(String(parent._id));
+        if (!seen) throw new AppError(0, "Parent category not found", 404);
+        if (seen.ownerPlaceId || seen.is_screen) {
             throw new AppError(
                 0,
-                `This screen holds ${questionCount} question(s) and ${responseCount} response(s) — move or delete them first.`,
+                "A place's category sits at the top level or inside one of the Master's groups.",
                 409
             );
         }
     }
+    // In a group that a place added, a Master category would be shown
+    // nowhere but in that place, and yet not be that place's.
+    if (!view && parent?.ownerPlaceId) {
+        throw new AppError(
+            0,
+            "That group belongs to a place: add the category for that place.",
+            409
+        );
+    }
 
-    const category = await Categories.findByIdAndUpdate(category_id, patch, {
-        new: true,
-        runValidators: true,
-    }).lean();
-    if (!category) throw new AppError(0, "Category not found", 404);
+    // After the last of its siblings: for the Master by the order each will
+    // have once its draft is published, for a place after every one it can
+    // see there.
+    const siblings = view
+        ? [...view.resolved.categories.values()].filter(
+              (category) =>
+                  String(category.parentId || "") ===
+                  String(parent ? parent._id : "")
+          )
+        : (
+              await Categories.find({
+                  parentId: definition.parentId || null,
+                  ownerPlaceId: null,
+              })
+                  .select({ order: 1, draft: 1, hasDraft: 1 })
+                  .lean()
+          ).map(applied);
+
+    const category = await Categories.create({
+        ...definition,
+        title: normaliseLocalised(definition.title),
+        description: normaliseLocalised(definition.description) || {},
+        parentId: definition.parentId || null,
+        path,
+        depth,
+        // A place's own are numbered from PLACE_ORDER_BASE (utils/places.js).
+        order:
+            Math.max(
+                view ? PLACE_ORDER_BASE : 0,
+                ...siblings.map((c) => c.order || 0)
+            ) + 1,
+        // Archiving is the Master's; a place has its switch (below).
+        ...(view ? { ownerPlaceId } : { active }),
+        unpublished: true,
+        draftBy: admin._id,
+        draftAt: new Date(),
+    });
+
+    // "Do not show it in the app" is, for a place, its own Asked switch set
+    // to off — which it can switch on again, where an archived category of
+    // its own could never be restored (edit_category refuses that).
+    if (view && active === false) {
+        await writeOverride(
+            null,
+            {
+                placeId: ownerPlaceId,
+                targetType: "category",
+                targetId: category._id,
+            },
+            overrideUpdate(null, { asked: false }, { asked: true }, admin._id)
+        );
+    }
 
     return res.json(category);
 };
 
-module.exports.reparent_category = async (req, res) => {
+/**
+ * Wording and archive / restore. On a category that was never published the
+ * fields are written; on a published one the edit becomes (or joins) its
+ * draft, which a publish applies. See utils/drafts.js
+ */
+module.exports.edit_category = async (req, res) => {
     const schema = Joi.object({
         category_id: Joi.string().required(),
-        parentId: Joi.string().allow(null).required(),
+        rev: Joi.number().optional(),
+        title: localisedSchema.optional(),
+        description: localisedSchema.optional(),
+        active: Joi.boolean().optional(),
     }).options({ stripUnknown: true });
 
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    const node = await Categories.findById(value.category_id).lean();
-    if (!node) throw new AppError(0, "Category not found", 404);
+    const { category_id, rev, ...patch } = value;
 
-    if (value.parentId && String(value.parentId) === String(node._id)) {
-        throw new AppError(0, "A category cannot be its own parent", 409);
+    // A draft is Mixed: the schema's "needs English" check never sees it.
+    if (patch.title !== undefined) {
+        patch.title = requiredText(patch.title, "Category title");
+    }
+    if (patch.description !== undefined) {
+        patch.description = normaliseLocalised(patch.description) || {};
     }
 
-    const { path: newPath, depth: newDepth } = await pathFor(value.parentId);
+    const category = await Categories.findById(category_id).lean();
+    if (!category) throw new AppError(0, "Category not found", 404);
+    // The Master's is a super admin's; a place's own category is renamed by
+    // whoever manages that place.
+    await assertCanChange(res.locals.admin, category.ownerPlaceId);
+    // Archiving takes a category out of every place, which only the Master
+    // does; a place hides its own with its Asked switch.
+    if (category.ownerPlaceId && patch.active !== undefined) {
+        throw new AppError(0, PLACE_CANNOT_ARCHIVE, 409);
+    }
 
-    // Cycle guard: the proposed parent must not sit inside this node's subtree.
-    if (newPath.some((ancestor) => String(ancestor) === String(node._id))) {
+    return res.json(
+        await writeDraft(Categories, category, rev, patch, res.locals.admin._id)
+    );
+};
+
+/**
+ * Moves a category, as a draft: `parentId` (and `order`, when sent) wait for
+ * a publish, which is what rewrites `path`, `depth` and the responses'
+ * `categoryPath`. Until then the app's tree is the published one.
+ */
+module.exports.reparent_category = async (req, res) => {
+    const schema = Joi.object({
+        category_id: Joi.string().required(),
+        rev: Joi.number().optional(),
+        parentId: Joi.string().allow(null).required(),
+        order: Joi.number().optional(),
+    }).options({ stripUnknown: true });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+
+    const all = await Categories.find().lean();
+    const find = (id) =>
+        all.find((category) => String(category._id) === String(id).toLowerCase());
+
+    const node = find(value.category_id);
+    if (!node) throw new AppError(0, "Category not found", 404);
+
+    const parent = value.parentId ? find(value.parentId) : null;
+    if (value.parentId && !parent) {
+        throw new AppError(0, "Parent category not found", 404);
+    }
+    if (parent && String(parent._id) === String(node._id)) {
+        throw new AppError(0, "A category cannot be its own parent", 409);
+    }
+    // Only the Master's tree is rearranged. What a place added stays where
+    // it was added, and nothing of the Master's moves inside it.
+    if (node.ownerPlaceId || parent?.ownerPlaceId) {
+        throw new AppError(0, "Only the Master's categories can be moved.", 409);
+    }
+
+    // Cycle guard, in the tree as it is DRAFTED: the one the editor draws,
+    // and the one publishing everything produces. A publish checks again,
+    // against whatever is actually published by then.
+    const parentOf = new Map(
+        all.map((category) => [
+            String(category._id),
+            String(applied(category).parentId || ""),
+        ])
+    );
+    if (parent && ancestors(parent._id, parentOf).includes(String(node._id))) {
         throw new AppError(
             0,
             "That move would create a cycle — the target is inside this category",
@@ -174,39 +335,18 @@ module.exports.reparent_category = async (req, res) => {
         );
     }
 
-    const descendants = await Categories.find({ path: node._id }).lean();
-
-    const writes = [
-        {
-            updateOne: {
-                filter: { _id: node._id },
-                update: {
-                    $set: {
-                        parentId: value.parentId || null,
-                        path: newPath,
-                        depth: newDepth,
-                    },
-                },
+    return res.json(
+        await writeDraft(
+            Categories,
+            node,
+            value.rev,
+            {
+                parentId: parent ? parent._id : null,
+                ...(value.order !== undefined ? { order: value.order } : {}),
             },
-        },
-        // Every descendant keeps its suffix below this node; only the prefix moves.
-        ...descendants.map((descendant) => {
-            const suffix = descendant.path.slice(node.depth);
-            const path = [...newPath, ...suffix];
-            return {
-                updateOne: {
-                    filter: { _id: descendant._id },
-                    update: { $set: { path, depth: path.length } },
-                },
-            };
-        }),
-    ];
-
-    await Categories.bulkWrite(writes);
-
-    return res.json({
-        message: `Category moved (${descendants.length} descendant(s) updated)`,
-    });
+            res.locals.admin._id
+        )
+    );
 };
 
 module.exports.reorder_categories = async (req, res) => {
@@ -223,13 +363,13 @@ module.exports.reorder_categories = async (req, res) => {
     const { error, value } = schema.validate(req.body);
     if (error) throw error;
 
-    await Categories.bulkWrite(
-        value.map((item) => ({
-            updateOne: {
-                filter: { _id: item.category_id },
-                update: { $set: { order: item.order } },
-            },
-        }))
+    // A new position is a draft too: the app keeps the published order
+    // until a publish. Only the Master's categories take one: writeOrder
+    // passes over what a place added.
+    await writeOrder(
+        Categories,
+        value.map((item) => ({ id: item.category_id, order: item.order })),
+        res.locals.admin._id
     );
 
     return res.json({ message: "Categories reordered successfully" });
@@ -238,60 +378,117 @@ module.exports.reorder_categories = async (req, res) => {
 module.exports.delete_category = async (req, res) => {
     const { id } = req.query;
     if (!id) throw new AppError(0, "Please provide id", 400);
+    // The revision the caller was shown. An empty one is "none sent".
+    const rev = req.query.rev ? Number(req.query.rev) : undefined;
+    const { admin } = res.locals;
 
-    const [childCount, questionCount, responseCount] = await Promise.all([
+    const category = await Categories.findById(id).lean();
+    if (!category) throw new AppError(0, "Category not found", 404);
+    await assertCanChange(admin, category.ownerPlaceId);
+
+    // Never published: nothing outside the editor has seen it. It goes now,
+    // with the categories and questions that were added inside it.
+    if (category.unpublished) {
+        assertRev(category, rev);
+        await removeUnpublished("category", category, admin._id);
+        return res.json({
+            message: "Category deleted successfully",
+            pending: false,
+        });
+    }
+
+    // Once its own category is out, a place takes it away again by hiding it.
+    if (category.ownerPlaceId) {
+        throw new AppError(0, PLACE_CANNOT_ARCHIVE, 409);
+    }
+
+    const [childCount, questions, responseCount] = await Promise.all([
         Categories.countDocuments({ parentId: id }),
-        Questions.countDocuments({ categoryId: id }),
+        Questions.find({ categoryId: id })
+            .select({ ownerPlaceId: 1, hasDraft: 1, "draft.deleted": 1 })
+            .lean(),
         Responses.countDocuments({ categoryId: id }),
     ]);
+    const questionCount = questions.length;
 
     if (childCount > 0 || questionCount > 0 || responseCount > 0) {
+        // The Master's editor can show this page as empty while it is not:
+        // it does not list what places added here, nor what is waiting to
+        // be deleted. Say which, so the refusal can be acted on.
+        const ofPlaces = questions.filter((q) => q.ownerPlaceId).length;
+        const leaving = questions.filter(
+            (q) => !q.ownerPlaceId && q.hasDraft && q.draft?.deleted
+        ).length;
+        const why = [
+            ofPlaces > 0 && `${ofPlaces} of them added by places`,
+            leaving > 0 &&
+                `${leaving} waiting to be deleted: publish that first`,
+        ]
+            .filter(Boolean)
+            .join("; ");
         throw new AppError(
             0,
-            `Category has ${childCount} child categor(ies), ${questionCount} question(s) and ${responseCount} response(s) — deactivate it instead.`,
+            `Category has ${childCount} child categor(ies), ${questionCount} question(s)${
+                why ? ` (${why})` : ""
+            } and ${responseCount} response(s) — archive it instead.`,
             409
         );
     }
 
-    const category = await Categories.findByIdAndDelete(id);
-    if (!category) throw new AppError(0, "Category not found", 404);
+    // Published: it stays in the app until a publish takes it away, and that
+    // publish checks again that it is still empty.
+    await writeDraft(Categories, category, rev, { deleted: true }, admin._id);
 
-    return res.json({ message: "Category deleted successfully" });
+    return res.json({
+        message: "The category will be deleted when you publish",
+        pending: true,
+    });
 };
 
 /**
- * App-facing. The active tree with per-screen progress, already geo-filtered
- * for this caller — that is the doc's "pending questions" badge, computed from
- * the same filter rather than a second endpoint.
+ * App-facing. The tree this caller's place is asked, with per-screen
+ * progress — the doc's "pending questions" badge, computed from the same
+ * rule as the questions themselves rather than a second endpoint.
  */
 module.exports.get_live_categories = async (req, res) => {
     const { user } = res.locals;
     const language = req.query.lang || DEFAULT_LANGUAGE;
     const geo = await resolveUserGeo(user);
 
-    const categories = await Categories.find({ active: true })
-        .sort({ depth: 1, order: 1 })
-        .lean();
+    // Counting needs to know what is asked, not what it says: wording and
+    // option lists stay in the database.
+    const { resolved } = await loadEffective({
+        chain: geo.chain,
+        fields: {
+            categoryId: 1,
+            type: 1,
+            parentQuestionId: 1,
+            active: 1,
+            ownerPlaceId: 1,
+            unpublished: 1,
+        },
+    });
+
+    // A page with nothing left to ask here, and a group with no page left,
+    // are not listed: the app would draw them as dead tiles.
+    const visible = visibleCategoryIds(resolved);
+    const categories = [...resolved.categories.values()].filter((category) =>
+        visible.has(String(category._id))
+    );
+    const questions = [...resolved.questions.values()].filter(
+        (question) => question.asked
+    );
 
     const screenIds = categories
         .filter((category) => category.is_screen)
         .map((category) => category._id);
 
-    const [questions, responses] = await Promise.all([
-        Questions.find({
-            categoryId: { $in: screenIds },
-            active: true,
-            ...targetingMatch(geo),
-        })
-            .select({ categoryId: 1, type: 1, parentQuestionId: 1 })
-            .lean(),
-        Responses.find({
-            userId: user._id,
-            categoryId: { $in: screenIds },
-        })
-            .select({ categoryId: 1, "answers.questionId": 1 })
-            .lean(),
-    ]);
+    const responses = await Responses.find({
+        userId: user._id,
+        categoryId: { $in: screenIds },
+    })
+        .select({ categoryId: 1, "answers.questionId": 1 })
+        .lean();
 
     // Count what a person can actually answer on the screen: a section holds
     // no value but its children do; a group is one answer however many rows,

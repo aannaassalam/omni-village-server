@@ -1,4 +1,5 @@
 const Villages = require("../Models/villages");
+const Countries = require("../Models/countries");
 const MobilityOfficer = require("../Models/mobility-officer");
 const DemographicOfficer = require("../Models/demographic-officer");
 const EnergyOfficer = require("../Models/energy-officer");
@@ -6,6 +7,7 @@ const LandholdingOfficer = require("../Models/landholding-officer");
 const WaterOfficer = require("../Models/water-officer");
 const AppError = require("../AppError");
 const Joi = require("joi");
+const { edit_place } = require("./places");
 
 const handleErrors = (err) => {
     let errors = {};
@@ -14,6 +16,21 @@ const handleErrors = (err) => {
         return errors;
     }
     return err;
+};
+
+/**
+ * The tree of places joins on `countryId`; the free-text `country` stays the
+ * key for everything older. A village saved without the id would hang
+ * outside the tree, so both writes below set it. null when no country has
+ * that name yet — `countries.name` is lowercase, hence the lookup.
+ */
+const countryIdFor = async (country) => {
+    const match = await Countries.findOne({
+        name: String(country).toLowerCase(),
+    })
+        .select({ _id: 1 })
+        .lean();
+    return match?._id || null;
 };
 
 module.exports.get_villages = async (req, res) => {
@@ -45,7 +62,9 @@ module.exports.add_village = async (req, res) => {
         // if (user) {
         const village = await Villages.create({
             country,
-            name,
+            // Trimmed: a villager is matched to a village by this name.
+            name: typeof name === "string" ? name.trim() : name,
+            countryId: await countryIdFor(country),
         });
         res.json(village);
         // } else {
@@ -56,37 +75,35 @@ module.exports.add_village = async (req, res) => {
     }
 };
 
+/**
+ * Settings' village form. A village is a place now, so a rename goes through
+ * the same handler Locations uses (Controllers/places.js edit_place) and
+ * keeps its rules: no renaming a village that has villagers, no duplicate
+ * names, the name stored in lower case. Another country is not a rename: a
+ * place stays in its country, there as here.
+ */
 module.exports.edit_village = async (req, res) => {
     const { country, name, village_id } = req.body;
-    const { user } = res.locals;
-    try {
-        // if (user) {
-        const updatedVillage = await Villages.findByIdAndUpdate(village_id, {
-            country,
-            name,
-        });
-        res.json(updatedVillage);
-        // } else {
-        //   res.status(401).json({ message: "Unauthorized!" });
-        // }
-    } catch (err) {
-        res.status(400).json(handleErrors(err));
+    if (typeof village_id !== "string" || !/^[a-f0-9]{24}$/i.test(village_id)) {
+        throw new AppError(0, "Village not found", 404);
     }
-};
+    const village = await Villages.findById(village_id).lean();
+    if (!village) throw new AppError(0, "Village not found", 404);
 
-module.exports.delete_village = async (req, res) => {
-    const { village_id } = req.params;
-    const { user } = res.locals;
-    try {
-        // if (user) {
-        const deletedVillage = await Villages.findByIdAndDelete(village_id);
-        res.json(deletedVillage);
-        // } else {
-        //   res.status(401).json({ message: "Unauthorized!" });
-        // }
-    } catch (err) {
-        res.status(400).json(handleErrors(err));
+    if (
+        typeof country === "string" &&
+        country.trim().toLowerCase() !== String(village.country).toLowerCase()
+    ) {
+        throw new AppError(
+            0,
+            "A village cannot be moved to another country. Delete it and add it under the other country.",
+            409
+        );
     }
+
+    req.params.id = village_id;
+    req.body = typeof name === "string" ? { name } : {};
+    return edit_place(req, res);
 };
 
 module.exports.add_moderator_to_village = async (req, res) => {

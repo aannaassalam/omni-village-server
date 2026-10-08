@@ -44,6 +44,13 @@ const answerSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.Mixed,
             default: null,
         },
+        // The place whose wording `label` is, when a place reworded the
+        // question (utils/answerValidator.js snapshotAnswer). No default on
+        // purpose: absent means the Master's wording, as on every answer
+        // saved before places could change it.
+        changedIn: {
+            type: mongoose.Schema.Types.ObjectId,
+        },
     },
     { _id: false }
 );
@@ -90,8 +97,39 @@ const responseSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.Date,
             default: Date.now,
         },
+        // The publish in force when this page was last saved (the counter in
+        // Models/counters.js). Absent on responses saved before versions.
+        questionnaireVersion: {
+            type: mongoose.Schema.Types.Number,
+            default: null,
+        },
+        // Every question that was on offer at that save, all depths. This is
+        // what tells "not asked" from "asked and left blank". Absent on older
+        // responses, which the dashboard reads as "asked".
+        asked: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "question",
+            },
+        ],
         answers: {
             type: [answerSchema],
+            default: [],
+        },
+        // Row fields whose saved values this response is carrying for a form
+        // that was not served them: hidden since they were filled in, or
+        // shown again to a form opened while they were hidden. See keptFor
+        // in utils/answerValidator.js. Absent on most responses.
+        carried: {
+            type: [mongoose.Schema.Types.ObjectId],
+            default: undefined,
+        },
+        // Every question answered above, at ANY depth — top level, inside rows,
+        // inside nested rows. `answers.questionId` only sees the top level, so
+        // "is this question answered anywhere?" needs this flat copy. Written
+        // at submit; older documents by scripts/backfill-answered-ids.js
+        answeredIds: {
+            type: [mongoose.Schema.Types.ObjectId],
             default: [],
         },
     },
@@ -99,6 +137,7 @@ const responseSchema = new mongoose.Schema(
 );
 
 responseSchema.index({ "answers.questionId": 1 });
+responseSchema.index({ answeredIds: 1 });
 responseSchema.index({ categoryId: 1 });
 responseSchema.index({ userId: 1 });
 responseSchema.index({ userId: 1, categoryId: 1 }, { unique: true });

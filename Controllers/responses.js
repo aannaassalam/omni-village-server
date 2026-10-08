@@ -3,14 +3,27 @@ const mongoose = require("mongoose");
 const Responses = require("../Models/responses");
 const Questions = require("../Models/questions");
 const Categories = require("../Models/categories");
+const Users = require("../Models/user");
 const AppError = require("../AppError");
 const {
     validateAnswer,
     snapshotAnswer,
+    collectAnsweredIds,
 } = require("../utils/answerValidator");
-const { resolveUserGeo, targetingMatch } = require("../utils/geoResolver");
+const { resolveUserGeo } = require("../utils/geoResolver");
+const { loadEffective } = require("../utils/liveQuestionnaire");
+const { askedQuestionIds } = require("../utils/effectiveQuestionnaire");
+const Counters = require("../Models/counters");
 const { localise } = require("../utils/localised");
 const { rowQuestions, isTopLevel } = require("../utils/questionTree");
+const {
+    listPlaces,
+    indexPlaces,
+    chainOf,
+    villagesUnder,
+    readScope,
+    shown,
+} = require("../utils/places");
 
 const ObjectId = mongoose.Types.ObjectId;
 const MAX_LIMIT = 200;
@@ -105,15 +118,61 @@ const compileFilter = (raw) => {
     return { answers: nest(target.split(".")) };
 };
 
-/** One parser, shared by the table, the long-row view and the stats. */
-const parseQuery = (query) => {
+/**
+ * "Search by user": every word has to be found in the villager's first name,
+ * last name or phone number. Worked out to ids — a response keeps who
+ * answered, not what they are called — and only among `among`, the people
+ * who answered in the view being searched: a name is looked for where the
+ * caller is looking, so nobody elsewhere can crowd a match out, or be found.
+ */
+const usersMatching = async (text, among) => {
+    const words = text.trim().split(/\s+/).filter(Boolean).slice(0, 5);
+    if (words.length === 0) return null;
+    const found = await Users.find({
+        _id: { $in: among },
+        $and: words.map((word) => {
+            const like = escapeRegex(word);
+            return {
+                $or: [
+                    { first_name: { $regex: like, $options: "i" } },
+                    { last_name: { $regex: like, $options: "i" } },
+                    // The phone is stored as a number.
+                    {
+                        $expr: {
+                            $regexMatch: {
+                                input: { $toString: "$phone" },
+                                regex: like,
+                            },
+                        },
+                    },
+                ],
+            };
+        }),
+    })
+        .select({ _id: 1 })
+        .lean();
+    return found.map((user) => user._id);
+};
+
+/**
+ * One parser, shared by the table, the long-row view and the stats.
+ *
+ * `place` is any level, a country down to one village, and the boundary a
+ * regional account cannot leave: it is always held to a place, its own
+ * unless it names one inside it (utils/places.js readScope).
+ *
+ * A response stores the village and the country it came from, never the
+ * places in between, so "under Ladakh" is worked out here from the villages
+ * that are under it now. Moving a village carries its responses with it.
+ */
+const parseQuery = async (query, admin) => {
     const {
         categoryId,
         categoryPath,
-        country,
         from,
         to,
         q,
+        user,
         page = 0,
         limit = 25,
         sortBy = "submittedAt",
@@ -128,22 +187,23 @@ const parseQuery = (query) => {
         );
     }
 
+    const scope = await readScope(admin, query.place);
+
     const match = {};
     if (categoryId) match.categoryId = toObjectId(categoryId, "categoryId");
     if (categoryPath) match.categoryPath = toObjectId(categoryPath, "categoryPath");
-    if (country) match.countryId = toObjectId(country, "country");
-
-    const villages = asArray(query.village).filter(Boolean);
-    if (villages.length > 0) {
-        match.villageId = {
-            $in: villages.map((v) => toObjectId(v, "village")),
-        };
-    }
 
     if (from || to) {
+        const day = (value, name) => {
+            const date = new Date(value);
+            if (typeof value !== "string" || Number.isNaN(date.getTime())) {
+                throw new AppError(0, `"${name}" must be a date`, 400);
+            }
+            return date;
+        };
         match.submittedAt = {
-            ...(from && { $gte: new Date(from) }),
-            ...(to && { $lte: new Date(to) }),
+            ...(from && { $gte: day(from, "from") }),
+            ...(to && { $lte: day(to, "to") }),
         };
     }
 
@@ -151,14 +211,44 @@ const parseQuery = (query) => {
         match["answers.value"] = { $regex: escapeRegex(q), $options: "i" };
     }
 
+    if (user !== undefined && typeof user !== "string") {
+        throw new AppError(0, '"user" must be text', 400);
+    }
+
     const filters = asArray(query.f).filter(Boolean).map(compileFilter);
+    if (scope.place) {
+        const villageId = {
+            $in: villagesUnder(scope.place._id, scope.places),
+        };
+        // A response whose village did not resolve still knows its country,
+        // so it counts for the country and for nothing narrower.
+        filters.push(
+            scope.place.kind === "country"
+                ? { $or: [{ countryId: scope.place._id }, { villageId }] }
+                : { villageId }
+        );
+    }
     if (filters.length > 0) match.$and = filters;
 
-    const safeLimit = Math.min(Number(limit) || 25, MAX_LIMIT);
+    // Last, so that the search runs inside everything above: the page, the
+    // place, the dates and the filters.
+    if (user) {
+        const ids = await usersMatching(
+            user,
+            await Responses.distinct("userId", match)
+        );
+        if (ids) match.userId = { $in: ids };
+    }
+
+    // Whole and in range: a negative or fractional $skip or $limit is an
+    // error from the database, not an empty page.
+    const whole = (value, fallback) => Math.floor(Number(value)) || fallback;
+    const safeLimit = Math.min(Math.max(whole(limit, 25), 1), MAX_LIMIT);
 
     return {
         match,
-        page: Number(page) || 0,
+        scope,
+        page: Math.max(whole(page, 0), 0),
         limit: safeLimit,
         sort: {
             [["submittedAt", "createdAt"].includes(sortBy)
@@ -168,20 +258,28 @@ const parseQuery = (query) => {
     };
 };
 
-/** Columns include retired questions, so historical answers keep a home. */
-const columnsFor = async (categoryId) => {
+/**
+ * The columns of one page for a scope: every PUBLISHED question that belongs
+ * in it (`scope.owners`), archived ones included so their answers keep a
+ * home. A question that was never published has no answers and is no column
+ * yet.
+ *
+ * Wording and options are the ones in force at the scope's place — what a
+ * villager there is asked today, published changes only. A question that
+ * place's chain does not reach (one a village inside it added) keeps its own.
+ */
+const columnsFor = async (categoryId, scope) => {
     if (!categoryId) return [];
-    const questions = await Questions.find({ categoryId })
-        .select({
-            label: 1,
-            type: 1,
-            active: 1,
-            replacedBy: 1,
-            order: 1,
-            parentQuestionId: 1,
-            options: 1,
-        })
-        .lean();
+    const { questions: stored, resolved } = await loadEffective({
+        chain: scope.place ? chainOf(scope.place) : [],
+        categoryId,
+    });
+    const owners = scope.owners && new Set(scope.owners.map(String));
+    const questions = stored.filter(
+        (question) =>
+            !question.unpublished &&
+            (!owners || owners.has(String(question.ownerPlaceId || null)))
+    );
 
     const childrenOf = new Map();
     questions
@@ -191,20 +289,26 @@ const columnsFor = async (categoryId) => {
             childrenOf.set(key, [...(childrenOf.get(key) || []), question]);
         });
 
-    const toColumn = (question) => ({
-        questionId: question._id,
-        label: question.label,
-        type: question.type,
-        active: question.active,
-        replacedBy: question.replacedBy,
-        options: question.options,
-        // A section inside a group is not a column either: what it holds
-        // sits directly in the row.
-        children: rowQuestions(question, questions).map((child) => ({
-            ...toColumn(child),
-            ...(child.section ? { section: child.section } : {}),
-        })),
-    });
+    const toColumn = (question) => {
+        const here = resolved.questions.get(String(question._id));
+        return {
+            questionId: question._id,
+            label: here?.label || question.label,
+            type: question.type,
+            active: question.active,
+            replacedBy: question.replacedBy,
+            ownerPlaceId: question.ownerPlaceId || null,
+            options: (here?.allOptions || question.options || []).map(
+                ({ value, label, archived }) => ({ value, label, archived })
+            ),
+            // A section inside a group is not a column either: what it holds
+            // sits directly in the row.
+            children: rowQuestions(question, questions).map((child) => ({
+                ...toColumn(child),
+                ...(child.section ? { section: child.section } : {}),
+            })),
+        };
+    };
 
     // A section is not a column: its children are answered at the top level, so
     // they surface as ordinary columns carrying the section name for context.
@@ -227,10 +331,51 @@ const columnsFor = async (categoryId) => {
     return out;
 };
 
-module.exports.list_responses = async (req, res) => {
-    const { match, page, limit, sort } = parseQuery(req.query);
+/**
+ * An answer as the dashboard gets it. The snapshot keeps every option the
+ * question had; only the ones this answer chose travel — at every depth, or
+ * each entry of a crop list would bring a 115-option list along.
+ */
+const slimAnswer = (answer) => {
+    const group = answer.type === "repeatable_group";
+    const chosen = new Set(
+        (Array.isArray(answer.value) ? answer.value : [answer.value]).map(String)
+    );
+    return {
+        questionId: answer.questionId,
+        label: answer.label,
+        type: answer.type,
+        options: group
+            ? []
+            : (answer.options || []).filter((option) =>
+                  chosen.has(String(option.value))
+              ),
+        value: group
+            ? (Array.isArray(answer.value) ? answer.value : []).map((row) => ({
+                  ...row,
+                  answers: (row.answers || []).map(slimAnswer),
+              }))
+            : answer.value,
+        // The place whose wording this was answered under, if not the
+        // Master's.
+        changedIn: answer.changedIn || null,
+    };
+};
 
-    const [total, docs, columns] = await Promise.all([
+/** Answers keyed by question — in the DTO only; stored, they stay a list. */
+const byQuestion = (answers) =>
+    (answers || []).reduce((acc, answer) => {
+        acc[String(answer.questionId)] = slimAnswer(answer);
+        return acc;
+    }, {});
+
+module.exports.list_responses = async (req, res) => {
+    const { match, scope, page, limit, sort } = await parseQuery(
+        req.query,
+        res.locals.admin
+    );
+
+    const [total, docs, columns, places] = await Promise.all([
         Responses.countDocuments(match),
         Responses.aggregate([
             { $match: match },
@@ -246,22 +391,30 @@ module.exports.list_responses = async (req, res) => {
                     let: { uid: "$userId" },
                     pipeline: [
                         { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
-                        {
-                            $project: {
-                                first_name: 1,
-                                last_name: 1,
-                                phone: 1,
-                                country_code: 1,
-                            },
-                        },
+                        { $project: { first_name: 1, last_name: 1 } },
                     ],
                     as: "user",
                 },
             },
             { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
         ]),
-        columnsFor(req.query.categoryId),
+        columnsFor(req.query.categoryId, scope),
+        scope.places || listPlaces(),
     ]);
+
+    const byId = indexPlaces(places);
+    const named = (id) => {
+        const place = byId.get(String(id));
+        return place ? shown(place) : null;
+    };
+    // Where a response came from, root first: its village's chain, or its
+    // country alone when the village did not resolve.
+    const pathOf = (doc) => {
+        const village = byId.get(String(doc.villageId));
+        return (village ? chainOf(village) : [doc.countryId])
+            .map(named)
+            .filter(Boolean);
+    };
 
     const rows = docs.map((doc) => ({
         _id: doc._id,
@@ -269,27 +422,58 @@ module.exports.list_responses = async (req, res) => {
         userName: [doc.user?.first_name, doc.user?.last_name]
             .filter(Boolean)
             .join(" "),
-        phone: doc.user
-            ? `${doc.user.country_code || ""}${doc.user.phone || ""}`
-            : "",
         villageName: doc.villageName,
         villageId: doc.villageId,
         countryId: doc.countryId,
+        placeNames: pathOf(doc),
         submittedAt: doc.submittedAt,
+        questionnaireVersion: doc.questionnaireVersion ?? null,
+        // What was on offer at that save. null on a response older than the
+        // record of it: "not asked" cannot be told from "left blank" there.
+        asked: doc.asked?.length > 0 ? doc.asked : null,
         // Keyed by questionId in the DTO ONLY — the stored document keeps the
         // array-of-pairs shape so no authored label ever becomes a field name.
-        answers: (doc.answers || []).reduce((acc, answer) => {
-            acc[String(answer.questionId)] = {
-                label: answer.label,
-                type: answer.type,
-                options: answer.options,
-                value: answer.value,
-            };
-            return acc;
-        }, {}),
+        answers: byQuestion(doc.answers),
     }));
 
-    return res.json({ total, page, limit, columns, rows });
+    // Every place a column or an answer names, for the "Added in" and
+    // "Changed in" tags.
+    const mentioned = new Set();
+    const collect = (columnList) =>
+        columnList.forEach((column) => {
+            if (column.ownerPlaceId) mentioned.add(String(column.ownerPlaceId));
+            collect(column.children || []);
+        });
+    collect(columns);
+    const noteChanged = (answers) =>
+        answers.forEach((answer) => {
+            if (answer.changedIn) mentioned.add(String(answer.changedIn));
+            if (answer.type === "repeatable_group") {
+                answer.value.forEach((row) => noteChanged(row.answers));
+            }
+        });
+    rows.forEach((row) => noteChanged(Object.values(row.answers)));
+
+    const brief = (place) => ({
+        _id: place._id,
+        name: shown(place),
+        level: place.level,
+    });
+
+    return res.json({
+        total,
+        page,
+        limit,
+        place: scope.place ? brief(scope.place) : null,
+        places: Object.fromEntries(
+            [...mentioned]
+                .map((id) => byId.get(id))
+                .filter(Boolean)
+                .map((place) => [String(place._id), brief(place)])
+        ),
+        columns,
+        rows,
+    });
 };
 
 /**
@@ -298,9 +482,14 @@ module.exports.list_responses = async (req, res) => {
  * collection, because rows are embedded.
  */
 module.exports.list_response_rows = async (req, res) => {
-    const { match, page, limit, sort } = parseQuery(req.query);
+    const { match, page, limit, sort } = await parseQuery(
+        req.query,
+        res.locals.admin
+    );
     const { groupPath } = req.query;
-    if (!groupPath) throw new AppError(0, "Please provide groupPath", 400);
+    if (typeof groupPath !== "string" || !groupPath) {
+        throw new AppError(0, "Please provide groupPath", 400);
+    }
 
     const [parentId, childId] = groupPath.split(".");
     toObjectId(parentId, "groupPath");
@@ -363,7 +552,20 @@ module.exports.list_response_rows = async (req, res) => {
             },
         },
         { $skip: page * limit },
-        { $limit: limit }
+        { $limit: limit },
+        // Whose entry each row is — on the page slice only, as in the list.
+        {
+            $lookup: {
+                from: "users",
+                let: { uid: "$userId" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
+                    { $project: { first_name: 1, last_name: 1 } },
+                ],
+                as: "user",
+            },
+        },
+        { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } }
     );
 
     const rows = await Responses.aggregate(pipeline);
@@ -372,16 +574,12 @@ module.exports.list_response_rows = async (req, res) => {
         page,
         limit,
         groupPath,
-        rows: rows.map((row) => ({
+        rows: rows.map(({ user, ...row }) => ({
             ...row,
-            answers: (row.answers || []).reduce((acc, answer) => {
-                acc[String(answer.questionId)] = {
-                    label: answer.label,
-                    type: answer.type,
-                    value: answer.value,
-                };
-                return acc;
-            }, {}),
+            userName: [user?.first_name, user?.last_name]
+                .filter(Boolean)
+                .join(" "),
+            answers: byQuestion(row.answers),
         })),
     });
 };
@@ -391,7 +589,7 @@ module.exports.list_response_rows = async (req, res) => {
  * why filtering is server-side in the first place.
  */
 module.exports.response_stats = async (req, res) => {
-    const { match } = parseQuery(req.query);
+    const { match, scope } = await parseQuery(req.query, res.locals.admin);
 
     const [total, overTime, flat, columns] = await Promise.all([
         Responses.countDocuments(match),
@@ -425,7 +623,7 @@ module.exports.response_stats = async (req, res) => {
                 },
             },
         ]),
-        columnsFor(req.query.categoryId),
+        columnsFor(req.query.categoryId, scope),
     ]);
 
     const bucketise = (entry) => {
@@ -556,6 +754,8 @@ module.exports.submit_response = async (req, res) => {
     const schema = Joi.object({
         categoryId: Joi.string().required(),
         complete: Joi.boolean().optional(),
+        // One answer per question: a repeated id would be stored, and
+        // counted, as often as it was sent.
         answers: Joi.array()
             .items(
                 Joi.object({
@@ -563,6 +763,7 @@ module.exports.submit_response = async (req, res) => {
                     value: Joi.any(),
                 })
             )
+            .unique("questionId")
             .required(),
     }).options({ stripUnknown: true });
 
@@ -577,11 +778,18 @@ module.exports.submit_response = async (req, res) => {
 
     const geo = await resolveUserGeo(user);
 
-    const live = await Questions.find({
+    // What this caller's place is asked on this page, with that place's
+    // wording and options — the same rule /questions/live served them by.
+    const { questions: everyQuestion, resolved } = await loadEffective({
+        chain: geo.chain,
         categoryId: value.categoryId,
-        active: true,
-        ...targetingMatch(geo),
-    }).lean();
+    });
+    if (!resolved.categories.get(String(category._id))?.asked) {
+        throw new AppError(0, "This page is no longer asked in your place", 409);
+    }
+    const live = [...resolved.questions.values()].filter(
+        (question) => question.asked
+    );
 
     const byId = new Map(live.map((question) => [String(question._id), question]));
 
@@ -598,6 +806,51 @@ module.exports.submit_response = async (req, res) => {
         );
     });
 
+    // Every question of this screen in any state — hidden, retired or excluded
+    // for the caller's place as well as live. An answer for one of these that
+    // is not served right now is "unserved", which is not "unknown".
+    const known = new Set(everyQuestion.map((question) => String(question._id)));
+
+    // …and neither is a question that a publish DELETED while this form was
+    // open: it is no question any more, here or anywhere, and refusing its
+    // answer would refuse everything else typed on the page with it. What
+    // still exists but belongs to another page stays unknown, and refused.
+    const sentIds = (answers) =>
+        (Array.isArray(answers) ? answers : []).flatMap((answer) =>
+            answer && typeof answer === "object"
+                ? [
+                      String(answer.questionId),
+                      ...(Array.isArray(answer.value)
+                          ? answer.value.flatMap((row) => sentIds(row?.answers))
+                          : []),
+                  ]
+                : []
+        );
+    const strangers = [...new Set(sentIds(value.answers))].filter(
+        (id) => !known.has(id) && HEX_ID.test(id)
+    );
+    if (strangers.length > 0) {
+        const elsewhere = await Questions.find({ _id: { $in: strangers } })
+            .select({ _id: 1 })
+            .lean();
+        const exists = new Set(elsewhere.map((question) => String(question._id)));
+        strangers.filter((id) => !exists.has(id)).forEach((id) => known.add(id));
+    }
+
+    // Loaded before validating, not after: what is already saved decides what
+    // may be resent (an answer on a since-removed option) and what a rebuilt
+    // row must not lose (fields hidden since they were filled in).
+    const existing = await Responses.findOne({
+        userId: user._id,
+        categoryId: value.categoryId,
+    }).lean();
+    const savedById = new Map(
+        (existing?.answers || []).map((answer) => [
+            String(answer.questionId),
+            answer,
+        ])
+    );
+
     // An explicitly empty value CLEARS a saved answer. Without this, blanking
     // a field in the app would be undone by the merge below. Whether the
     // question is required is enforced further down, and only on `complete`.
@@ -608,16 +861,32 @@ module.exports.submit_response = async (req, res) => {
         (Array.isArray(entry) && entry.length === 0);
     const cleared = new Set();
 
+    // What this response carries inside its rows for forms that were not
+    // served a field (utils/answerValidator.js keptFor): as it was, and as
+    // this save leaves it.
+    const carry = {
+        was: new Set((existing?.carried || []).map(String)),
+        now: new Set((existing?.carried || []).map(String)),
+    };
+
     const snapshots = value.answers.flatMap((answer) => {
         const question = byId.get(String(answer.questionId));
         // Never silently drop an unknown answer — that is how the invariant rots.
         if (!question) {
+            // Unserved is different: a question of this screen that was hidden
+            // after the form was opened. Skipping it — not snapshotted, not
+            // cleared — leaves the saved answer as it is and lets the form save.
+            if (known.has(String(answer.questionId))) return [];
             throw new AppError(
                 0,
                 `Unknown question ${answer.questionId} for this screen`,
                 400
             );
         }
+        // Live, but its parent is not served (hiding or excluding a section
+        // leaves its fields active), so /questions/live does not send it
+        // either: unserved, as above.
+        if (question.parentQuestionId && !byId.has(String(question.parentQuestionId))) return [];
         // A section's children ARE answered at the top level; a repeatable
         // group's children are only answerable inside one of its rows.
         if (question.type !== "section" && !isTopLevel(question, byId)) {
@@ -631,12 +900,20 @@ module.exports.submit_response = async (req, res) => {
             cleared.add(String(question._id));
             return [];
         }
-        validateAnswer(question, answer.value, question.childMap || new Map());
+        const savedAnswer = savedById.get(String(question._id));
+        validateAnswer(question, answer.value, question.childMap || new Map(), 1, {
+            saved: savedAnswer?.value,
+            known,
+            complete: Boolean(value.complete),
+            carried: carry.was,
+        });
         return [
             snapshotAnswer(
                 question,
                 answer.value,
-                question.childMap || new Map()
+                question.childMap || new Map(),
+                savedAnswer,
+                carry
             ),
         ];
     });
@@ -659,11 +936,6 @@ module.exports.submit_response = async (req, res) => {
             });
     }
 
-    const existing = await Responses.findOne({
-        userId: user._id,
-        categoryId: value.categoryId,
-    }).lean();
-
     // Merge by questionId: replace what was re-answered, keep the rest.
     const incoming = new Map(
         snapshots.map((snapshot) => [String(snapshot.questionId), snapshot])
@@ -676,11 +948,19 @@ module.exports.submit_response = async (req, res) => {
         )
         .concat(snapshots);
 
+    const version = await Counters.findById("questionnaireVersion").lean();
+
     const saved = await Responses.findOneAndUpdate(
         { userId: user._id, categoryId: value.categoryId },
         {
             $set: {
                 answers: merged,
+                // Flat, every depth — see utils/questionUsage.js
+                answeredIds: collectAnsweredIds(merged),
+                carried: [...carry.now].map((id) => new ObjectId(id)),
+                // What was on offer at this save, and under which publish.
+                asked: askedQuestionIds(resolved, value.categoryId),
+                questionnaireVersion: version?.seq || 1,
                 submittedAt: new Date(),
                 categoryPath: [...(category.path || []), category._id],
                 countryId: geo.country?._id || null,

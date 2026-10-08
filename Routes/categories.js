@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const categories_controller = require("../Controllers/categories");
 const { verifyToken, checkUser } = require("../Middlewares/user");
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
 /**
@@ -35,8 +36,8 @@ router.get(
  *    get:
  *      tags:
  *        - Categories
- *      summary: List categories.
- *      description: The questionnaire category tree. Only is_screen nodes hold questions.
+ *      summary: List published categories.
+ *      description: The questionnaire category tree as it is published - never-published categories are left out and drafts are not applied (the editor reads GET /questionnaire/editor). Only is_screen nodes hold questions. With no place, a super admin gets the Master's categories and those every place added.
  *      produces:
  *        - application/json
  *
@@ -53,6 +54,12 @@ router.get(
  *         required: false
  *         schema:
  *           type: string
+ *       - name: place
+ *         in: query
+ *         description: A place id of any level - the Master's categories, those of the places above it, and those added in it or inside it. A regional account is always held to its own place, and may only name one inside it.
+ *         required: false
+ *         schema:
+ *           type: string
  *
  *      responses:
  *        200:
@@ -60,7 +67,12 @@ router.get(
  *        500:
  *          description: Internal Server Error
  */
-router.get("/", ControllerWrapper(categories_controller.get_categories));
+router.get(
+    "/",
+    verifyAdmin,
+    requireRole("admin", "regional"),
+    ControllerWrapper(categories_controller.get_categories)
+);
 
 /**
  * @swagger
@@ -68,8 +80,8 @@ router.get("/", ControllerWrapper(categories_controller.get_categories));
  *    post:
  *      tags:
  *        - Categories
- *      summary: Add a category.
- *      description: Pass parentId to nest it. path and depth are computed server-side.
+ *      summary: Add a category (unpublished until the next publish).
+ *      description: Pass parentId to nest it. is_screen is chosen here and cannot be changed afterwards. It is placed after its last sibling; path and depth are computed server-side. Pass ownerPlaceId to add it for one place only (by whoever manages that place) - at the top level or inside one of the Master's groups; active false then hides it for that place instead of archiving it. Without ownerPlaceId it is the Master's and a super admin's to add.
  *      produces:
  *        - application/json
  *
@@ -89,12 +101,16 @@ router.get("/", ControllerWrapper(categories_controller.get_categories));
  *               type: string
  *             is_screen:
  *               type: boolean
- *             order:
- *               type: number
+ *             active:
+ *               type: boolean
+ *             ownerPlaceId:
+ *               type: string
  *
  *      responses:
  *        200:
- *          description: Successfully added data.
+ *          description: The created category.
+ *        403:
+ *          description: Not the caller's place, or the Master asked of a regional account
  *        404:
  *          description: Parent category not found
  *        500:
@@ -102,6 +118,8 @@ router.get("/", ControllerWrapper(categories_controller.get_categories));
  */
 router.post(
     "/add-category",
+    verifyAdmin,
+    requireRole("admin", "regional"),
     ControllerWrapper(categories_controller.add_category)
 );
 
@@ -111,8 +129,8 @@ router.post(
  *    put:
  *      tags:
  *        - Categories
- *      summary: Edit a category.
- *      description: Demoting a screen that already holds questions or responses is refused with 409.
+ *      summary: Edit a category (as a draft - nothing reaches the app until a publish).
+ *      description: Accepts title, description and active (archive or restore). is_screen and order are not accepted here. Send the rev the editor showed - a different one is answered 409. A category a place added is renamed by whoever manages that place; active is refused for it (409), that place hides it instead.
  *      produces:
  *        - application/json
  *
@@ -126,23 +144,27 @@ router.post(
  *           properties:
  *             category_id:
  *               type: string
+ *             rev:
+ *               type: number
  *             title:
  *               type: string
- *             is_screen:
- *               type: boolean
+ *             description:
+ *               type: string
  *             active:
  *               type: boolean
  *
  *      responses:
  *        200:
- *          description: Successfully updated data.
+ *          description: Returns { _id, rev }.
  *        409:
- *          description: Screen still holds data
+ *          description: Changed by someone else
  *        500:
  *          description: Internal Server Error
  */
 router.put(
     "/edit-category",
+    verifyAdmin,
+    requireRole("admin", "regional"),
     ControllerWrapper(categories_controller.edit_category)
 );
 
@@ -152,8 +174,8 @@ router.put(
  *    put:
  *      tags:
  *        - Categories
- *      summary: Move a category to a new parent.
- *      description: Rewrites the whole subtree's materialised path in one bulkWrite. Cycles are refused.
+ *      summary: Move a category to a new parent (as a draft).
+ *      description: The move waits for a publish, which rewrites the subtree's path and depth and the responses' categoryPath. Cycles are refused here and again at publish. order is optional. Only the Master's categories move - one a place added, or a move into one, is refused (409).
  *      produces:
  *        - application/json
  *
@@ -167,19 +189,25 @@ router.put(
  *           properties:
  *             category_id:
  *               type: string
+ *             rev:
+ *               type: number
  *             parentId:
  *               type: string
+ *             order:
+ *               type: number
  *
  *      responses:
  *        200:
- *          description: Successfully moved.
+ *          description: Returns { _id, rev }.
  *        409:
- *          description: Move would create a cycle
+ *          description: Move would create a cycle, or changed by someone else
  *        500:
  *          description: Internal Server Error
  */
 router.put(
     "/reparent",
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(categories_controller.reparent_category)
 );
 
@@ -189,8 +217,8 @@ router.put(
  *    put:
  *      tags:
  *        - Categories
- *      summary: Reorder categories.
- *      description: Accepts an array of category_id/order pairs, applied in one bulkWrite.
+ *      summary: Reorder categories (as a draft).
+ *      description: Accepts an array of category_id/order pairs. No rev - order is last-write-wins. Only the Master's categories are reordered - one a place added is passed over.
  *      produces:
  *        - application/json
  *
@@ -210,6 +238,8 @@ router.put(
  */
 router.put(
     "/reorder",
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(categories_controller.reorder_categories)
 );
 
@@ -220,7 +250,13 @@ router.put(
  *      tags:
  *        - Categories
  *      summary: Delete a category.
- *      description: Refused with 409 when it has children, questions or responses.
+ *      description: >
+ *        A category that was never published is deleted at once, with what
+ *        was added inside it (pending false). A published one is deleted by
+ *        the next publish (pending true), and only when it has no categories,
+ *        questions or responses under it - otherwise 409. A category a place
+ *        added can be deleted only while it is unpublished - once published
+ *        it is refused (409), that place hides it instead.
  *      produces:
  *        - application/json
  *
@@ -231,17 +267,25 @@ router.put(
  *         required: true
  *         schema:
  *           type: string
+ *       - name: rev
+ *         in: query
+ *         description: The rev the editor showed.
+ *         required: false
+ *         schema:
+ *           type: number
  *
  *      responses:
  *        200:
- *          description: Successfully deleted data.
+ *          description: Returns { message, pending }.
  *        409:
- *          description: Category is still in use
+ *          description: Category is still in use, or was changed by someone else
  *        500:
  *          description: Internal Server Error
  */
 router.delete(
     "/delete-category",
+    verifyAdmin,
+    requireRole("admin", "regional"),
     ControllerWrapper(categories_controller.delete_category)
 );
 
