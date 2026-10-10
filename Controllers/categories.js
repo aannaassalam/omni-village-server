@@ -1,12 +1,18 @@
 const Joi = require("joi");
 const Categories = require("../Models/categories");
 const Questions = require("../Models/questions");
-const Responses = require("../Models/responses");
 const AppError = require("../AppError");
 const { resolveUserGeo } = require("../utils/geoResolver");
 const { loadEffective, loadPlaceView } = require("../utils/liveQuestionnaire");
 const { visibleCategoryIds } = require("../utils/effectiveQuestionnaire");
-const { isTopLevel } = require("../utils/questionTree");
+const { isTopLevel, servedTo } = require("../utils/questionTree");
+const { ANSWER_TYPES_HEADER, answerTypesOf } = require("../utils/fileKinds");
+const {
+    audienceOf,
+    categoryFilter,
+    parseAudience,
+} = require("../utils/audience");
+const { storeFor, countAnswers } = require("../utils/responseStores");
 const {
     DEFAULT_LANGUAGE,
     localise,
@@ -79,13 +85,19 @@ const pathFor = async (parentId) => {
  * places above it added and those added in it or inside it. A regional
  * account is always held to a place — its own unless it names one inside it
  * (utils/places.js readScope).
+ *
+ * `audience` is whose questionnaire: the villagers' unless "officer" is
+ * asked for. The officers' is the Master's alone, so every place is listed
+ * the whole of it.
  */
 module.exports.get_categories = async (req, res) => {
     const { tree, includeInactive } = req.query;
+    const audience = parseAudience(req.query.audience);
     const { owners } = await readScope(res.locals.admin, req.query.place);
     const readable = owners ? { ownerPlaceId: { $in: owners } } : {};
     const query = {
         unpublished: { $ne: true },
+        ...categoryFilter(audience),
         ...readable,
         ...(includeInactive === "true" ? {} : { active: true }),
     };
@@ -128,6 +140,11 @@ module.exports.get_categories = async (req, res) => {
  * With `ownerPlaceId` it is that place's own category, shown there and in
  * the places inside it only: at the top level or inside one of the Master's
  * groups, after what the place can see there. Without, it is the Master's.
+ *
+ * `audience` says whose questionnaire a TOP-LEVEL category starts a part of
+ * (the villagers' when it is left out). Inside another category it is not
+ * asked: a category is its parent's audience, so a tree is one audience's
+ * from its root down.
  */
 module.exports.add_category = async (req, res) => {
     const schema = Joi.object({
@@ -136,6 +153,8 @@ module.exports.add_category = async (req, res) => {
         parentId: Joi.string().allow(null).optional(),
         is_screen: Joi.boolean().required(),
         active: Joi.boolean().optional(),
+        // Read by parseAudience below, which has the one refusal for it.
+        audience: Joi.any(),
         ownerPlaceId: Joi.string()
             .hex()
             .length(24)
@@ -148,7 +167,8 @@ module.exports.add_category = async (req, res) => {
     if (error) throw error;
 
     const { admin } = res.locals;
-    const { ownerPlaceId, active, ...definition } = value;
+    const { ownerPlaceId, active, audience: named, ...definition } = value;
+    const atTheTop = parseAudience(named);
 
     // Refused here unless the caller manages that place — or, for the
     // Master, is a super admin.
@@ -159,6 +179,17 @@ module.exports.add_category = async (req, res) => {
     // publish works them out again for every category, so they only have to
     // be right from then on.
     const { path, depth, parent } = await pathFor(definition.parentId);
+    const audience = parent ? audienceOf(parent) : atTheTop;
+    // The officers' questionnaire is the Master's alone. Said here, before
+    // the place's view is asked for the parent: that view is of the
+    // villagers' tree, where an officers' category is simply "not found".
+    if (view && audience === "officer") {
+        throw new AppError(
+            0,
+            "Places cannot add to the officer questionnaire.",
+            409
+        );
+    }
     if (view && parent) {
         // As the place sees the tree: a group of the Master's, and one that
         // is published, since the Master's unpublished work is not shown to
@@ -185,7 +216,8 @@ module.exports.add_category = async (req, res) => {
 
     // After the last of its siblings: for the Master by the order each will
     // have once its draft is published, for a place after every one it can
-    // see there.
+    // see there. At the top level the siblings are those of its own
+    // questionnaire: the two are ordered apart.
     const siblings = view
         ? [...view.resolved.categories.values()].filter(
               (category) =>
@@ -196,6 +228,7 @@ module.exports.add_category = async (req, res) => {
               await Categories.find({
                   parentId: definition.parentId || null,
                   ownerPlaceId: null,
+                  ...categoryFilter(audience),
               })
                   .select({ order: 1, draft: 1, hasDraft: 1 })
                   .lean()
@@ -208,6 +241,7 @@ module.exports.add_category = async (req, res) => {
         parentId: definition.parentId || null,
         path,
         depth,
+        audience,
         // A place's own are numbered from PLACE_ORDER_BASE (utils/places.js).
         order:
             Math.max(
@@ -317,6 +351,16 @@ module.exports.reparent_category = async (req, res) => {
     if (node.ownerPlaceId || parent?.ownerPlaceId) {
         throw new AppError(0, "Only the Master's categories can be moved.", 409);
     }
+    // Dragged under a category of the other questionnaire, a page would
+    // change who answers it, and leave its saved answers in the collection
+    // of those who no longer do.
+    if (parent && audienceOf(parent) !== audienceOf(node)) {
+        throw new AppError(
+            0,
+            "A category cannot be moved between the villagers' and the officers' questionnaire.",
+            409
+        );
+    }
 
     // Cycle guard, in the tree as it is DRAFTED: the one the editor draws,
     // and the one publishing everything produces. A publish checks again,
@@ -407,7 +451,8 @@ module.exports.delete_category = async (req, res) => {
         Questions.find({ categoryId: id })
             .select({ ownerPlaceId: 1, hasDraft: 1, "draft.deleted": 1 })
             .lean(),
-        Responses.countDocuments({ categoryId: id }),
+        // Whoever answered: villagers and field officers alike.
+        countAnswers({ categoryId: id }),
     ]);
     const questionCount = questions.length;
 
@@ -446,19 +491,24 @@ module.exports.delete_category = async (req, res) => {
 };
 
 /**
- * App-facing. The tree this caller's place is asked, with per-screen
- * progress — the doc's "pending questions" badge, computed from the same
- * rule as the questions themselves rather than a second endpoint.
+ * The tree one caller is asked, with per-screen progress — the doc's "pending
+ * questions" badge, computed from the same rule as the questions themselves
+ * rather than a second endpoint.
+ *
+ * One body for both apps: a villager's (get_live_categories below) and a
+ * field officer's (Controllers/officer.js). What differs is who is asking:
+ * `audience` is whose questionnaire, `chain` the places that decide what of
+ * it is asked, and `owner.filter` what finds the responses progress is
+ * counted from — a villager's own, or a village's.
  */
-module.exports.get_live_categories = async (req, res) => {
-    const { user } = res.locals;
+const liveCategories = async (req, { audience, chain, owner }) => {
     const language = req.query.lang || DEFAULT_LANGUAGE;
-    const geo = await resolveUserGeo(user);
 
     // Counting needs to know what is asked, not what it says: wording and
     // option lists stay in the database.
     const { resolved } = await loadEffective({
-        chain: geo.chain,
+        audience,
+        chain,
         fields: {
             categoryId: 1,
             type: 1,
@@ -469,33 +519,44 @@ module.exports.get_live_categories = async (req, res) => {
         },
     });
 
+    // What this caller is served: what its place is asked, less the photo
+    // and audio questions its build of the app cannot answer (the same rule
+    // as get_live_questions, by the same X-Answer-Types header). Pages and
+    // progress are counted from that, so an older build is not shown a
+    // question pending that it will never be asked.
+    const questions = servedTo(
+        [...resolved.questions.values()].filter((question) => question.asked),
+        answerTypesOf(req.get(ANSWER_TYPES_HEADER))
+    );
+    const byId = new Map(
+        questions.map((question) => [String(question._id), question])
+    );
+
     // A page with nothing left to ask here, and a group with no page left,
     // are not listed: the app would draw them as dead tiles.
-    const visible = visibleCategoryIds(resolved);
+    const visible = visibleCategoryIds({
+        categories: resolved.categories,
+        questions: byId,
+    });
     const categories = [...resolved.categories.values()].filter((category) =>
         visible.has(String(category._id))
-    );
-    const questions = [...resolved.questions.values()].filter(
-        (question) => question.asked
     );
 
     const screenIds = categories
         .filter((category) => category.is_screen)
         .map((category) => category._id);
 
-    const responses = await Responses.find({
-        userId: user._id,
-        categoryId: { $in: screenIds },
-    })
+    const responses = await storeFor(audience)
+        .find({
+            ...owner.filter,
+            categoryId: { $in: screenIds },
+        })
         .select({ categoryId: 1, "answers.questionId": 1 })
         .lean();
 
     // Count what a person can actually answer on the screen: a section holds
     // no value but its children do; a group is one answer however many rows,
     // and what sits inside its rows is not counted separately.
-    const byId = new Map(
-        questions.map((question) => [String(question._id), question])
-    );
     const answerable = new Set();
     const questionCounts = new Map();
     questions.forEach((question) => {
@@ -537,5 +598,19 @@ module.exports.get_live_categories = async (req, res) => {
         };
     });
 
-    return res.json(buildTree(decorated));
+    return buildTree(decorated);
+};
+module.exports.liveCategories = liveCategories;
+
+/** App-facing. The tree this villager's place is asked. */
+module.exports.get_live_categories = async (req, res) => {
+    const { user } = res.locals;
+    const geo = await resolveUserGeo(user);
+    return res.json(
+        await liveCategories(req, {
+            audience: "villager",
+            chain: geo.chain,
+            owner: { filter: { userId: user._id } },
+        })
+    );
 };

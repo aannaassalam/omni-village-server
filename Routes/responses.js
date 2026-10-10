@@ -16,10 +16,29 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *        then frozen with a label/type/options snapshot. Merging with any
  *        existing response is by questionId only, never by array position.
  *        Pass complete:true to additionally enforce required questions.
+ *        Each answer is { questionId, value } - a scalar for text, number,
+ *        date, boolean and single_select; a list of option values for
+ *        multi_select; a list of rows { rowId, answers } for a
+ *        repeatable_group; and for photo and audio a list of file ids (the
+ *        _id that POST /files returned), at most the question's max of them
+ *        (one when it has no max). A file id new to its answer must be a file
+ *        the caller uploaded, of the question's kind. A blank value (null,
+ *        "", an empty list) clears the saved answer, and a file that an
+ *        answer no longer holds after the save is deleted.
+ *        A build that does not name photo or audio in its X-Answer-Types
+ *        header was not served such a question - it is then not required of
+ *        it, an answer sent for it is skipped, and what another build saved
+ *        for it is kept as it is.
  *      produces:
  *        - application/json
  *
  *      parameters:
+ *       - name: X-Answer-Types
+ *         in: header
+ *         description: The file answer types this build of the app can answer, comma separated - "photo,audio". The same value as on GET /questions/live.
+ *         required: false
+ *         schema:
+ *           type: string
  *       - name: body
  *         in: body
  *         description:
@@ -36,9 +55,11 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *
  *      responses:
  *        200:
- *          description: Successfully saved data.
+ *          description: Successfully saved data. The saved response, with fileIds (every file its answers hold, at any depth).
  *        400:
- *          description: Validation failed
+ *          description: Validation failed - for a photo or audio answer also a file that is not the caller's, or not of the question's kind
+ *        409:
+ *          description: This page is no longer asked in the caller's place
  *        500:
  *          description: Internal Server Error
  */
@@ -56,7 +77,7 @@ router.post(
  *      tags:
  *        - Responses
  *      summary: Aggregates for the graphs tab.
- *      description: Takes the same filters as the table and aggregates the whole filtered set, not just the visible page.
+ *      description: Takes the same filters as the table and aggregates the whole filtered set, not just the visible page. A list is counted by how many entries each response holds, and a photo or audio question by how many files. With audience=officer, of the field officers' responses.
  *      produces:
  *        - application/json
  *
@@ -70,6 +91,12 @@ router.post(
  *       - name: f
  *         in: query
  *         description: Repeatable per-question filter, "questionId[.childId]:op:value".
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - name: audience
+ *         in: query
+ *         description: villager (the default) or officer - whose responses.
  *         required: false
  *         schema:
  *           type: string
@@ -99,7 +126,9 @@ router.get(
  *      description: >
  *        groupPath is "parentQuestionId" or "parentQuestionId.childGroupId".
  *        Because rows are embedded in the response document this is $unwind
- *        only, never a $lookup into a side collection.
+ *        only, never a $lookup into a side collection. With audience=officer,
+ *        of the field officers' responses - each row then carries moderatorId
+ *        and savedBy where a villager's carries userId and userName.
  *      produces:
  *        - application/json
  *
@@ -114,6 +143,12 @@ router.get(
  *         in: query
  *         description:
  *         required: true
+ *         schema:
+ *           type: string
+ *       - name: audience
+ *         in: query
+ *         description: villager (the default) or officer - whose responses.
+ *         required: false
  *         schema:
  *           type: string
  *
@@ -144,7 +179,14 @@ router.get(
  *        answers keep a column) alongside the page of rows. Filtering, sorting
  *        and pagination are all server-side. Each row carries the questions
  *        that were on offer when it was saved (asked), the questionnaire
- *        version, and with each answer only the options it chose.
+ *        version, and with each answer only the options it chose. A photo or
+ *        audio answer is a list of file ids - the bytes of each are read with
+ *        GET /files/admin/{id}.
+ *        With audience=officer it is the field officers' responses - one per
+ *        village and page, held to the same place filter. A row then carries
+ *        villageName, moderatorId and savedBy (the officer who saved last)
+ *        where a villager's carries userId and userName, and user searches
+ *        the village's name and that officer's name or phone number.
  *      produces:
  *        - application/json
  *
@@ -169,7 +211,13 @@ router.get(
  *           type: string
  *       - name: user
  *         in: query
- *         description: Search by villager - every word must be found in the first name, last name or phone number.
+ *         description: Search by villager - every word must be found in the first name, last name or phone number. For audience=officer, in the village's name or in the name or phone number of the officer who saved last.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - name: audience
+ *         in: query
+ *         description: villager (the default) or officer - whose responses.
  *         required: false
  *         schema:
  *           type: string

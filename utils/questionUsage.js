@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
-const Responses = require("../Models/responses");
+const { STORES, countAnswers } = require("./responseStores");
 const { collectAnsweredIds } = require("./answerValidator");
 
 /**
- * "Does any response hold an answer to this question?" — at ANY depth.
+ * "Does any response hold an answer to this question?" — at ANY depth, and
+ * whoever answered: a villager's response and a field officer's are kept in
+ * two collections (utils/responseStores.js), and everything here asks both.
  *
  * `answeredIds` is the real answer: flat, indexed, written at every submit.
  * The three dotted paths ask the same of a document saved before that field
@@ -30,7 +32,7 @@ const answeredFilter = (id) => {
 };
 
 /** How many responses answer this question, wherever in them it sits. */
-const countAnswered = (id) => Responses.countDocuments(answeredFilter(id));
+const countAnswered = (id) => countAnswers(answeredFilter(id));
 
 /**
  * Every answered question id, as strings: one read for a whole editor's
@@ -38,22 +40,30 @@ const countAnswered = (id) => Responses.countDocuments(answeredFilter(id));
  * a response saved before that field existed is walked instead.
  */
 const answeredSet = async () => {
-    const [flat, older] = await Promise.all([
-        Responses.distinct("answeredIds"),
-        // Responses the backfill has not reached yet are read whole, so the
-        // editor does not offer "Delete" for a question that the exact
-        // check (answeredFilter) will then refuse to delete. Nothing
-        // matches here once scripts/backfill-answered-ids.js has run.
-        Responses.find({
-            answeredIds: { $exists: false },
-            "answers.0": { $exists: true },
+    const ids = new Set();
+    await Promise.all(
+        STORES.map(async (Store) => {
+            const [flat, older] = await Promise.all([
+                Store.distinct("answeredIds"),
+                // Responses the backfill has not reached yet are read whole,
+                // so the editor does not offer "Delete" for a question that
+                // the exact check (answeredFilter) will then refuse to
+                // delete. Nothing matches here once
+                // scripts/backfill-answered-ids.js has run.
+                Store.find({
+                    answeredIds: { $exists: false },
+                    "answers.0": { $exists: true },
+                })
+                    .select({ answers: 1 })
+                    .lean(),
+            ]);
+            flat.forEach((id) => ids.add(String(id)));
+            older.forEach((response) =>
+                collectAnsweredIds(response.answers).forEach((id) =>
+                    ids.add(id)
+                )
+            );
         })
-            .select({ answers: 1 })
-            .lean(),
-    ]);
-    const ids = new Set(flat.map(String));
-    older.forEach((response) =>
-        collectAnsweredIds(response.answers).forEach((id) => ids.add(id))
     );
     return ids;
 };
@@ -68,9 +78,13 @@ const answeredSet = async () => {
  * thousands of answers.
  */
 const usageOf = async (id) => {
-    const responses = await Responses.find(answeredFilter(id))
-        .select({ answers: 1 })
-        .lean();
+    const responses = (
+        await Promise.all(
+            STORES.map((Store) =>
+                Store.find(answeredFilter(id)).select({ answers: 1 }).lean()
+            )
+        )
+    ).flat();
 
     const used = new Set();
     const walk = (answers) =>
@@ -95,7 +109,7 @@ const usageOf = async (id) => {
 
 /** How many responses are saved for a page. */
 const usageOfCategory = async (categoryId) => ({
-    answerCount: await Responses.countDocuments({ categoryId }),
+    answerCount: await countAnswers({ categoryId }),
 });
 
 module.exports = {

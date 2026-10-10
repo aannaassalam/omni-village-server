@@ -223,7 +223,14 @@ const requiredText = (value, name) => {
 /* What a place changed (Models/placeOverrides.js)                     */
 /* ------------------------------------------------------------------ */
 
-const STATE_KEYS = ["asked", "label", "helper_text", "options", "addedOptions"];
+const STATE_KEYS = [
+    "asked",
+    "label",
+    "helper_text",
+    "required",
+    "options",
+    "addedOptions",
+];
 
 /** Two values of a state, compared as stored. `asked: false` is a value. */
 const sameState = (a, b) => sameValue("", a, b);
@@ -256,7 +263,7 @@ const placeOptionKey = () => `p_${new mongoose.Types.ObjectId()}`;
  *
  * Then whatever the patch SET that changes nothing is dropped, measured
  * against `inherited`: what the place gets WITHOUT this override —
- * `{ asked, label, helper_text, options: [{ value, asked, archived }] }`,
+ * `{ asked, label, helper_text, required, options: [{ value, asked, archived }] }`,
  * i.e. the resolver's answer with this place's own override left out. A
  * switch set to what it already is, wording equal to the wording above, an
  * option "hidden" that is not offered anyway: none of it is kept, so a
@@ -322,7 +329,7 @@ const overrideUpdate = (
             };
         });
 
-        ["asked", "label", "helper_text"].filter(set).forEach((key) => {
+        ["asked", "label", "helper_text", "required"].filter(set).forEach((key) => {
             const changesNothing = sameState(next[key], inherited[key]);
             const alreadyOut = sameState(next[key], published[key]);
             if (changesNothing && !alreadyOut) delete next[key];
@@ -741,6 +748,16 @@ const planPublish = async ({
                 ops[item.type].push({
                     deleteMany: { filter: { _id: { $in: ids } } },
                 });
+                // A question one of them had replaced has no replacement any
+                // more, and can be given another.
+                if (item.type === "question") {
+                    ops.question.push({
+                        updateMany: {
+                            filter: { replacedBy: { $in: ids } },
+                            update: { $set: { replacedBy: null } },
+                        },
+                    });
+                }
                 // What places had set about them would point at nothing.
                 ops.override.push({
                     deleteMany: { filter: { targetId: { $in: ids } } },
@@ -844,7 +861,18 @@ const removeUnpublished = async (type, doc, adminId) => {
             .lean();
         const inside = below(doc._id, page, "parentQuestionId");
         const gone = [doc, ...inside].map((question) => question._id);
-        await Questions.deleteMany({ _id: { $in: gone } });
+        // Only while it is still unpublished: a publish may have put it out
+        // since it was read.
+        const { deletedCount } = await Questions.deleteOne({
+            _id: doc._id,
+            unpublished: true,
+        });
+        if (deletedCount === 0) {
+            // Gone already, with the new group it sat in: nothing to do.
+            if (!(await Questions.exists({ _id: doc._id }))) return;
+            throw new AppError(0, CONFLICT, 409);
+        }
+        await Questions.deleteMany({ _id: { $in: gone }, unpublished: true });
         await PlaceOverrides.deleteMany({ targetId: { $in: gone } });
         return;
     }
@@ -908,7 +936,7 @@ const removeUnpublished = async (type, doc, adminId) => {
     await PlaceOverrides.deleteMany({
         targetId: { $in: [...ids, ...gone.map((question) => question._id)] },
     });
-    await Categories.deleteMany({ _id: { $in: ids } });
+    await Categories.deleteMany({ _id: { $in: ids }, unpublished: true });
 };
 
 module.exports = {

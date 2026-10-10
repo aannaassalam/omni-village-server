@@ -10,12 +10,21 @@
  *   node scripts/seed-questionnaire.js --dry-run   # print the tree, write nothing
  *   node scripts/seed-questionnaire.js             # create it
  *   node scripts/seed-questionnaire.js --reset     # wipe and recreate
+ *   node scripts/seed-questionnaire.js --officer   # add the field officers' tree
  *
  * --reset refuses to run once any responses exist, because deleting a question
  * that has been answered breaks the questionId binding those answers rely on.
  * It also refuses once the questionnaire has been edited in the dashboard —
  * anything published (history), drafted, unpublished, added by a place, or
  * changed by a place for itself (place_overrides).
+ *
+ * --officer (alone or with --dry-run) adds the field officers' questionnaire,
+ * written out in officer-screens.js, beside the villagers' and touches nothing
+ * else. It refuses once an officer category exists and has no --reset of its
+ * own; and --reset refuses while the officers' tree or an officer's response
+ * is there, because it wipes both collections whole. Deploy the code before
+ * running it: a seeded category is live at once, and code from before the
+ * officers' questionnaire serves every category to villagers.
  */
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -23,22 +32,26 @@ const mongoose = require("mongoose");
 const connection_url = require("../Enviroment");
 const Categories = require("../Models/categories");
 const Questions = require("../Models/questions");
-const Responses = require("../Models/responses");
 const History = require("../Models/questionnaireHistory");
 const PlaceOverrides = require("../Models/placeOverrides");
+const { categoryFilter } = require("../utils/audience");
+const { countAnswers } = require("../utils/responseStores");
 const {
     SKIP_FIELDS,
     SCREEN_SPLITS,
     DROPDOWN_TYPE_OVERRIDES,
+    TYPE_OVERRIDES,
     LABEL_OVERRIDES,
     TREE,
     DROPDOWN_MODELS,
 } = require("./questionnaire-map");
 const { loadAppTranslations } = require("./app-translations");
 const { buildAppTree } = require("./app-screens");
+const { buildOfficerTree } = require("./officer-screens");
 
 const DRY_RUN = process.argv.includes("--dry-run");
 const RESET = process.argv.includes("--reset");
+const OFFICER = process.argv.includes("--officer");
 
 const warnings = [];
 const stats = { categories: 0, questions: 0, options: 0, translated: 0 };
@@ -170,6 +183,12 @@ const questionFor = ({
     const label = localisedLabel(labelForPath(fieldPath));
     const base = { label, order, required: false };
     const isArray = Boolean(schemaPath.$isMongooseArray);
+
+    // Said outright in questionnaire-map.js, because the schema cannot: a
+    // String that holds the path of a picture is a photo, not text. With no
+    // `max` it takes one, as the old screen did.
+    const fixedType = TYPE_OVERRIDES[modelName]?.[fieldPath];
+    if (fixedType) return { ...base, type: fixedType };
 
     // Options from a *-dropdown collection
     if (isObjectIdPath(schemaPath) && dropdownTypes) {
@@ -409,6 +428,10 @@ const createCategory = async ({ title, description, parent, isScreen, order }) =
     return Categories.create({
         title: typeof title === "string" ? localisedLabel(title) : title,
         ...(description ? { description } : {}),
+        // An --officer run creates the officers' tree and nothing else, so
+        // every category of it is theirs. Without the flag the model's own
+        // default applies: the villagers'.
+        ...(OFFICER ? { audience: "officer" } : {}),
         parentId: parent ? parent._id : null,
         path,
         depth: path.length,
@@ -432,7 +455,10 @@ const inOrder = (questions) =>
         };
     });
 
-/** Production and Consumption: written to mirror the app (app-screens.js). */
+/**
+ * A tree written out by hand to mirror the app: Production and Consumption
+ * (app-screens.js), and the officers' (officer-screens.js).
+ */
 const createAppTree = async (node, parent, order, indent = "") => {
     const category = await createCategory({
         title: node.title,
@@ -459,6 +485,77 @@ const createAppTree = async (node, parent, order, indent = "") => {
     );
 };
 
+/**
+ * The field officers' questionnaire (officer-screens.js): a second tree in
+ * the same two collections, added beside the villagers' and never in its
+ * place. So it has a guard of its own and passes none of run()'s: those are
+ * about the villagers' tree, and the wipe of --reset is of both collections
+ * whole.
+ *
+ * ponytail: written one document at a time with no transaction, as the
+ * villagers' tree is. A run cut off midway leaves part of the tree, live,
+ * and the guard then refuses the next run: the officer categories and their
+ * questions have to be taken out by hand. Put the loop in a transaction (a
+ * publish has one) if that ever happens.
+ */
+const seedOfficerTree = async () => {
+    const existing = await Categories.countDocuments(categoryFilter("officer"));
+    if (existing > 0) {
+        const why =
+            `${existing} categor(ies) of the officer questionnaire already exist.\n` +
+            "It has no --reset: change it in the dashboard.";
+        if (!DRY_RUN) {
+            console.error(`Refusing to seed: ${why}`);
+            await mongoose.disconnect();
+            process.exit(1);
+        }
+        console.log(`[dry run] a real run would refuse: ${why}\n`);
+    }
+
+    const officerTree = await buildOfficerTree(mongoose.connection.db, (warning) =>
+        warnings.push(warning)
+    );
+    // The tree is whole before anything is written, so refusing costs
+    // nothing; and it must: a picker written without options could not be
+    // answered, and the guard above would refuse every run that came to put
+    // it right.
+    if (!DRY_RUN && warnings.length) {
+        console.error(
+            `Refusing to seed: ${warnings.length} thing(s) are missing.`
+        );
+        warnings.forEach((warning) => console.error(`  ! ${warning}`));
+        console.error(
+            "\nAn empty picker means the *_officer_dropdowns collection has no rows of\n" +
+                "that type in this database. Copy them first\n" +
+                "(scripts/copy-master-data.js), then run this again."
+        );
+        await mongoose.disconnect();
+        process.exit(1);
+    }
+    for (const [index, node] of officerTree.entries()) {
+        await createAppTree(node, null, index + 1);
+    }
+
+    console.log(
+        `\n${DRY_RUN ? "[dry run] would create" : "created"}: ` +
+            `${stats.categories} officer categories, ${stats.questions} questions, ` +
+            `${stats.options} options`
+    );
+    if (warnings.length) {
+        console.log(`\n${warnings.length} thing(s) to review:`);
+        warnings.forEach((warning) => console.log(`  ! ${warning}`));
+        console.log(
+            "\nAn empty picker means the *_officer_dropdowns collection has no rows of\n" +
+                "that type in this database (scripts/copy-master-data.js copies them).\n" +
+                "Look with --dry-run first: once seeded, options are added in the dashboard."
+        );
+    }
+    console.log(
+        "\nOption labels are the lists' own names, and the questions' Malay is the\n" +
+            "app's, which looks machine translated. Review both in the dashboard."
+    );
+};
+
 const run = async () => {
     await mongoose.connect(connection_url, {
         useNewUrlParser: true,
@@ -466,7 +563,15 @@ const run = async () => {
         family: 4,
     });
 
-    const existing = await Categories.countDocuments();
+    if (OFFICER) {
+        await seedOfficerTree();
+        await mongoose.disconnect();
+        return;
+    }
+
+    // The villagers' tree only: the officers' is seeded on its own, and is
+    // no reason to refuse this one.
+    const existing = await Categories.countDocuments(categoryFilter("villager"));
     if (existing > 0 && !RESET && !DRY_RUN) {
         console.error(
             `Refusing to seed: ${existing} categor(ies) already exist.\n` +
@@ -477,11 +582,27 @@ const run = async () => {
     }
 
     if (RESET && !DRY_RUN) {
-        const responseCount = await Responses.countDocuments();
+        // The villagers' answers and the officers': the wipe below clears
+        // every question, so an answer in either store would be orphaned.
+        const responseCount = await countAnswers({});
         if (responseCount > 0) {
             console.error(
-                `Refusing to reset: ${responseCount} response(s) exist.\n` +
+                `Refusing to reset: ${responseCount} response(s) exist, villagers' and officers' together.\n` +
                     "Deleting an answered question would orphan the answers bound to its questionId."
+            );
+            await mongoose.disconnect();
+            process.exit(1);
+        }
+
+        // That wipe is of both collections whole, and this path rebuilds
+        // the villagers' tree only.
+        const officerCategories = await Categories.countDocuments(
+            categoryFilter("officer")
+        );
+        if (officerCategories > 0) {
+            console.error(
+                `Refusing to reset: ${officerCategories} categor(ies) of the officer questionnaire exist.\n` +
+                    "A reset clears every category and question, the officers' with the villagers'."
             );
             await mongoose.disconnect();
             process.exit(1);

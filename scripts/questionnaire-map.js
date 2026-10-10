@@ -167,6 +167,25 @@ const DROPDOWN_TYPE_OVERRIDES = {
     },
 };
 
+/**
+ * field -> answer type, where the schema cannot say it. Housing keeps the
+ * PATH of each uploaded picture in a String, which would otherwise be seeded
+ * as a text box to type into.
+ *
+ * Only a fresh database gets these. One that already has the five as `text`
+ * is changed in the editor: the answer type while nobody has answered,
+ * "Create a replacement question" after that.
+ */
+const TYPE_OVERRIDES = {
+    housing: {
+        front_photo: "photo",
+        back_photo: "photo",
+        neighbourhood_photo: "photo",
+        inside_living_photo: "photo",
+        kitchen_photo: "photo",
+    },
+};
+
 /** Labels that humanising the field name gets wrong or ugly. */
 const LABEL_OVERRIDES = {
     avg_age_of_live_stocks: "Average age of livestock",
@@ -243,6 +262,7 @@ module.exports = {
     SKIP_FIELDS,
     SCREEN_SPLITS,
     DROPDOWN_TYPE_OVERRIDES,
+    TYPE_OVERRIDES,
     LABEL_OVERRIDES,
     TREE,
     DROPDOWN_MODELS,

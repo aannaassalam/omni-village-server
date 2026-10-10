@@ -3,7 +3,10 @@ const {
     localisedField,
     optionalLocalisedField,
 } = require("../utils/localised");
+const { FILE_TYPES } = require("../utils/fileKinds");
 
+// The ONE list of answer types: Controllers/questions.js checks a request
+// against this same array.
 const QUESTION_TYPES = [
     "text",
     "number",
@@ -11,6 +14,9 @@ const QUESTION_TYPES = [
     "multi_select",
     "date",
     "boolean",
+    // "photo" and "audio": answered with files, a list of their ids. The
+    // names, the limits and the checks are utils/fileKinds.js
+    ...FILE_TYPES,
     "repeatable_group",
     // A presentational grouping (the app renders it as an accordion). It holds
     // no value of its own; its children are answered and stored FLAT at the top
@@ -65,6 +71,8 @@ const questionSchema = new mongoose.Schema(
             default: [],
         },
         // Numeric range for `number`; row-count bounds for `repeatable_group`.
+        // For `photo` and `audio`, `max` is how many files one answer may
+        // hold (null = 1) and `min` is not used.
         min: {
             type: mongoose.Schema.Types.Number,
             default: null,

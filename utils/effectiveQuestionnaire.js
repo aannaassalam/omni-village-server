@@ -255,6 +255,7 @@ const resolve = ({
                 asked: true,
                 label: seen.label,
                 helper_text: seen.helper_text,
+                required: Boolean(seen.required),
                 // Fresh objects: the input documents are never mutated.
                 options: (seen.options || []).map((option) => ({
                     value: option.value,
@@ -268,7 +269,7 @@ const resolve = ({
                     (seen.options || []).map((option) => String(option.value))
                 ),
             },
-            ["asked", "label", "helper_text"]
+            ["asked", "label", "helper_text", "required"]
         );
         const pendingDelete = seen.deleted === true;
         const replacedByPending = replacedByDraft.has(id);
@@ -276,6 +277,7 @@ const resolve = ({
             ...seen,
             label: current.label,
             helper_text: current.helper_text,
+            required: current.required,
             asked: false,
             selfAsked:
                 seen.active !== false &&
@@ -570,10 +572,27 @@ if (require.main === module) {
     assert.deepStrictEqual(reworded.helper_text, en("As on ID"));
     assert.strictEqual(reworded.from.helper_text, "in");
 
+    /* ---- required: the nearest place that set it wins, "no" included ---- */
+    const needs = [over("in", "name", { required: true })];
+    const needed = (overrides, place = chain) =>
+        resolve({ chain: place, categories, questions, overrides }).questions.get("name");
+    assert.strictEqual(needed([]).required, false);
+    assert.strictEqual(needed(needs).required, true);
+    assert.strictEqual(needed(needs).from.required, "in");
+    const optionalAgain = [...needs, over("ladakh", "name", { required: false })];
+    assert.strictEqual(needed(optionalAgain).required, false);
+    assert.strictEqual(needed(optionalAgain).from.required, "ladakh");
+    assert.strictEqual(needed(optionalAgain, ["in"]).required, true);
+
     /* ---- an override that repeats what it inherits changes nothing ---- */
     const idle = run({
         overrides: [
-            over("ladakh", "name", { asked: true, label: en("name"), helper_text: {} }),
+            over("ladakh", "name", {
+                asked: true,
+                label: en("name"),
+                helper_text: {},
+                required: false,
+            }),
         ],
     }).questions.get("name");
     assert.deepStrictEqual(idle.from, {});

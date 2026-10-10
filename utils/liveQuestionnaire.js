@@ -3,6 +3,7 @@ const Questions = require("../Models/questions");
 const PlaceOverrides = require("../Models/placeOverrides");
 const { resolve } = require("./effectiveQuestionnaire");
 const { listShape } = require("./questionTree");
+const { categoryFilter } = require("./audience");
 const {
     listPlaces,
     chainOf,
@@ -19,18 +20,32 @@ const {
  * and the dashboard editor all come through here, so "which documents count"
  * is decided once.
  *
+ * `audience` is whose questionnaire: the villagers' unless the field
+ * officers' is asked for (utils/audience.js). The two never mix, and this is
+ * where they are kept apart: only that audience's categories are read, and
+ * only the questions on them are handed on. So nothing that reads through
+ * here, the app's endpoints least of all, can be given a page of the other.
+ * (The resolver stays blind to it. It already drops a question whose page it
+ * was not given; the questions are narrowed here for the callers that read
+ * the stored documents themselves: the editor's pending rows, the submit.)
+ *
  * `categoryId` narrows the QUESTIONS to one page. Categories are always all
  * read: a page is asked only if everything above it is. `fields` narrows what
  * is read of each question — the app's home screen only counts them, and one
- * seeded question carries 155 options.
+ * seeded question carries 155 options. It has to keep `categoryId`.
  *
  * What the places on `chain` changed is read with it; the Master itself (no
  * chain) has nothing to read. `overridePlaces` names further places whose
  * overrides come back in `overrides` without counting for this chain — the
  * resolver skips a place that is not on it. The editor asks for the places
  * INSIDE the one it shows, whose pending changes it lists.
+ *
+ * ponytail: with no `categoryId` every question of BOTH audiences is read and
+ * one audience's kept. Fine for the few hundred there are; give questions
+ * their page's audience if that read ever shows up.
  */
 const loadEffective = async ({
+    audience = "villager",
     chain = [],
     drafts = new Set(),
     categoryId,
@@ -40,8 +55,8 @@ const loadEffective = async ({
     const questionQuery = Questions.find(categoryId ? { categoryId } : {});
     if (fields) questionQuery.select(fields);
 
-    const [categories, questions, overrides] = await Promise.all([
-        Categories.find().lean(),
+    const [categories, everyQuestion, overrides] = await Promise.all([
+        Categories.find(categoryFilter(audience)).lean(),
         questionQuery.lean(),
         chain.length > 0
             ? PlaceOverrides.find({
@@ -49,6 +64,10 @@ const loadEffective = async ({
               }).lean()
             : [],
     ]);
+    const pages = new Set(categories.map((category) => String(category._id)));
+    const questions = everyQuestion.filter((question) =>
+        pages.has(String(question.categoryId))
+    );
 
     return {
         categories,
@@ -69,6 +88,9 @@ const loadEffective = async ({
  *
  * `places` saves the read when the caller has them; `subtree` also brings
  * the overrides of the places inside this one.
+ *
+ * Always the villagers' questionnaire: the officers' is the Master's alone,
+ * and no place has a version of it.
  */
 const loadPlaceView = async (admin, placeId, { places, subtree } = {}) => {
     const all = places || (await listPlaces());

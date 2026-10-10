@@ -1,8 +1,9 @@
 const Joi = require("joi");
 const Questions = require("../Models/questions");
 const Categories = require("../Models/categories");
-const Responses = require("../Models/responses");
 const AppError = require("../AppError");
+const { categoryFilter } = require("../utils/audience");
+const { storeFor, countAnswers } = require("../utils/responseStores");
 const { resolveUserGeo } = require("../utils/geoResolver");
 const {
     loadEffective,
@@ -14,7 +15,13 @@ const {
     localise,
     normaliseLocalised,
 } = require("../utils/localised");
-const { groupDepth, listShape } = require("../utils/questionTree");
+const { groupDepth, listShape, servedTo } = require("../utils/questionTree");
+const {
+    FILE_TYPES,
+    MAX_FILES,
+    ANSWER_TYPES_HEADER,
+    answerTypesOf,
+} = require("../utils/fileKinds");
 const {
     answeredFilter,
     countAnswered,
@@ -45,16 +52,9 @@ const localisedSchema = Joi.alternatives().try(
     Joi.object().pattern(Joi.string(), Joi.string().allow(""))
 );
 
-const QUESTION_TYPES = [
-    "text",
-    "number",
-    "single_select",
-    "multi_select",
-    "date",
-    "boolean",
-    "repeatable_group",
-    "section",
-];
+// The model's own list. A draft and a publish write past the schema's
+// validators, so the check made here is the only one an edit ever gets.
+const { QUESTION_TYPES } = Questions;
 
 const SELECT_TYPES = ["single_select", "multi_select"];
 
@@ -107,6 +107,30 @@ const assertSelectHasOptions = (type, options) => {
             400
         );
     }
+};
+
+/**
+ * What a photo or audio question may carry. `max` is how many files one
+ * answer holds, a whole number up to MAX_FILES (null: one file); it has no
+ * minimum and no options, whatever was sent. Rewrites `fields`: a new
+ * question, or the patch of an edit.
+ */
+const settleFileFields = (type, fields) => {
+    if (!FILE_TYPES.includes(type)) return;
+    const { max } = fields;
+    if (
+        max !== undefined &&
+        max !== null &&
+        !(Number.isInteger(max) && max >= 1 && max <= MAX_FILES)
+    ) {
+        throw new AppError(
+            0,
+            `A photo or audio question takes 1 to ${MAX_FILES} files.`,
+            400
+        );
+    }
+    fields.min = null;
+    fields.options = [];
 };
 
 /** Nests children under their parent. Sorting is display-only, never binding. */
@@ -372,7 +396,25 @@ module.exports.add_question = async (req, res) => {
             throw new AppError(0, "Only the Master can replace a question", 409);
         }
         // Refused here unless the caller manages that place.
-        settleForPlace(await loadPlaceView(admin, ownerPlaceId), definition);
+        const view = await loadPlaceView(admin, ownerPlaceId);
+        // The officers' questionnaire is the Master's alone. Said before
+        // the place's view is asked for the page: that view is of the
+        // villagers' tree, where an officers' page is simply "not found"
+        // (as is an id that is none, which is left for it to say).
+        const officers =
+            /^[a-f0-9]{24}$/i.test(definition.categoryId) &&
+            (await Categories.exists({
+                _id: definition.categoryId,
+                ...categoryFilter("officer"),
+            }));
+        if (officers) {
+            throw new AppError(
+                0,
+                "Places cannot change the officer questionnaire.",
+                409
+            );
+        }
+        settleForPlace(view, definition);
     } else {
         assertMaster(admin);
     }
@@ -427,6 +469,7 @@ module.exports.add_question = async (req, res) => {
         );
     }
 
+    settleFileFields(definition.type, definition);
     if (definition.options) assertOptionKeys(definition.options);
     assertSelectHasOptions(definition.type, definition.options);
 
@@ -550,7 +593,13 @@ module.exports.edit_question = async (req, res) => {
             parentQuestionId: question.parentQuestionId,
             type: patch.type,
         });
+        // A range belongs to the type it was set for: a number's "up to
+        // 100" must not become a hundred photos, or a hundred entries.
+        // Unless this edit sets them, both go with the old type.
+        patch.min = patch.min ?? null;
+        patch.max = patch.max ?? null;
     }
+    settleFileFields(patch.type ?? current.type, patch);
 
     if (patch.options !== undefined) {
         patch.options = patch.options.map(
@@ -731,7 +780,7 @@ module.exports.move_question = async (req, res) => {
     }
 
     const inside = below(question._id, view.questions, "parentQuestionId");
-    const answered = await Responses.countDocuments({
+    const answered = await countAnswers({
         $or: [question, ...inside].map((one) => answeredFilter(one._id)),
     });
     if (answered > 0) {
@@ -832,7 +881,7 @@ module.exports.delete_question = async (req, res) => {
     // fires. One query for the lot rather than a count per descendant.
     const answeredInside =
         descendants.length > 0
-            ? await Responses.countDocuments({
+            ? await countAnswers({
                   $or: descendants.map(answeredFilter),
               })
             : 0;
@@ -855,11 +904,16 @@ module.exports.delete_question = async (req, res) => {
 };
 
 /**
- * App-facing. Returns the geo-filtered live question set AND the caller's
- * frozen response in one round trip; the app merges them by questionId locally.
+ * The geo-filtered live question set of one page AND the caller's frozen
+ * response, in one round trip; the app merges them by questionId locally.
+ *
+ * One body for both apps: a villager's (get_live_questions below) and a
+ * field officer's (Controllers/officer.js). Who is asking is as in
+ * liveCategories (Controllers/categories.js): `audience`, `chain`, and
+ * `owner.filter`, which finds the saved response — the villager's own, or
+ * the village's. A page of the other questionnaire yields no questions.
  */
-module.exports.get_live_questions = async (req, res) => {
-    const { user } = res.locals;
+const liveQuestions = async (req, { audience, chain, owner }) => {
     const { categoryId, lang } = req.query;
     if (!categoryId) throw new AppError(0, "Please provide categoryId", 400);
 
@@ -868,16 +922,15 @@ module.exports.get_live_questions = async (req, res) => {
     const language = lang || DEFAULT_LANGUAGE;
     const flatten = language !== "all";
 
-    const geo = await resolveUserGeo(user);
-
     const [{ resolved }, response] = await Promise.all([
-        loadEffective({ chain: geo.chain, categoryId }),
-        Responses.findOne({ userId: user._id, categoryId })
+        loadEffective({ audience, chain, categoryId }),
+        storeFor(audience)
+            .findOne({ ...owner.filter, categoryId })
             .select({ answers: 1, submittedAt: 1, categoryId: 1 })
             .lean(),
     ]);
 
-    // The options this villager's OWN saved answers sit on, at every depth.
+    // The options this caller's OWN saved answers sit on, at every depth.
     // One that a place has switched off since, or that the Master archived,
     // is not on offer any more — but the app can only draw (and untick) a
     // choice it is given the option for. So whoever made that choice still
@@ -931,21 +984,26 @@ module.exports.get_live_questions = async (req, res) => {
     // Only what this caller's place is asked, with that place's wording and
     // options. A page that is not asked there yields nothing, whatever its
     // questions say: the resolver already folded that in.
-    const questions = [...resolved.questions.values()]
-        .filter((question) => question.asked)
-        .map((question) => ({
-            _id: question._id,
-            label: question.label,
-            helper_text: question.helper_text,
-            type: question.type,
-            options: optionsFor(question),
-            min: question.min,
-            max: question.max,
-            presentation: question.presentation,
-            required: question.required,
-            order: question.order,
-            parentQuestionId: question.parentQuestionId,
-        }));
+    //
+    // And of that, only what this caller's build of the app can answer: one
+    // that does not name photo or audio in its X-Answer-Types header is not
+    // asked such a question at all, here or on submit.
+    const questions = servedTo(
+        [...resolved.questions.values()].filter((question) => question.asked),
+        answerTypesOf(req.get(ANSWER_TYPES_HEADER))
+    ).map((question) => ({
+        _id: question._id,
+        label: question.label,
+        helper_text: question.helper_text,
+        type: question.type,
+        options: optionsFor(question),
+        min: question.min,
+        max: question.max,
+        presentation: question.presentation,
+        required: question.required,
+        order: question.order,
+        parentQuestionId: question.parentQuestionId,
+    }));
 
     // parentQuestionId is only needed to nest; strip it from the payload.
     const nested = nestChildren(questions).map(function strip(question) {
@@ -968,5 +1026,19 @@ module.exports.get_live_questions = async (req, res) => {
         };
     });
 
-    return res.json({ questions: nested, response: response || null });
+    return { questions: nested, response: response || null };
+};
+module.exports.liveQuestions = liveQuestions;
+
+/** App-facing. One page as this villager's place is asked it. */
+module.exports.get_live_questions = async (req, res) => {
+    const { user } = res.locals;
+    const geo = await resolveUserGeo(user);
+    return res.json(
+        await liveQuestions(req, {
+            audience: "villager",
+            chain: geo.chain,
+            owner: { filter: { userId: user._id } },
+        })
+    );
 };

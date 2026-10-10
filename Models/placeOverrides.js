@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 /**
  * What ONE place changed about ONE question or category: whether it is asked
- * there, its own wording, the options it switched off and the options it
- * added. Whatever a place has not set here it takes from the place above, and
+ * there, its own wording, whether an answer is required there, the options
+ * it switched off and the options it added. Whatever a place has not set here it takes from the place above, and
  * in the end from the Master (utils/effectiveQuestionnaire.js).
  *
  * `published` is what the app reads. `draft` is the WHOLE next state — not a
  * patch, unlike a question's draft — and waits for a publish. A state is
  *
- *   { asked?, label?, helper_text?,
+ *   { asked?, label?, helper_text?, required?,
  *     options?:      [{ value, asked }],
  *     addedOptions?: [{ value, label, archived? }] }
  *

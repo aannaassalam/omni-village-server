@@ -8,11 +8,13 @@ const mongoose = require("mongoose");
  * `value` is Mixed:
  *   scalar                      for text | number | date | boolean | single_select
  *   [scalar]                    for multi_select
+ *   [fileId]                    for photo | audio  (24 hex, lower case: ids of
+ *                               Models/answerFiles.js documents, never bytes)
  *   [{ rowId, answers: [...] }] for repeatable_group  (rows EMBEDDED, so every
  *                               analytics query is $unwind and never $lookup)
  *
  * The real enforcement lives in utils/answerValidator.js — the schema stays
- * permissive on purpose so one validator owns the rules for all seven types.
+ * permissive on purpose so one validator owns the rules for every type.
  */
 const answerSchema = new mongoose.Schema(
     {
@@ -132,12 +134,24 @@ const responseSchema = new mongoose.Schema(
             type: [mongoose.Schema.Types.ObjectId],
             default: [],
         },
+        // Every file the photo and audio answers above hold, at ANY depth,
+        // written at each save like `answeredIds` (fileIdsIn in
+        // utils/fileKinds.js). A file inside an entry sits two or three
+        // arrays down, where no index reaches: this flat copy is how "which
+        // response holds this file?" is answered, and that decides who on
+        // the dashboard may read it and whether it is still in use. Absent
+        // on responses saved before these types, which hold none.
+        fileIds: {
+            type: [mongoose.Schema.Types.String],
+            default: [],
+        },
     },
     { timestamps: true }
 );
 
 responseSchema.index({ "answers.questionId": 1 });
 responseSchema.index({ answeredIds: 1 });
+responseSchema.index({ fileIds: 1 });
 responseSchema.index({ categoryId: 1 });
 responseSchema.index({ userId: 1 });
 responseSchema.index({ userId: 1, categoryId: 1 }, { unique: true });

@@ -81,6 +81,8 @@ const questions = require("./Routes/questions");
 const responses = require("./Routes/responses");
 const places = require("./Routes/places");
 const questionnaire = require("./Routes/questionnaire");
+const files = require("./Routes/files");
+const officer = require("./Routes/officer");
 
 const connection_url = require("./Enviroment");
 
@@ -126,7 +128,7 @@ const swaggerSpec = swaggerJSDoc(options);
 app.set("views", path.join(__dirname, "Views"));
 app.set("view engine", "ejs");
 
-app.use(cors({ origin: "*", optionsSuccessStatus: 200 }));
+app.use(cors({ origin: "*", optionsSuccessStatus: 200, maxAge: 7200 }));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -218,6 +220,8 @@ app.use("/api/questions", questions);
 app.use("/api/responses", responses);
 app.use("/api/places", places);
 app.use("/api/questionnaire", questionnaire);
+app.use("/api/files", files);
+app.use("/api/officer", officer);
 
 app.get("/", async (req, res) => {
     // for await (const _item of Object.entries(object_of_arrays)) {

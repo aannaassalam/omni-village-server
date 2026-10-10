@@ -167,18 +167,28 @@ const editorLists = (resolved, answered, mine = () => true) => {
  * The place named is the one the override sits on; whatever is inside that
  * place follows it without being listed.
  *
- * @param overrides lean place_overrides documents with a published state
+ * A question is not asked where its own switch is off, and neither where
+ * the place hides what it SITS IN: its page, a category above that, the
+ * section or list it is a field of. `sitsIn(questionId)` names those (ids of
+ * questions and categories); without it only the question's own switch
+ * counts.
+ *
+ * @param overrides lean place_overrides documents with a published state,
+ *                  about questions and (for `sitsIn`) about categories
  * @param places    listPlaces()
  * @param reach     `{ countries, villages }`: how many there are in all
+ * @param sitsIn    (questionId) => ids of everything the question sits in
  * @returns (questionId) => that question's `usage`
  */
-const masterUsage = (overrides, places, reach) => {
+const masterUsage = (overrides, places, reach, sitsIn = () => []) => {
     const byId = indexPlaces(places);
     const position = new Map(
         places.map((place, index) => [String(place._id), index])
     );
-    const none = () => ({ hidden: [], reworded: [], options: [] });
+    const none = () => ({ hidden: [], reworded: [], options: [], required: [] });
 
+    // Keyed by what the override is about: a question, or a category (whose
+    // state only ever holds `asked`).
     const perQuestion = new Map();
     overrides.forEach(({ placeId, targetId, published }) => {
         const place = byId.get(String(placeId));
@@ -189,6 +199,7 @@ const masterUsage = (overrides, places, reach) => {
         if (published.asked === false) found.hidden.push(place);
         if (published.label || published.helper_text) found.reworded.push(place);
         if (published.options || published.addedOptions) found.options.push(place);
+        if (published.required !== undefined) found.required.push(place);
     });
 
     // In tree order, whatever order the overrides were read in.
@@ -202,6 +213,14 @@ const masterUsage = (overrides, places, reach) => {
 
     return (questionId) => {
         const found = perQuestion.get(String(questionId)) || none();
+        const hidden = [
+            ...new Set([
+                ...found.hidden,
+                ...sitsIn(questionId).flatMap(
+                    (id) => perQuestion.get(String(id))?.hidden || []
+                ),
+            ]),
+        ];
         // A place with its own wording keeps it whatever the Master's is
         // changed to, and so does every village inside that place.
         const keeping = new Set(
@@ -210,9 +229,10 @@ const masterUsage = (overrides, places, reach) => {
             )
         );
         return {
-            hiddenIn: names(found.hidden),
+            hiddenIn: names(hidden),
             rewordedIn: names(found.reworded),
             optionsChangedIn: names(found.options),
+            requiredChangedIn: names(found.required),
             wording: {
                 countries:
                     reach.countries -
@@ -243,8 +263,8 @@ const statusAt = (doc, rank) => {
         return ["hidden", from.asked];
     }
     if (doc.ownerPlaceId) return ["added", String(doc.ownerPlaceId)];
-    if (from.label || from.helper_text) {
-        return ["changed", nearest(from.label, from.helper_text)];
+    if (from.label || from.helper_text || from.required) {
+        return ["changed", nearest(from.label, from.helper_text, from.required)];
     }
     if (from.options) return ["options", from.options];
     return ["master", null];
@@ -287,7 +307,12 @@ const tallyOf = (resolved, chain) => {
             if (!wording) return;
             const { from } = doc;
             new Set(
-                [from.label, from.helper_text, from.options].filter(Boolean)
+                [
+                    from.label,
+                    from.helper_text,
+                    from.required,
+                    from.options,
+                ].filter(Boolean)
             ).forEach((place) => count(place, "changed"));
         });
     each(resolved.categories, "categoriesHidden", "categoriesAdded", false);
@@ -501,6 +526,10 @@ const placePayload = ({ view, answered, version }) => {
                     helperFromName:
                         nameOf(above.from.helper_text || question.ownerPlaceId) ||
                         "Master",
+                    required: Boolean(above.required),
+                    requiredFromName:
+                        nameOf(above.from.required || question.ownerPlaceId) ||
+                        "Master",
                 },
                 asked: question.selfAsked,
                 status: status(question),
@@ -511,6 +540,7 @@ const placePayload = ({ view, answered, version }) => {
                     asked: question.from.asked || null,
                     label: question.from.label || null,
                     helper_text: question.from.helper_text || null,
+                    required: question.from.required || null,
                     options: question.from.options || null,
                 },
                 own: override
@@ -872,6 +902,8 @@ if (require.main === module) {
         helper_text: {},
         fromName: "India",
         helperFromName: "Master",
+        required: false,
+        requiredFromName: "Master",
     });
     // Hidden above: the same status, naming India, and not "here".
     assert.deepStrictEqual(lq("notes").status, {
@@ -890,12 +922,16 @@ if (require.main === module) {
         // The label is the Master's; the helper text is India's.
         fromName: "Master",
         helperFromName: "India",
+        required: false,
+        requiredFromName: "Master",
     });
     assert.deepStrictEqual(lq("age").inherited, {
         label: en("age"),
         helper_text: {},
         fromName: "Master",
         helperFromName: "Master",
+        required: false,
+        requiredFromName: "Master",
     });
     // Its own override: the state the next patch is merged into.
     assert.deepStrictEqual(lq("name").own, {
@@ -911,12 +947,14 @@ if (require.main === module) {
         asked: "ladakh",
         label: null,
         helper_text: null,
+        required: null,
         options: null,
     });
     assert.deepStrictEqual(lq("email").from, {
         asked: null,
         label: "in",
         helper_text: "ladakh",
+        required: null,
         options: null,
     });
     assert.deepStrictEqual(lq("phone").own, {
@@ -1048,6 +1086,8 @@ if (require.main === module) {
         helper_text: {},
         fromName: "Ladakh",
         helperFromName: "Master",
+        required: false,
+        requiredFromName: "Master",
     });
     assert.strictEqual(vq("ladakh-q").inherited.fromName, "Ladakh");
     // Switched back on here (a draft): asked again, and as in the Master.
@@ -1178,6 +1218,42 @@ if (require.main === module) {
     assert.deepStrictEqual(paro.pending, []);
     assert.deepStrictEqual(Object.keys(paro.places), ["bt", "paro"]);
 
+    /* ---- whether an answer is required, set by one place ---- */
+
+    // Village 2 has changed nothing; then it alone turns "required" round.
+    const plainAge = pick(payload("v2").questions, "age");
+    const turned = over("o-req", "v2", "age", {
+        published: { required: !plainAge.required },
+    });
+    const v2 = viewOf("v2");
+    const strict = placePayload({
+        view: {
+            ...v2,
+            overrides: [...overrides, turned],
+            resolved: resolve({ ...v2, overrides: [...overrides, turned] }),
+        },
+        answered: new Set(),
+        version: 12,
+    });
+    const strictAge = pick(strict.questions, "age");
+    assert.strictEqual(strictAge.required, !plainAge.required);
+    assert.strictEqual(strictAge.inherited.required, plainAge.required);
+    assert.strictEqual(strictAge.inherited.requiredFromName, "Master");
+    assert.strictEqual(strictAge.from.required, "v2");
+    // It counts as a change made here, though the wording is Ladakh's.
+    assert.deepStrictEqual(strictAge.status, {
+        kind: "changed",
+        placeId: "v2",
+        placeName: "Village 2",
+        here: true,
+    });
+    assert.strictEqual(strict.compare.own.changed, 1);
+    assert.deepStrictEqual(
+        masterUsage([turned], places, { countries: 2, villages: 3 })("age")
+            .requiredChangedIn,
+        ["Village 2"]
+    );
+
     /* ---- the Master's side: where its questions are changed ---- */
 
     const reach = { countries: 2, villages: 3 };
@@ -1192,12 +1268,14 @@ if (require.main === module) {
         hiddenIn: ["Ladakh"],
         rewordedIn: [],
         optionsChangedIn: [],
+        requiredChangedIn: [],
         wording: everywhere,
     });
     assert.deepStrictEqual(usage("marital"), {
         hiddenIn: [],
         rewordedIn: [],
         optionsChangedIn: ["Ladakh"],
+        requiredChangedIn: [],
         wording: everywhere,
     });
     // Ladakh keeps its own wording, and so do its two villages.
@@ -1205,6 +1283,7 @@ if (require.main === module) {
         hiddenIn: [],
         rewordedIn: ["Ladakh"],
         optionsChangedIn: [],
+        requiredChangedIn: [],
         wording: { countries: 2, villages: 1, keptBy: ["Ladakh"] },
     });
     // India keeps its own helper text: one country less, and only Paro left.
@@ -1218,6 +1297,7 @@ if (require.main === module) {
         hiddenIn: [],
         rewordedIn: ["India", "Ladakh"],
         optionsChangedIn: [],
+        requiredChangedIn: [],
         wording: { countries: 1, villages: 1, keptBy: ["India", "Ladakh"] },
     });
     assert.deepStrictEqual(usage("notes").hiddenIn, ["India"]);
@@ -1227,8 +1307,39 @@ if (require.main === module) {
         hiddenIn: [],
         rewordedIn: [],
         optionsChangedIn: [],
+        requiredChangedIn: [],
         wording: everywhere,
     });
+    // A question is not asked where a place hides what it sits in: its
+    // page (or a category above it), or the list it is a field of. Ladakh
+    // hides the page "health"; India, here, the list of crops.
+    const published = overrides.filter((o) => o.published);
+    const sitsIn = (id) =>
+        ({ crop: ["entries", "crops", "food"], pulse: ["health"] }[id] || []);
+    const wider = masterUsage(
+        [...published, over("x0", "in", "entries", { published: { asked: false } })],
+        places,
+        reach,
+        sitsIn
+    );
+    assert.deepStrictEqual(wider("pulse").hiddenIn, ["Ladakh"]);
+    assert.deepStrictEqual(wider("crop").hiddenIn, ["India"]);
+    // Its own switch and its page's are one place, named once.
+    assert.deepStrictEqual(
+        masterUsage(
+            [
+                over("x4", "ladakh", "pulse", { published: { asked: false } }),
+                ...published,
+            ],
+            places,
+            reach,
+            sitsIn
+        )("pulse").hiddenIn,
+        ["Ladakh"]
+    );
+    // Without it, as before: only the question's own switch counts.
+    assert.deepStrictEqual(usage("pulse").hiddenIn, []);
+
     // Several places on one question are named in tree order (Bhutan's
     // Paro before India's Village 2), whatever order they were read in.
     assert.deepStrictEqual(
@@ -1247,6 +1358,7 @@ if (require.main === module) {
             hiddenIn: ["India"],
             rewordedIn: ["Paro", "Village 2"],
             optionsChangedIn: [],
+            requiredChangedIn: [],
             wording: { countries: 2, villages: 1, keptBy: ["Paro", "Village 2"] },
         }
     );

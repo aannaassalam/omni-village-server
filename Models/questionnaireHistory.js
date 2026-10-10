@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { AUDIENCES } = require("../utils/audience");
 
 /**
  * What each publish changed: one document per row of the Publish dialog.
@@ -17,6 +18,16 @@ const historySchema = new mongoose.Schema(
         version: {
             type: mongoose.Schema.Types.Number,
             required: [true, "Version is required!"],
+        },
+        // Whose questionnaire was changed: the villagers', or the field
+        // officers' (utils/audience.js). The two share this history and the
+        // version counter, and each editor lists, and undoes the latest of,
+        // its own rows. A row saved before this field has none and is the
+        // villagers': ask with categoryFilter, never for "villager".
+        audience: {
+            type: mongoose.Schema.Types.String,
+            enum: AUDIENCES,
+            default: "villager",
         },
         at: {
             type: mongoose.Schema.Types.Date,

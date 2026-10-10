@@ -25,9 +25,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get("/list-all", ControllerWrapper(moderator_controller.list_all));
+// The dashboard's Moderators and Assign pages, and a super admin's. These
+// two and /change-status below had no guard at all: anyone could read every
+// officer's phone number and address, or approve an officer. And the
+// officers' questionnaire rests on that approval (Controllers/officer.js).
+router.get(
+    "/list-all",
+    verifyAdmin,
+    requireRole("admin"),
+    ControllerWrapper(moderator_controller.list_all)
+);
 router.get(
     "/list-all-approved",
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(moderator_controller.list_all_approved)
 );
 // As /user/generate_token: an officer's token for a phone number, with no
@@ -58,6 +69,8 @@ router.post(
 );
 router.put(
     "/change-status",
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(moderator_controller.change_moderator_status)
 );
 

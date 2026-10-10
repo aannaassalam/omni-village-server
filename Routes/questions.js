@@ -11,7 +11,14 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *      tags:
  *        - Questions
  *      summary: Live question set for a screen, plus the caller's response.
- *      description: Geo-filtered and nested. The app merges questions against response.answers by questionId.
+ *      description: >
+ *        Geo-filtered and nested. The app merges questions against
+ *        response.answers by questionId. A photo or audio question (answered
+ *        with file ids, see POST /files; max is how many files, null meaning
+ *        one) is served only to a build that names its type in the
+ *        X-Answer-Types header. A build that does not is not asked it at
+ *        all - nor a section or list that holds nothing else - so it never
+ *        meets a question it cannot answer.
  *      produces:
  *        - application/json
  *
@@ -20,6 +27,12 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *         in: query
  *         description:
  *         required: true
+ *         schema:
+ *           type: string
+ *       - name: X-Answer-Types
+ *         in: header
+ *         description: The file answer types this build of the app can answer, comma separated - "photo,audio". Leave it out and no such question is served.
+ *         required: false
  *         schema:
  *           type: string
  *
@@ -47,9 +60,12 @@ router.get(
  *      summary: Add a question (unpublished until the next publish).
  *      description: >
  *        type is one of text, number, single_select, multi_select, date,
- *        boolean, repeatable_group, section. Pass parentQuestionId to add a
- *        child to a group; groups nest two levels at most. order defaults to
- *        after the last sibling. An option value may not start with "p_".
+ *        boolean, photo, audio, repeatable_group, section. Pass
+ *        parentQuestionId to add a child to a group; groups nest two levels
+ *        at most. order defaults to after the last sibling. An option value
+ *        may not start with "p_". For photo and audio, max is how many files
+ *        one answer may hold - a whole number from 1 to 10, or left out for
+ *        one - and min and options are not kept.
  *        Pass replaces (the id of a published Master question) to create its
  *        successor - it takes that question's page, parent and order, and the
  *        old one is retired when the new one is published; copyChildren also
@@ -58,7 +74,9 @@ router.get(
  *        the places inside it) - by whoever manages that place; without it
  *        the question is the Master's and a super admin's to add. A place's
  *        question goes after everything that place can see there, and on a
- *        page that is one list it goes inside the list.
+ *        page that is one list it goes inside the list. A page of the field
+ *        officers' questionnaire takes no place's question (409) - that
+ *        questionnaire is the Master's alone.
  *      produces:
  *        - application/json
  *
@@ -80,6 +98,10 @@ router.get(
  *               type: string
  *             options:
  *               type: array
+ *             min:
+ *               type: number
+ *             max:
+ *               type: number
  *             required:
  *               type: boolean
  *             order:
@@ -94,10 +116,12 @@ router.get(
  *      responses:
  *        200:
  *          description: The created question.
+ *        400:
+ *          description: A value that is not allowed - among them a photo or audio question whose max is not a whole number from 1 to 10
  *        403:
  *          description: Not the caller's place, or the Master asked of a regional account
  *        409:
- *          description: Invalid placement, or the question to replace cannot be replaced
+ *          description: Invalid placement, the question to replace cannot be replaced, or a place adding to the officer questionnaire
  *        500:
  *          description: Internal Server Error
  */
@@ -126,6 +150,10 @@ router.post(
  *        answers (archive it instead). A question a place added is edited by
  *        whoever manages that place, under the same rules, except that its
  *        order cannot be set.
+ *        For photo and audio, max is how many files one answer may hold (a
+ *        whole number from 1 to 10, or null for one) and min and options are
+ *        not kept. An edit that changes the type and sends no min or max
+ *        clears them - a number's range does not become a file limit.
  *      produces:
  *        - application/json
  *
@@ -147,12 +175,18 @@ router.post(
  *               type: string
  *             options:
  *               type: array
+ *             min:
+ *               type: number
+ *             max:
+ *               type: number
  *             required:
  *               type: boolean
  *
  *      responses:
  *        200:
  *          description: Returns { _id, rev }.
+ *        400:
+ *          description: A value that is not allowed - among them a photo or audio question whose max is not a whole number from 1 to 10
  *        409:
  *          description: Changed by someone else, or locked by saved answers
  *        500:

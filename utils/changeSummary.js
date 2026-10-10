@@ -87,13 +87,15 @@ const describeOverride = (before, after) => {
 
     const wording = ["label", "helper_text"];
     const options = ["options", "addedOptions"];
-    // Every wording and option change taken back: not "wording changed".
-    if (sets(was, [...wording, ...options]) && !sets(now, [...wording, ...options])) {
+    // Everything but the switch taken back: not "wording changed".
+    const own = [...wording, ...options, "required"];
+    if (sets(was, own) && !sets(now, own)) {
         kinds.push("reset");
         return { kinds, counts };
     }
 
     if (wording.some(differs)) kinds.push("wording");
+    if (differs("required")) kinds.push("required");
     if (options.some(differs)) {
         kinds.push("options");
         const values = (list, keep = () => true) =>
@@ -415,11 +417,12 @@ const pendingRows = ({
             return [only && !only.has(own) ? own : rowKeyOf(parent)];
         }
         // A published question that only BECOMES a group or section with its
-        // draft: until that is out, it cannot hold anything.
-        const holds = (type) => CONTAINERS.includes(type);
-        return !holds(parent.type) && holds(seen(parent).type)
-            ? [keyOf("question", parent)]
-            : [];
+        // draft: until that is out, it cannot hold anything. With that draft
+        // gone it waits for a row nobody can send, and is never put out
+        // inside a plain question.
+        return CONTAINERS.includes(parent.type)
+            ? []
+            : [keyOf("question", parent)];
     };
 
     // A new question inside a new question is not a row of its own: a group
@@ -773,6 +776,20 @@ if (require.main === module) {
         ),
         null
     );
+
+    // Required is a value either way: "not required" is stored where the
+    // place above requires it, and is nothing where it is not required anyway.
+    const optionalAbove = { ...inherited, required: false };
+    const requiredAbove = { ...inherited, required: true };
+    assert.strictEqual(put(null, { required: false }, optionalAbove), null);
+    const eased = put(null, { required: false }, requiredAbove);
+    assert.deepStrictEqual(eased.draft, { required: false });
+    assert.strictEqual(put(eased, { required: null }, requiredAbove), null);
+    assert.strictEqual(
+        toText(describeOverride({}, eased.draft), "question"),
+        "required changed"
+    );
+    assert.deepStrictEqual(describeOverride(eased.draft, {}).kinds, ["reset"]);
 
     // A hide is stored — as a draft, the WHOLE next state.
     const hide = put(null, { asked: false }, inherited);
@@ -1507,6 +1524,13 @@ if (require.main === module) {
         const removed = await plan([sent("question", "gone")]);
         assert.deepStrictEqual(removed.ops.question, [
             { deleteMany: { filter: { _id: { $in: ["gone"] } } } },
+            // What it had replaced can be given another replacement.
+            {
+                updateMany: {
+                    filter: { replacedBy: { $in: ["gone"] } },
+                    update: { $set: { replacedBy: null } },
+                },
+            },
         ]);
         assert.strictEqual(removed.history[0].after, null);
         // What places had set about it is not left pointing at nothing.
@@ -1524,6 +1548,12 @@ if (require.main === module) {
         const herdItem = [sent("question", "herd", herd)];
         assert.deepStrictEqual((await plan(herdItem, withHerd)).ops.question, [
             { deleteMany: { filter: { _id: { $in: ["herd", "cow", "milk"] } } } },
+            {
+                updateMany: {
+                    filter: { replacedBy: { $in: ["herd", "cow", "milk"] } },
+                    update: { $set: { replacedBy: null } },
+                },
+            },
         ]);
         assert.strictEqual(
             (await plan(herdItem, { ...withHerd, answeredIds: ["milk"] })).published,

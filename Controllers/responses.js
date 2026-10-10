@@ -1,10 +1,13 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
-const Responses = require("../Models/responses");
 const Questions = require("../Models/questions");
 const Categories = require("../Models/categories");
 const Users = require("../Models/user");
+const Moderators = require("../Models/moderator");
+const PlaceOverrides = require("../Models/placeOverrides");
 const AppError = require("../AppError");
+const { audienceOf, parseAudience } = require("../utils/audience");
+const { storeFor } = require("../utils/responseStores");
 const {
     validateAnswer,
     snapshotAnswer,
@@ -15,7 +18,15 @@ const { loadEffective } = require("../utils/liveQuestionnaire");
 const { askedQuestionIds } = require("../utils/effectiveQuestionnaire");
 const Counters = require("../Models/counters");
 const { localise } = require("../utils/localised");
-const { rowQuestions, isTopLevel } = require("../utils/questionTree");
+const { rowQuestions, isTopLevel, servedTo } = require("../utils/questionTree");
+const {
+    FILE_TYPES,
+    ANSWER_TYPES_HEADER,
+    filesIn,
+    fileIdsIn,
+    answerTypesOf,
+} = require("../utils/fileKinds");
+const { filesOf, removeUnheld, villagerFiles } = require("./files");
 const {
     listPlaces,
     indexPlaces,
@@ -52,9 +63,9 @@ const escapeRegex = (value) =>
 const valueExpression = (op, raw) => {
     switch (op) {
         case "eq":
-            return coerce(raw);
+            return { $in: readings(raw) };
         case "in":
-            return { $in: String(raw).split(",").map(coerce) };
+            return { $in: String(raw).split(",").flatMap(readings) };
         case "gte":
             return { $gte: Number(raw) };
         case "lte":
@@ -63,7 +74,7 @@ const valueExpression = (op, raw) => {
             return { $regex: escapeRegex(raw), $options: "i" };
         case "any":
             // multi_select / any row in a group
-            return { $elemMatch: { $eq: coerce(raw) } };
+            return { $elemMatch: { $in: readings(raw) } };
         default:
             throw new AppError(0, `Unsupported filter operator "${op}"`, 400);
     }
@@ -75,6 +86,10 @@ const coerce = (raw) => {
     const asNumber = Number(raw);
     return raw !== "" && !Number.isNaN(asNumber) ? asNumber : raw;
 };
+
+// "12" may be a number answer, a text answer or an option's key: how the
+// filter's text looks does not say which, so both readings are compared.
+const readings = (raw) => [...new Set([raw, coerce(raw)])];
 
 /**
  * Compiles one `f=<questionId>[.<childId>]:<op>:<value>` filter.
@@ -155,7 +170,95 @@ const usersMatching = async (text, among) => {
 };
 
 /**
+ * The same search over the field officers' responses, "by village or
+ * officer": every word has to be found in the village's name, or in the
+ * first name, last name or phone number of the officer who saved last. One
+ * condition per word, since a response is found by either: "rukha tashi" is
+ * Tashi's save for Rukha.
+ *
+ * `among` are the officers who saved in the view being searched, as for
+ * villagers.
+ *
+ * ponytail: those officers are read whole and matched here, one test per
+ * word. There are as many as there are villages in view, at most; match them
+ * in the database, as usersMatching does, if that ever runs to thousands.
+ */
+const officersMatching = async (text, among) => {
+    const words = text.trim().split(/\s+/).filter(Boolean).slice(0, 5);
+    if (words.length === 0) return null;
+    const officers = await Moderators.find({ _id: { $in: among } })
+        .select({ first_name: 1, last_name: 1, phone: 1 })
+        .lean();
+    return words.map((word) => {
+        const like = escapeRegex(word);
+        const named = new RegExp(like, "i");
+        return {
+            $or: [
+                { villageName: { $regex: like, $options: "i" } },
+                {
+                    moderatorId: {
+                        $in: officers
+                            .filter((officer) =>
+                                [
+                                    officer.first_name,
+                                    officer.last_name,
+                                    // The phone is stored as a number.
+                                    officer.phone,
+                                ].some((part) => named.test(String(part ?? "")))
+                            )
+                            .map((officer) => officer._id),
+                    },
+                },
+            ],
+        };
+    });
+};
+
+/**
+ * Whose name a row carries, per audience. A villager's response is theirs
+ * (`userName`). A field officer's is the village's, and says which officer
+ * saved it last (`savedBy`).
+ */
+const WHO = {
+    villager: { from: "users", id: "userId", name: "userName" },
+    officer: { from: "moderators", id: "moderatorId", name: "savedBy" },
+};
+
+/**
+ * The two stages that bring that person along, as `user`. Placed after the
+ * page slice, never before it.
+ */
+const whoStages = (audience) => [
+    // let/$expr rather than localField+pipeline — the latter needs
+    // MongoDB 5.0+, and this deployment's version isn't pinned.
+    {
+        $lookup: {
+            from: WHO[audience].from,
+            let: { uid: `$${WHO[audience].id}` },
+            pipeline: [
+                { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
+                { $project: { first_name: 1, last_name: 1 } },
+            ],
+            as: "user",
+        },
+    },
+    { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+];
+
+/** Who a row is by, as the dashboard gets it: their id and their name. */
+const whoOf = (audience, row) => ({
+    [WHO[audience].id]: row[WHO[audience].id],
+    [WHO[audience].name]: [row.user?.first_name, row.user?.last_name]
+        .filter(Boolean)
+        .join(" "),
+});
+
+/**
  * One parser, shared by the table, the long-row view and the stats.
+ *
+ * `audience` is whose answers: the villagers' unless "officer" is asked
+ * for. They are kept apart (utils/responseStores.js), and `Store` is the
+ * one this request reads.
  *
  * `place` is any level, a country down to one village, and the boundary a
  * regional account cannot leave: it is always held to a place, its own
@@ -171,7 +274,6 @@ const parseQuery = async (query, admin) => {
         categoryPath,
         from,
         to,
-        q,
         user,
         page = 0,
         limit = 25,
@@ -187,6 +289,8 @@ const parseQuery = async (query, admin) => {
         );
     }
 
+    const audience = parseAudience(query.audience);
+    const Store = storeFor(audience);
     const scope = await readScope(admin, query.place);
 
     const match = {};
@@ -207,10 +311,6 @@ const parseQuery = async (query, admin) => {
         };
     }
 
-    if (q) {
-        match["answers.value"] = { $regex: escapeRegex(q), $options: "i" };
-    }
-
     if (user !== undefined && typeof user !== "string") {
         throw new AppError(0, '"user" must be text', 400);
     }
@@ -221,10 +321,23 @@ const parseQuery = async (query, admin) => {
             $in: villagesUnder(scope.place._id, scope.places),
         };
         // A response whose village did not resolve still knows its country,
-        // so it counts for the country and for nothing narrower.
+        // so it counts for the country and for nothing narrower. One whose
+        // village IS a place counts where that village is, whatever country
+        // an older save stamped on it.
+        const placed = scope.places
+            .filter((place) => place.kind === "village")
+            .map((place) => place._id);
         filters.push(
             scope.place.kind === "country"
-                ? { $or: [{ countryId: scope.place._id }, { villageId }] }
+                ? {
+                      $or: [
+                          {
+                              countryId: scope.place._id,
+                              villageId: { $nin: placed },
+                          },
+                          { villageId },
+                      ],
+                  }
                 : { villageId }
         );
     }
@@ -232,10 +345,16 @@ const parseQuery = async (query, admin) => {
 
     // Last, so that the search runs inside everything above: the page, the
     // place, the dates and the filters.
-    if (user) {
+    if (user && audience === "officer") {
+        const words = await officersMatching(
+            user,
+            await Store.distinct("moderatorId", match)
+        );
+        if (words) match.$and = [...(match.$and || []), ...words];
+    } else if (user) {
         const ids = await usersMatching(
             user,
-            await Responses.distinct("userId", match)
+            await Store.distinct("userId", match)
         );
         if (ids) match.userId = { $in: ids };
     }
@@ -248,6 +367,8 @@ const parseQuery = async (query, admin) => {
     return {
         match,
         scope,
+        audience,
+        Store,
         page: Math.max(whole(page, 0), 0),
         limit: safeLimit,
         sort: {
@@ -267,10 +388,13 @@ const parseQuery = async (query, admin) => {
  * Wording and options are the ones in force at the scope's place — what a
  * villager there is asked today, published changes only. A question that
  * place's chain does not reach (one a village inside it added) keeps its own.
+ *
+ * A page that is not part of `audience`'s questionnaire has no columns.
  */
-const columnsFor = async (categoryId, scope) => {
+const columnsFor = async (categoryId, scope, audience) => {
     if (!categoryId) return [];
     const { questions: stored, resolved } = await loadEffective({
+        audience,
         chain: scope.place ? chainOf(scope.place) : [],
         categoryId,
     });
@@ -289,18 +413,52 @@ const columnsFor = async (categoryId, scope) => {
             childrenOf.set(key, [...(childrenOf.get(key) || []), question]);
         });
 
+    // The options places IN the view added (any place, with all of them in
+    // view): the chain above holds none of those, yet answers on screen sit
+    // on them and Graphs and Filters name options from this list.
+    const addedBy = await PlaceOverrides.find({
+        targetId: { $in: questions.map((question) => question._id) },
+        "published.addedOptions.0": { $exists: true },
+        ...(owners
+            ? { placeId: { $in: scope.owners.filter(Boolean) } }
+            : {}),
+    })
+        .select({ targetId: 1, "published.addedOptions": 1 })
+        .lean();
+    const addedTo = new Map();
+    addedBy.forEach(({ targetId, published }) => {
+        const key = String(targetId);
+        addedTo.set(key, [...(addedTo.get(key) || []), ...published.addedOptions]);
+    });
+
+    // Archived itself, or sitting in something that is.
+    const byId = new Map(questions.map((question) => [String(question._id), question]));
+    const isActive = (question) => {
+        let current = question;
+        for (let depth = 0; current && depth < 4; depth += 1) {
+            if (current.active === false) return false;
+            current = byId.get(String(current.parentQuestionId));
+        }
+        return true;
+    };
+
     const toColumn = (question) => {
         const here = resolved.questions.get(String(question._id));
+        const options = here?.allOptions || question.options || [];
+        const listed = new Set(options.map((option) => String(option.value)));
         return {
             questionId: question._id,
             label: here?.label || question.label,
             type: question.type,
-            active: question.active,
+            active: isActive(question),
             replacedBy: question.replacedBy,
             ownerPlaceId: question.ownerPlaceId || null,
-            options: (here?.allOptions || question.options || []).map(
-                ({ value, label, archived }) => ({ value, label, archived })
-            ),
+            options: [
+                ...options,
+                ...(addedTo.get(String(question._id)) || []).filter(
+                    (option) => !listed.has(String(option.value))
+                ),
+            ].map(({ value, label, archived }) => ({ value, label, archived })),
             // A section inside a group is not a column either: what it holds
             // sits directly in the row.
             children: rowQuestions(question, questions).map((child) => ({
@@ -325,7 +483,13 @@ const columnsFor = async (categoryId, scope) => {
         (childrenOf.get(String(question._id)) || [])
             .sort((a, b) => a.order - b.order)
             .forEach((child) =>
-                out.push({ ...toColumn(child), section: question.label })
+                out.push({
+                    ...toColumn(child),
+                    // As the place in view words it.
+                    section:
+                        resolved.questions.get(String(question._id))?.label ||
+                        question.label,
+                })
             );
     });
     return out;
@@ -370,35 +534,20 @@ const byQuestion = (answers) =>
     }, {});
 
 module.exports.list_responses = async (req, res) => {
-    const { match, scope, page, limit, sort } = await parseQuery(
-        req.query,
-        res.locals.admin
-    );
+    const { match, scope, audience, Store, page, limit, sort } =
+        await parseQuery(req.query, res.locals.admin);
 
     const [total, docs, columns, places] = await Promise.all([
-        Responses.countDocuments(match),
-        Responses.aggregate([
+        Store.countDocuments(match),
+        Store.aggregate([
             { $match: match },
             { $sort: sort },
             { $skip: page * limit },
             { $limit: limit },
             // The lookup runs on the page slice only, never the whole set.
-            // let/$expr rather than localField+pipeline — the latter needs
-            // MongoDB 5.0+, and this deployment's version isn't pinned.
-            {
-                $lookup: {
-                    from: "users",
-                    let: { uid: "$userId" },
-                    pipeline: [
-                        { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
-                        { $project: { first_name: 1, last_name: 1 } },
-                    ],
-                    as: "user",
-                },
-            },
-            { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+            ...whoStages(audience),
         ]),
-        columnsFor(req.query.categoryId, scope),
+        columnsFor(req.query.categoryId, scope, audience),
         scope.places || listPlaces(),
     ]);
 
@@ -418,10 +567,8 @@ module.exports.list_responses = async (req, res) => {
 
     const rows = docs.map((doc) => ({
         _id: doc._id,
-        userId: doc.userId,
-        userName: [doc.user?.first_name, doc.user?.last_name]
-            .filter(Boolean)
-            .join(" "),
+        // userId and userName; for an officer's, moderatorId and savedBy.
+        ...whoOf(audience, doc),
         villageName: doc.villageName,
         villageId: doc.villageId,
         countryId: doc.countryId,
@@ -482,7 +629,7 @@ module.exports.list_responses = async (req, res) => {
  * collection, because rows are embedded.
  */
 module.exports.list_response_rows = async (req, res) => {
-    const { match, page, limit, sort } = await parseQuery(
+    const { match, audience, Store, page, limit, sort } = await parseQuery(
         req.query,
         res.locals.admin
     );
@@ -498,11 +645,14 @@ module.exports.list_response_rows = async (req, res) => {
     // Only a nested group can be unwound a second level. A scalar child would
     // produce meaningless rows, so refuse rather than guess.
     if (childId) {
-        const child = await Questions.findById(childId)
-            .select({ type: 1 })
-            .lean();
-        if (!child) throw new AppError(0, "Child question not found", 404);
-        if (child.type !== "repeatable_group") {
+        // Looked up on the page in view, and answered one way whatever the
+        // id is: this is not a way to ask whether a question exists.
+        const child = await Questions.exists({
+            _id: childId,
+            type: "repeatable_group",
+            ...(match.categoryId ? { categoryId: match.categoryId } : {}),
+        });
+        if (!child) {
             throw new AppError(
                 0,
                 "groupPath may only descend into a repeatable_group child",
@@ -538,7 +688,8 @@ module.exports.list_response_rows = async (req, res) => {
         {
             $project: {
                 responseId: "$_id",
-                userId: 1,
+                // userId, or for an officer's response moderatorId.
+                [WHO[audience].id]: 1,
                 villageName: 1,
                 countryId: 1,
                 villageId: 1,
@@ -554,21 +705,10 @@ module.exports.list_response_rows = async (req, res) => {
         { $skip: page * limit },
         { $limit: limit },
         // Whose entry each row is — on the page slice only, as in the list.
-        {
-            $lookup: {
-                from: "users",
-                let: { uid: "$userId" },
-                pipeline: [
-                    { $match: { $expr: { $eq: ["$_id", "$$uid"] } } },
-                    { $project: { first_name: 1, last_name: 1 } },
-                ],
-                as: "user",
-            },
-        },
-        { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } }
+        ...whoStages(audience)
     );
 
-    const rows = await Responses.aggregate(pipeline);
+    const rows = await Store.aggregate(pipeline);
 
     return res.json({
         page,
@@ -576,9 +716,7 @@ module.exports.list_response_rows = async (req, res) => {
         groupPath,
         rows: rows.map(({ user, ...row }) => ({
             ...row,
-            userName: [user?.first_name, user?.last_name]
-                .filter(Boolean)
-                .join(" "),
+            ...whoOf(audience, { ...row, user }),
             answers: byQuestion(row.answers),
         })),
     });
@@ -589,11 +727,14 @@ module.exports.list_response_rows = async (req, res) => {
  * why filtering is server-side in the first place.
  */
 module.exports.response_stats = async (req, res) => {
-    const { match, scope } = await parseQuery(req.query, res.locals.admin);
+    const { match, scope, audience, Store } = await parseQuery(
+        req.query,
+        res.locals.admin
+    );
 
-    const [total, overTime, flat, columns] = await Promise.all([
-        Responses.countDocuments(match),
-        Responses.aggregate([
+    const [total, overTime, flat, columns, offered, unrecorded] = await Promise.all([
+        Store.countDocuments(match),
+        Store.aggregate([
             { $match: match },
             {
                 // $dateToString rather than $dateTrunc — the latter needs
@@ -610,9 +751,38 @@ module.exports.response_stats = async (req, res) => {
             },
             { $sort: { _id: 1 } },
         ]),
-        Responses.aggregate([
+        Store.aggregate([
             { $match: match },
             { $unwind: "$answers" },
+            // Only how many entries a list has is charted. Carrying the
+            // entries (each with its pickers' whole option lists) put every
+            // response's into one document, past what MongoDB holds.
+            // Photos and recordings likewise: how many files each response
+            // holds, not their ids, which would be one bar per response.
+            {
+                $addFields: {
+                    "answers.value": {
+                        $cond: [
+                            {
+                                $in: [
+                                    "$answers.type",
+                                    ["repeatable_group", ...FILE_TYPES],
+                                ],
+                            },
+                            {
+                                $size: {
+                                    $cond: [
+                                        { $isArray: "$answers.value" },
+                                        "$answers.value",
+                                        [],
+                                    ],
+                                },
+                            },
+                            "$answers.value",
+                        ],
+                    },
+                },
+            },
             {
                 $group: {
                     _id: "$answers.questionId",
@@ -623,8 +793,20 @@ module.exports.response_stats = async (req, res) => {
                 },
             },
         ]),
-        columnsFor(req.query.categoryId, scope),
+        columnsFor(req.query.categoryId, scope, audience),
+        // Who was OFFERED each question: a response that was never asked it
+        // (hidden in its place, or another place's own) did not skip it.
+        Store.aggregate([
+            { $match: match },
+            { $unwind: "$asked" },
+            { $group: { _id: "$asked", count: { $sum: 1 } } },
+        ]),
+        // Saved before that record was kept: taken as asked everything.
+        Store.countDocuments({ ...match, "asked.0": { $exists: false } }),
     ]);
+    const offeredTo = new Map(
+        offered.map((entry) => [String(entry._id), entry.count])
+    );
 
     const bucketise = (entry) => {
         const counts = new Map();
@@ -643,11 +825,6 @@ module.exports.response_stats = async (req, res) => {
             }
             if (entry.type === "date" && value) {
                 const key = new Date(value).toISOString().slice(0, 7);
-                counts.set(key, (counts.get(key) || 0) + 1);
-                return;
-            }
-            if (entry.type === "repeatable_group" && Array.isArray(value)) {
-                const key = String(value.length);
                 counts.set(key, (counts.get(key) || 0) + 1);
                 return;
             }
@@ -723,7 +900,12 @@ module.exports.response_stats = async (req, res) => {
             type: entry.type,
             active: live?.active ?? false,
             answered: entry.answered,
-            skipped: Math.max(total - entry.answered, 0),
+            skipped: Math.max(
+                (offeredTo.get(String(entry._id)) || 0) +
+                    unrecorded -
+                    entry.answered,
+                0
+            ),
             buckets: buckets.map((bucket) => ({
                 ...bucket,
                 label:
@@ -747,9 +929,24 @@ module.exports.response_stats = async (req, res) => {
     });
 };
 
-/** App-facing submit. Merges by questionId — never by position. */
-module.exports.submit_response = async (req, res) => {
-    const { user } = res.locals;
+/**
+ * Saves one page of answers. Merges by questionId — never by position.
+ *
+ * One body for both apps: a villager's (submit_response below) and a field
+ * officer's (Controllers/officer.js), so that "an answer binds by
+ * questionId" is enforced in one place. What differs is who is asking:
+ *
+ *   `audience`      whose questionnaire the page has to be part of;
+ *   `chain`         the places that decide what of it is asked;
+ *   `owner.filter`  what finds the response being saved: a villager's own
+ *                   (one per villager and page), or a village's (one per
+ *                   village and page);
+ *   `owner.stamp`   what the save records about where it came from;
+ *   `files`         whose files may be put in the answers
+ *                   (Controllers/files.js villagerFiles, officerFiles).
+ */
+const submitAnswers = async (req, { audience, chain, owner, files: whose }) => {
+    const Store = storeFor(audience);
 
     const schema = Joi.object({
         categoryId: Joi.string().required(),
@@ -771,24 +968,32 @@ module.exports.submit_response = async (req, res) => {
     if (error) throw error;
 
     const category = await Categories.findById(value.categoryId).lean();
-    if (!category) throw new AppError(0, "Category not found", 404);
+    // A page of the other questionnaire is no page of this caller's.
+    if (!category || audienceOf(category) !== audience) {
+        throw new AppError(0, "Category not found", 404);
+    }
     if (!category.is_screen) {
         throw new AppError(0, "That category is not a screen", 409);
     }
 
-    const geo = await resolveUserGeo(user);
-
     // What this caller's place is asked on this page, with that place's
     // wording and options — the same rule /questions/live served them by.
     const { questions: everyQuestion, resolved } = await loadEffective({
-        chain: geo.chain,
+        audience,
+        chain,
         categoryId: value.categoryId,
     });
     if (!resolved.categories.get(String(category._id))?.asked) {
         throw new AppError(0, "This page is no longer asked in your place", 409);
     }
-    const live = [...resolved.questions.values()].filter(
-        (question) => question.asked
+    // …and of that, what this caller's build of the app can answer. A photo
+    // or audio question its X-Answer-Types header does not name was never
+    // served to it (get_live_questions), so from here on it is a question
+    // hidden for this caller: skipped if sent, not required, not recorded
+    // as asked, and carried inside the entries that hold it.
+    const live = servedTo(
+        [...resolved.questions.values()].filter((question) => question.asked),
+        answerTypesOf(req.get(ANSWER_TYPES_HEADER))
     );
 
     const byId = new Map(live.map((question) => [String(question._id), question]));
@@ -840,8 +1045,8 @@ module.exports.submit_response = async (req, res) => {
     // Loaded before validating, not after: what is already saved decides what
     // may be resent (an answer on a since-removed option) and what a rebuilt
     // row must not lose (fields hidden since they were filled in).
-    const existing = await Responses.findOne({
-        userId: user._id,
+    const existing = await Store.findOne({
+        ...owner.filter,
         categoryId: value.categoryId,
     }).lean();
     const savedById = new Map(
@@ -868,6 +1073,18 @@ module.exports.submit_response = async (req, res) => {
         was: new Set((existing?.carried || []).map(String)),
         now: new Set((existing?.carried || []).map(String)),
     };
+
+    // One sent answer against the rules. Asked twice of an answer when the
+    // save holds files: `files` is only known once the answers have been
+    // read (see "Files" below).
+    const check = (question, sent, files) =>
+        validateAnswer(question, sent, question.childMap || new Map(), 1, {
+            saved: savedById.get(String(question._id))?.value,
+            known,
+            complete: Boolean(value.complete),
+            carried: carry.was,
+            files,
+        });
 
     const snapshots = value.answers.flatMap((answer) => {
         const question = byId.get(String(answer.questionId));
@@ -900,19 +1117,13 @@ module.exports.submit_response = async (req, res) => {
             cleared.add(String(question._id));
             return [];
         }
-        const savedAnswer = savedById.get(String(question._id));
-        validateAnswer(question, answer.value, question.childMap || new Map(), 1, {
-            saved: savedAnswer?.value,
-            known,
-            complete: Boolean(value.complete),
-            carried: carry.was,
-        });
+        check(question, answer.value);
         return [
             snapshotAnswer(
                 question,
                 answer.value,
                 question.childMap || new Map(),
-                savedAnswer,
+                savedById.get(String(question._id)),
                 carry
             ),
         ];
@@ -940,6 +1151,28 @@ module.exports.submit_response = async (req, res) => {
     const incoming = new Map(
         snapshots.map((snapshot) => [String(snapshot.questionId), snapshot])
     );
+
+    // Files. So far a photo or audio answer has only been checked for its
+    // shape: the validator cannot read the database. A file that is new to
+    // its answer has to be one this caller uploaded, of the kind the
+    // question takes — nothing else ties an id to a person, and the
+    // dashboard shows whatever an answer holds. What the response already
+    // held needs no lookup: it was checked when it was saved, and its saved
+    // answer says which kind it is. The rest is looked up once.
+    const held = filesIn(existing?.answers);
+    const sent = fileIdsIn(snapshots);
+    if (sent.length > 0) {
+        const brought = sent.filter((id) => !held.has(id));
+        const files =
+            brought.length > 0 ? await filesOf(brought, whose) : new Map();
+        held.forEach((kind, id) => files.set(id, { kind, mine: true }));
+        value.answers
+            .filter((answer) => incoming.has(String(answer.questionId)))
+            .forEach((answer) =>
+                check(byId.get(String(answer.questionId)), answer.value, files)
+            );
+    }
+
     const merged = (existing?.answers || [])
         .filter(
             (answer) =>
@@ -947,29 +1180,66 @@ module.exports.submit_response = async (req, res) => {
                 !cleared.has(String(answer.questionId))
         )
         .concat(snapshots);
+    const fileIds = fileIdsIn(merged);
 
     const version = await Counters.findById("questionnaireVersion").lean();
 
-    const saved = await Responses.findOneAndUpdate(
-        { userId: user._id, categoryId: value.categoryId },
+    const saved = await Store.findOneAndUpdate(
+        { ...owner.filter, categoryId: value.categoryId },
         {
             $set: {
                 answers: merged,
                 // Flat, every depth — see utils/questionUsage.js
                 answeredIds: collectAnsweredIds(merged),
+                // Likewise flat: every file the answers hold.
+                fileIds,
                 carried: [...carry.now].map((id) => new ObjectId(id)),
-                // What was on offer at this save, and under which publish.
-                asked: askedQuestionIds(resolved, value.categoryId),
+                // What was on offer at this save, and under which publish:
+                // what the place is asked, less what this caller's build
+                // was not served.
+                asked: askedQuestionIds(resolved, value.categoryId).filter(
+                    (id) => byId.has(id)
+                ),
                 questionnaireVersion: version?.seq || 1,
                 submittedAt: new Date(),
                 categoryPath: [...(category.path || []), category._id],
-                countryId: geo.country?._id || null,
-                villageId: geo.village?._id || null,
-                villageName: user.village_name || "",
+                // Where it came from, and for an officer who saved it.
+                ...owner.stamp,
             },
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
     ).lean();
 
-    return res.json(saved);
+    // A file this save took out of the response (its answer cleared, the
+    // photo replaced, its entry removed) is no answer's any more, and is
+    // deleted unless another of this caller's answers holds it too. If
+    // that fails, the save has still succeeded.
+    const lost = [...held.keys()].filter((id) => !fileIds.includes(id));
+    if (lost.length > 0) {
+        await removeUnheld(whose, { _id: { $in: lost } }).catch(() => {});
+    }
+
+    return saved;
+};
+module.exports.submitAnswers = submitAnswers;
+
+/** App-facing submit, for a villager: the answers are their own. */
+module.exports.submit_response = async (req, res) => {
+    const { user } = res.locals;
+    const geo = await resolveUserGeo(user);
+    return res.json(
+        await submitAnswers(req, {
+            audience: "villager",
+            chain: geo.chain,
+            owner: {
+                filter: { userId: user._id },
+                stamp: {
+                    countryId: geo.country?._id || null,
+                    villageId: geo.village?._id || null,
+                    villageName: user.village_name || "",
+                },
+            },
+            files: villagerFiles(user),
+        })
+    );
 };

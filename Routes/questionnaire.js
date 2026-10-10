@@ -27,6 +27,9 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *        this place and the places above it changed), places (names of every
  *        place mentioned) and pending for the place and the places inside it.
  *        A regional account may open its own place and what is inside it.
+ *        With audience=officer and scope=master it is the field officers'
+ *        questionnaire - the same payload as the Master's, of that tree (no
+ *        place changes it, so every usage is empty). It has no place scope.
  *      produces:
  *        - application/json
  *
@@ -37,12 +40,18 @@ const ControllerWrapper = require("../utils/ControllerWrapper");
  *         required: true
  *         schema:
  *           type: string
+ *       - name: audience
+ *         in: query
+ *         description: villager (the default) or officer - whose questionnaire. officer goes with scope=master only, and is a super admin's.
+ *         required: false
+ *         schema:
+ *           type: string
  *
  *      responses:
  *        200:
  *          description: Successfully fetched data.
  *        400:
- *          description: Unknown scope
+ *          description: Unknown scope or audience, or a place scope asked of the officer questionnaire
  *        403:
  *          description: This place is not yours, or the Master asked for by a regional account
  *        404:
@@ -76,7 +85,9 @@ router.get(
  *        - is dropped, and a place left with nothing set has no override.
  *        A category, and a question the place added itself, take asked only.
  *        The target must be visible to that place. Returns items - {placeId,
- *        targetId, rev} each (rev 0 when no override is left).
+ *        targetId, rev} each (rev 0 when no override is left). Nothing of
+ *        the field officers' questionnaire can be a target (409) - places do
+ *        not change it.
  *      produces:
  *        - application/json
  *
@@ -101,7 +112,7 @@ router.get(
  *        404:
  *          description: Place, question or category not found
  *        409:
- *          description: Changed by someone else, archived in the Master, or the field that names each entry of a list
+ *          description: Changed by someone else, archived in the Master, the field that names each entry of a list, or a question or category of the officer questionnaire
  *        500:
  *          description: Internal Server Error
  */
@@ -174,6 +185,10 @@ router.get(
  *        out - it waits on a row that was not sent, or answers were saved
  *        since - is skipped with its reason and the rest is published.
  *        Returns version, published (rows) and skipped ({type, id, reason}).
+ *        audience says whose questionnaire the items are part of - villager
+ *        (the default) or officer. An item of the other one stops the whole
+ *        publish (409), and the officers' has scope master only. Both share
+ *        the one version counter.
  *      produces:
  *        - application/json
  *
@@ -189,6 +204,8 @@ router.get(
  *               type: string
  *             items:
  *               type: array
+ *             audience:
+ *               type: string
  *
  *      responses:
  *        200:
@@ -198,7 +215,7 @@ router.get(
  *        403:
  *          description: Not the caller's place, or an item that is not that place's
  *        409:
- *          description: Something sent was edited since the list was opened
+ *          description: Something sent was edited since the list was opened, or is part of the other questionnaire
  *        500:
  *          description: Internal Server Error
  */
@@ -222,7 +239,9 @@ router.post(
  *        never published is deleted, with what was added inside it. An
  *        override goes back to what the place has published, or goes
  *        altogether. Each item is judged by the place it belongs to.
- *        Returns discarded.
+ *        audience says whose questionnaire the items are part of - villager
+ *        (the default) or officer - and an item of the other one stops the
+ *        discard (409). Returns discarded.
  *      produces:
  *        - application/json
  *
@@ -236,6 +255,8 @@ router.post(
  *           properties:
  *             items:
  *               type: array
+ *             audience:
+ *               type: string
  *
  *      responses:
  *        200:
@@ -243,7 +264,7 @@ router.post(
  *        403:
  *          description: An item belongs to the Master or to a place that is not the caller's
  *        409:
- *          description: Changed by someone else
+ *          description: Changed by someone else, or an item is part of the other questionnaire
  *        500:
  *          description: Internal Server Error
  */
@@ -261,7 +282,7 @@ router.post(
  *      tags:
  *        - Questionnaire
  *      summary: What was published, newest first.
- *      description: Returns rows (one per published change, with its summary), total, and actors - everyone who has published. A regional account gets the rows of its own place and of the places inside it, and the people who published there.
+ *      description: Returns rows (one per published change, with its summary), total, and actors - everyone who has published. A regional account gets the rows of its own place and of the places inside it, and the people who published there. One questionnaire at a time - the villagers', or with audience=officer the field officers' (a super admin's to read). rows, actors and latest are all of that one, so a publish in the other does not move latest.
  *      produces:
  *        - application/json
  *
@@ -269,6 +290,12 @@ router.post(
  *       - name: place
  *         in: query
  *         description: A place id - that place and everything inside it - or "master" for changes to the Master.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - name: audience
+ *         in: query
+ *         description: villager (the default) or officer - whose history.
  *         required: false
  *         schema:
  *           type: string
@@ -325,7 +352,7 @@ router.get(
  *      tags:
  *        - Questionnaire
  *      summary: Takes back the latest published change.
- *      description: Only the newest row of the history the caller can see - for a regional account the newest of its own place and the places inside it. The row's earlier state is published again, as a new version with its own history row. Refused with 409 for a deletion, a replacement, a reorder, something that has a change waiting, or something new that already has answers.
+ *      description: Only the newest row of the history the caller can see - for a regional account the newest of its own place and the places inside it. The row's earlier state is published again, as a new version with its own history row. Refused with 409 for a deletion, a replacement, a reorder, something that has a change waiting, or something new that already has answers. "Newest" is within one questionnaire - the villagers', or with audience officer the field officers' - so a publish in the other one since does not stand in the way.
  *      produces:
  *        - application/json
  *
@@ -341,6 +368,9 @@ router.get(
  *             id:
  *               type: string
  *               description: The id of the history row, as GET /questionnaire/history gives it in latest.
+ *             audience:
+ *               type: string
+ *               description: villager (the default) or officer - the same as on the history call that gave the id.
  *
  *      responses:
  *        200:

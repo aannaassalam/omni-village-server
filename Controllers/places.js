@@ -5,7 +5,6 @@ const Regions = require("../Models/regions");
 const Villages = require("../Models/villages");
 const Admin = require("../Models/admin");
 const Users = require("../Models/user");
-const Responses = require("../Models/responses");
 const Questions = require("../Models/questions");
 const Categories = require("../Models/categories");
 const PlaceOverrides = require("../Models/placeOverrides");
@@ -24,6 +23,8 @@ const {
     shown,
 } = require("../utils/places");
 const { placeDiffs } = require("../utils/editorPayload");
+const { loadEffective } = require("../utils/liveQuestionnaire");
+const { countAnswers, storeFor } = require("../utils/responseStores");
 
 // Every read goes through utils/places.js. A write cannot: it has to name the
 // collection that kind of place is kept in.
@@ -192,24 +193,16 @@ module.exports.get_places = async (req, res) => {
     // How each place differs from the Master (the overview of all places,
     // and the Locations column). Asked for separately — it reads the whole
     // questionnaire — and a super admin's only: the Master is in it.
-    const diffs =
-        ["1", "true"].includes(req.query.diff) && !scope
-            ? placeDiffs({
-                  places: all,
-                  ...Object.fromEntries(
-                      await Promise.all(
-                          [
-                              ["categories", Categories],
-                              ["questions", Questions],
-                              ["overrides", PlaceOverrides],
-                          ].map(async ([key, Model]) => [
-                              key,
-                              await Model.find().lean(),
-                          ])
-                      )
-                  ),
-              })
-            : null;
+    // The villagers' questionnaire, that is: the field officers' has no
+    // place versions, and would only be counted as "not asked" anywhere.
+    let diffs = null;
+    if (["1", "true"].includes(req.query.diff) && !scope) {
+        const [{ categories, questions }, overrides] = await Promise.all([
+            loadEffective(),
+            PlaceOverrides.find().lean(),
+        ]);
+        diffs = placeDiffs({ places: all, categories, questions, overrides });
+    }
 
     return res.json(
         places.map((place) => ({
@@ -458,6 +451,16 @@ module.exports.edit_place = async (req, res) => {
             updateOne: { filter: { _id: place._id }, update: { $set: patch } },
         });
         await MODELS[place.kind].bulkWrite(writes).catch(duplicateAs(taken));
+        // An officer's response carries a copy of its village's name, which
+        // the Officer responses table shows and searches. (A villager's
+        // carries what the villager typed, and their village is not renamed.)
+        if (place.kind === "village" && patch.name) {
+            await storeFor("officer").updateMany(
+                { villageId: place._id },
+                { $set: { villageName: patch.name } },
+                { timestamps: false }
+            );
+        }
     }
 
     // A move changes what the villagers inside are asked — they inherit
@@ -517,9 +520,11 @@ module.exports.delete_place = async (req, res) => {
     const [team, responses, villagers, changes, ownQuestions, ownCategories] =
         await Promise.all([
             Admin.countDocuments({ role: "regional", placeId: place._id }),
+            // What villagers there answered, and what its field officer
+            // answered about it.
             place.kind === "region"
                 ? 0
-                : Responses.countDocuments(
+                : countAnswers(
                       place.kind === "village"
                           ? { villageId: place._id }
                           : { countryId: place._id }

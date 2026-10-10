@@ -3,6 +3,7 @@ const {
     localisedField,
     optionalLocalisedField,
 } = require("../utils/localised");
+const { AUDIENCES } = require("../utils/audience");
 
 /**
  * A tree: category -> subcategory -> screen. Only `is_screen` nodes carry
@@ -42,6 +43,19 @@ const categorySchema = new mongoose.Schema(
         active: {
             type: mongoose.Schema.Types.Boolean,
             default: true,
+        },
+        // Whose questionnaire it is part of: the villagers', or the field
+        // officers' (utils/audience.js). Set when a top-level category is
+        // created and never changed; a category inside another takes its
+        // parent's, so a whole tree is one audience's. A category saved
+        // before this field has none and is the villagers': every reader is
+        // lean, so ask audienceOf / categoryFilter, never the field itself.
+        // Not indexed on purpose: there are a few dozen categories, and a
+        // filtered read then comes back in the order an unfiltered one does.
+        audience: {
+            type: mongoose.Schema.Types.String,
+            enum: AUDIENCES,
+            default: "villager",
         },
 
         /* ---- Drafts and ownership: the same fields, with the same meaning,

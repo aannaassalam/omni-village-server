@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const AppError = require("../AppError");
 const { localise } = require("./localised");
+const { FILE_TYPES, FILE_ID } = require("./fileKinds");
 
 const MAX_TEXT_LENGTH = 5000;
 const DEFAULT_MAX_ROWS = 200;
@@ -35,6 +36,10 @@ const bad = (message) => {
  *   carried — id strings of the row fields this response is carrying for a
  *           form that was not served them (see keptFor below). A required
  *           one of those is held by the entry although this save omits it.
+ *   files — for a photo or audio answer: a Map of file id (lower case) to
+ *           `{ kind, mine }`, the files this caller may put in an answer.
+ *           The caller reads it from the database, which this file cannot.
+ *           Without it only the shape of the answer is checked.
  */
 /**
  * What a select may hold. When the caller knows every key that was ever valid
@@ -201,6 +206,7 @@ const validateAnswer = (question, value, children = new Map(), depth = 1, ctx = 
                             )?.value,
                             known: ctx.known,
                             carried: ctx.carried,
+                            files: ctx.files,
                         }
                     );
                 });
@@ -236,6 +242,46 @@ const validateAnswer = (question, value, children = new Map(), depth = 1, ctx = 
                     bad(`"${localise(child.label)}" is required in "${label}"`);
                 });
             });
+            return;
+        }
+
+        case "photo":
+        case "audio": {
+            // A list of file ids (Models/answerFiles.js), at most `max`.
+            if (!Array.isArray(value)) bad(`"${label}" must be a list of files`);
+            if (!value.every((id) => typeof id === "string" && FILE_ID.test(id))) {
+                bad(`"${label}" holds something that is not a file`);
+            }
+            // In lower case, the one case they are stored and compared in.
+            const ids = value.map((id) => id.toLowerCase());
+            if (new Set(ids).size !== ids.length) bad(`"${label}" holds one file twice`);
+
+            const saved = (Array.isArray(ctx.saved) ? ctx.saved : []).map((id) =>
+                String(id).toLowerCase()
+            );
+            const added = ids.filter((id) => !saved.includes(id));
+            // As for a number's range: what was valid when it was saved
+            // stays valid after `max` is lowered, until it is changed.
+            const unchanged = added.length === 0 && ids.length === saved.length;
+            const most = question.max ?? 1;
+            if (!unchanged && ids.length > most) {
+                bad(`"${label}" takes at most ${most} file(s)`);
+            }
+
+            // An id proves nothing by itself. One that this answer did not
+            // already hold has to be a file the caller uploaded, of the kind
+            // asked for: otherwise anyone could put another person's photo
+            // in their answer, and the dashboard would show it. All three
+            // failures read the same, so the answer does not say which ids
+            // are somebody else's files.
+            if (ctx.files) {
+                added.forEach((id) => {
+                    const file = ctx.files.get(id);
+                    if (!file || !file.mine || file.kind !== question.type) {
+                        bad(`“${label}”: a file could not be found. Add it again.`);
+                    }
+                });
+            }
             return;
         }
 
@@ -335,6 +381,12 @@ const snapshotAnswer = (question, value, children = new Map(), saved, carry) => 
             base.options.push({ value: option.value, label: option.label });
         }
     });
+
+    // A photo's or a recording's file ids are stored in lower case, the way
+    // Mongo prints them: one spelling, whatever a client sent.
+    if (FILE_TYPES.includes(question.type)) {
+        return { ...base, value: value.map((id) => id.toLowerCase()) };
+    }
 
     if (question.type !== "repeatable_group") {
         return {
@@ -960,6 +1012,141 @@ function demo() {
                 .value[0].answers.map((answer) => String(answer.questionId)),
             [String(crop._id)]
         );
+    }
+
+    {
+        /* ---- photo and audio: a list of file ids ---- */
+
+        const a = "66f0a1b2c3d4e5f601234560";
+        const b = "66f0a1b2c3d4e5f601234561";
+        const c = "66f0a1b2c3d4e5f601234562";
+        const photo = (over) => q({ type: "photo", label: { en: "Photo" }, ...over });
+        const check = (question, value, given) =>
+            validateAnswer(question, value, new Map(), 1, given);
+
+        assert.doesNotThrow(() => check(photo(), [a]));
+        assert.doesNotThrow(() => check(q({ type: "audio", max: 2 }), [a, b]));
+        // No `max` is one file.
+        assert.throws(() => check(photo(), [a, b]), /at most 1 file/);
+        assert.throws(() => check(photo({ max: 3 }), a), /list of files/);
+        assert.throws(() => check(photo({ max: 3 }), ["uploads/1.png"]), /not a file/);
+        assert.throws(() => check(photo({ max: 3 }), [a, { id: b }]), /not a file/);
+        assert.throws(() => check(photo({ max: 3 }), [a, a]), /twice/);
+        assert.throws(() => check(photo({ max: 3 }), [a, a.toUpperCase()]), /twice/);
+        assert.throws(() => check(photo({ required: true }), []), /is required/);
+        assert.doesNotThrow(() => check(photo(), []));
+
+        // `max` lowered from 3 to 1 after three were saved: the answer stays
+        // valid as it is (in any order, in either case), and is measured
+        // again the moment it changes, even when a file is only taken away.
+        assert.doesNotThrow(() => check(photo({ max: 1 }), [a, b, c], { saved: [c, b, a] }));
+        assert.doesNotThrow(() =>
+            check(photo({ max: 1 }), [a.toUpperCase(), b, c], { saved: [c, b, a] })
+        );
+        assert.throws(
+            () => check(photo({ max: 1 }), [a, b], { saved: [a, b, c] }),
+            /at most 1 file/
+        );
+
+        // With the files the caller may use: a new id has to be one of them,
+        // the caller's own, and of the kind the question takes.
+        const files = new Map([
+            [a, { kind: "photo", mine: true }],
+            [b, { kind: "audio", mine: true }],
+            [c, { kind: "photo", mine: false }],
+        ]);
+        const missing = /a file could not be found\. Add it again\./;
+        assert.doesNotThrow(() => check(photo(), [a], { files }));
+        assert.doesNotThrow(() => check(photo(), [a.toUpperCase()], { files }));
+        assert.doesNotThrow(() => check(q({ type: "audio" }), [b], { files }));
+        assert.throws(() => check(photo(), [b], { files }), missing, "a recording as a photo");
+        assert.throws(() => check(photo(), [c], { files }), missing, "somebody else's file");
+        assert.throws(
+            () => check(photo(), ["66f0a1b2c3d4e5f601234569"], { files }),
+            missing,
+            "no such file"
+        );
+        assert.throws(() => check(photo(), [a], { files: new Map() }), missing);
+        // What the answer already held was checked when it was saved, and is
+        // not looked for again; what joins it is.
+        assert.doesNotThrow(() => check(photo({ max: 2 }), [c, a], { saved: [c], files }));
+        assert.throws(() => check(photo({ max: 2 }), [c, b], { saved: [c], files }), missing);
+        // No Map at all: only the shape is checked.
+        assert.doesNotThrow(() => check(photo(), [c]));
+
+        // Inside a list entry: the same rule, each entry against ITS files.
+        const picture = photo({ required: true, max: 2 });
+        const houses = q({ type: "repeatable_group", label: { en: "Houses" } });
+        const fields = new Map([[String(picture._id), picture]]);
+        const row = (rowId, value) => ({
+            rowId,
+            answers: value ? [{ questionId: picture._id, value }] : [],
+        });
+        assert.doesNotThrow(() => validateAnswer(houses, [row("r1", [a, b])], fields));
+        assert.throws(() => validateAnswer(houses, [row("r1")], fields), /is required in/);
+        assert.doesNotThrow(() => validateAnswer(houses, [row("r1", [a])], fields, 1, { files }));
+        assert.throws(
+            () => validateAnswer(houses, [row("r1", [a, b])], fields, 1, { files }),
+            missing
+        );
+        const savedRows = [{ rowId: "r1", answers: [stored(picture, [c])] }];
+        assert.doesNotThrow(() =>
+            validateAnswer(houses, [row("r1", [c])], fields, 1, { saved: savedRows, files })
+        );
+        assert.throws(
+            () =>
+                validateAnswer(houses, [row("r1", [c]), row("r2", [c])], fields, 1, {
+                    saved: savedRows,
+                    files,
+                }),
+            missing,
+            "a file one entry holds is new to another entry"
+        );
+
+        // Stored as sent, in lower case, with nothing but the ids.
+        const frozen = snapshotAnswer(houses, [row("r1", [a, b.toUpperCase()])], fields)
+            .value[0].answers[0];
+        assert.deepStrictEqual(frozen.value, [a, b]);
+        assert.strictEqual(frozen.type, "photo");
+        assert.deepStrictEqual(frozen.options, []);
+        assert.deepStrictEqual(snapshotAnswer(photo(), [a.toUpperCase()]).value, [a]);
+        // A file id is not a row: only the question counts as answered.
+        assert.deepStrictEqual(collectAnsweredIds([snapshotAnswer(picture, [a])]), [
+            String(picture._id),
+        ]);
+
+        // A build that cannot answer photos is not served the field
+        // (servedTo in utils/questionTree.js), so to this file it is a hidden
+        // one: the required photo is not asked of that build's entries, old
+        // or new, and what a newer build saved rides along.
+        const name = q({ type: "text", required: true });
+        const both = new Map([name, picture].map((x) => [String(x._id), x]));
+        const older = new Map([[String(name._id), name]]);
+        const onPage = new Set([houses, name, picture].map((x) => String(x._id)));
+        const named = (rowId, text, ...more) => ({
+            rowId,
+            answers: [{ questionId: name._id, value: text }, ...more],
+        });
+        const savedHouses = snapshotAnswer(
+            houses,
+            [named("r1", "Home", { questionId: picture._id, value: [a] })],
+            both
+        );
+        const again = [named("r1", "Home"), named("r2", "Barn")];
+        assert.doesNotThrow(() =>
+            validateAnswer(houses, again, older, 1, {
+                saved: savedHouses.value,
+                known: onPage,
+            })
+        );
+        const carry = { was: new Set(), now: new Set() };
+        const after = snapshotAnswer(houses, again, older, savedHouses, carry);
+        assert.deepStrictEqual(
+            after.value[0].answers.map((answer) => answer.value),
+            ["Home", [a]]
+        );
+        assert.strictEqual(after.value[1].answers.length, 1);
+        assert.deepStrictEqual([...carry.now], [String(picture._id)]);
     }
 
     console.log("answerValidator: all checks passed");
