@@ -34,6 +34,15 @@ const consumptionCrop = require("./Routes/consumptionCrop");
 const consumption = require("./Routes/consumption");
 const webhook = require("./Routes/webhook");
 const dashboard = require("./Routes/dashboard");
+const demographicDashboard = require("./Routes/dashboard-demographics");
+const landholdingDashboard = require("./Routes/dashboard-landholdings");
+const housingDashboard = require("./Routes/dashboard-housing");
+const waterDashboard = require("./Routes/dashboard-water");
+const energyDashboard = require("./Routes/dashboard-energy");
+const mobilityDashboard = require("./Routes/dashboard-mobility");
+const personalDashboard = require("./Routes/dashboard-personal");
+const forestryDashboard = require("./Routes/dashboard-forestry");
+const commercialDashboard = require("./Routes/dashboard-commercial");
 const admin = require("./Routes/admin");
 const demographic = require("./Routes/demographicRoutes");
 const demographic_dropdown = require("./Routes/demographic-dropdown");
@@ -91,37 +100,37 @@ const app = express();
 const PORT = process.env.PORT || 5100;
 
 const swaggerDefinition = {
-    swagger: "2.0",
-    info: {
-        title: "Omni Village API Documentation",
-        version: "1.0.0",
-        description:
-            "This is a REST API Server made with Express. It serves data for Omni Village.",
-        contact: {
-            name: "Anas Alam",
-            url: "https://www.linkedin.com/in/anas-alam-0207331b2/",
-        },
+  swagger: "2.0",
+  info: {
+    title: "Omni Village API Documentation",
+    version: "1.0.0",
+    description:
+      "This is a REST API Server made with Express. It serves data for Omni Village.",
+    contact: {
+      name: "Anas Alam",
+      url: "https://www.linkedin.com/in/anas-alam-0207331b2/",
     },
-    basePath: "/api",
-    securityDefinitions: {
-        bearerAuth: {
-            type: "apiKey",
-            name: "Authorization",
-            scheme: "bearer",
-            in: "header",
-        },
+  },
+  basePath: "/api",
+  securityDefinitions: {
+    bearerAuth: {
+      type: "apiKey",
+      name: "Authorization",
+      scheme: "bearer",
+      in: "header",
     },
-    security: [
-        {
-            bearerAuth: [],
-        },
-    ],
+  },
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
 };
 
 const options = {
-    swaggerDefinition,
-    // Paths to files containing OpenAPI definitions
-    apis: ["./Routes/*.js"],
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ["./Routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -135,13 +144,13 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 app.use(
-    "/api/documentation",
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerSpec, {
-        swaggerOptions: {
-            docExpansion: "none",
-        },
-    })
+  "/api/documentation",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      docExpansion: "none",
+    },
+  })
 );
 
 app.use("/api/admin", admin);
@@ -187,8 +196,8 @@ app.use("/api/mobility", mobility);
 app.use("/api/forestry-dropdown", forestry_dropdown);
 app.use("/api/forestry", forestry);
 app.use(
-    "/api/other-personal-household-items-dropdown",
-    other_personal_household_items_dropdown
+  "/api/other-personal-household-items-dropdown",
+  other_personal_household_items_dropdown
 );
 app.use("/api/other-personal-household-items", other_personal_household_items);
 app.use("/api/business-dropdown", business_dropdown);
@@ -212,6 +221,15 @@ app.use("/api/mobility-officer-dropdown", mobility_officer_dropdown);
 app.use("/api/water-officer-dropdown", water_officer_dropdown);
 app.use("/api/webhook", webhook);
 app.use("/api/dashboard", dashboard);
+app.use("/api/demographic-dashboard", demographicDashboard);
+app.use("/api/landholding-dashboard", landholdingDashboard);
+app.use("/api/housing-dashboard", housingDashboard);
+app.use("/api/water-dashboard", waterDashboard);
+app.use("/api/energy-dashboard", energyDashboard);
+app.use("/api/mobility-dashboard", mobilityDashboard);
+app.use("/api/personal-dashboard", personalDashboard);
+app.use("/api/forestry-dashboard", forestryDashboard);
+app.use("/api/commercial-dashboard", commercialDashboard);
 
 // Dynamic questionnaire
 app.use("/api/countries", countries);
@@ -224,34 +242,34 @@ app.use("/api/files", files);
 app.use("/api/officer", officer);
 
 app.get("/", async (req, res) => {
-    // for await (const _item of Object.entries(object_of_arrays)) {
-    //     const [key, value] = _item;
-    //     for await (const _value of value) {
-    //         const res = await demographicDropdown.create({
-    //             name: {
-    //                 en: _value,
-    //                 ms: _value,
-    //                 dz: _value,
-    //             },
-    //             type: key,
-    //         });
-    //     }
-    // }
-    res.send("Welcome to OmniVillage Server!");
+  // for await (const _item of Object.entries(object_of_arrays)) {
+  //     const [key, value] = _item;
+  //     for await (const _value of value) {
+  //         const res = await demographicDropdown.create({
+  //             name: {
+  //                 en: _value,
+  //                 ms: _value,
+  //                 dz: _value,
+  //             },
+  //             type: key,
+  //         });
+  //     }
+  // }
+  res.send("Welcome to OmniVillage Server!");
 });
 
 app.use(ErrorHandler);
 
 mongoose
-    .connect(connection_url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        family: 4,
-    })
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log("listening to port ", PORT);
-            // upload();
-        });
-    })
-    .catch((err) => console.log(err));
+  .connect(connection_url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    family: 4,
+  })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("listening to port ", PORT);
+      // upload();
+    });
+  })
+  .catch((err) => console.log(err));
