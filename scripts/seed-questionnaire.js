@@ -21,7 +21,9 @@
  * --officer (alone or with --dry-run) adds the field officers' questionnaire,
  * written out in officer-screens.js, beside the villagers' and touches nothing
  * else. It refuses once an officer category exists and has no --reset of its
- * own; and --reset refuses while the officers' tree or an officer's response
+ * own, and it refuses while any option list it reads is empty (a picker with
+ * no options could not be answered, and could not be seeded again); and
+ * --reset refuses while the officers' tree or an officer's response
  * is there, because it wipes both collections whole. Deploy the code before
  * running it: a seeded category is live at once, and code from before the
  * officers' questionnaire serves every category to villagers.
@@ -526,8 +528,10 @@ const seedOfficerTree = async () => {
         warnings.forEach((warning) => console.error(`  ! ${warning}`));
         console.error(
             "\nAn empty picker means the *_officer_dropdowns collection has no rows of\n" +
-                "that type in this database. Copy them first\n" +
-                "(scripts/copy-master-data.js), then run this again."
+                "that type in this database. Copy the collection first\n" +
+                "(scripts/copy-master-data.js; it skips a collection that already has\n" +
+                "rows) or add rows of that type in the dashboard (Moderator Dropdowns),\n" +
+                "then run this again."
         );
         await mongoose.disconnect();
         process.exit(1);
@@ -547,7 +551,7 @@ const seedOfficerTree = async () => {
         console.log(
             "\nAn empty picker means the *_officer_dropdowns collection has no rows of\n" +
                 "that type in this database (scripts/copy-master-data.js copies them).\n" +
-                "Look with --dry-run first: once seeded, options are added in the dashboard."
+                "A real run refuses until every list has rows."
         );
     }
     console.log(

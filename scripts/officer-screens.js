@@ -123,7 +123,7 @@ const buildOfficerTree = async (db, warn = () => {}) => {
             );
         if (options.length === 0) {
             warn(
-                `"${collection}" has no usable rows of type "${filter.type}" — its picker will be empty`
+                `"${collection}" has no usable rows of type "${filter.type}" — its picker would be empty`
             );
         }
         return options;
@@ -719,24 +719,32 @@ const buildOfficerTree = async (db, warn = () => {}) => {
                     { en: "Broadband internet", ms: "Internet jalur lebar" },
                     { required: true }
                 ),
-                section({ en: "Broadband internet", ms: "Internet jalur lebar" }, [
-                    many(
-                        { en: "How many providers?", ms: "Berapa ramai pembekal?" },
-                        await community("no_of_broadband_providers")
-                    ),
-                    many(
-                        { en: "Method of using", ms: "Kaedah penggunaan" },
-                        await community("method_of_broadband")
-                    ),
-                    many(
-                        { en: "Bandwidth", ms: "Lebar jalur" },
-                        await community("bandwidth_of_broadband")
-                    ),
-                    many(
-                        { en: "Stability", ms: "Kestabilan" },
-                        await community("stability_of_broadband")
-                    ),
-                ]),
+                // Not the question's own name: the editor, the Publish dialog
+                // and History name a row by its label alone.
+                section(
+                    {
+                        en: "Broadband internet details",
+                        ms: "Butiran internet jalur lebar",
+                    },
+                    [
+                        many(
+                            { en: "How many providers?", ms: "Berapa ramai pembekal?" },
+                            await community("no_of_broadband_providers")
+                        ),
+                        many(
+                            { en: "Method of using", ms: "Kaedah penggunaan" },
+                            await community("method_of_broadband")
+                        ),
+                        many(
+                            { en: "Bandwidth", ms: "Lebar jalur" },
+                            await community("bandwidth_of_broadband")
+                        ),
+                        many(
+                            { en: "Stability", ms: "Kestabilan" },
+                            await community("stability_of_broadband")
+                        ),
+                    ]
+                ),
                 yesNo({ en: "Burial ground", ms: "Tanah perkuburan" }, { required: true }),
                 one(HOW_FAR, await community("distance_of_burial_cremation")),
                 yesNo(

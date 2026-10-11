@@ -229,8 +229,9 @@ module.exports.get_editor = async (req, res) => {
 /**
  * How much a question, or a page, is used: what the edit panel locks on.
  *
- * A regional account may ask about what it can see: the Master's, and what
- * the places above, at and inside its own have added.
+ * A regional account may ask about what it can see: the villagers' Master's,
+ * and what the places above, at and inside its own have added. The officers'
+ * questionnaire is a super admin's: its counts run over every village.
  */
 module.exports.get_usage = async (req, res) => {
     // From a query string: an array or an operator object would be checked

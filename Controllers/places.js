@@ -451,16 +451,19 @@ module.exports.edit_place = async (req, res) => {
             updateOne: { filter: { _id: place._id }, update: { $set: patch } },
         });
         await MODELS[place.kind].bulkWrite(writes).catch(duplicateAs(taken));
-        // An officer's response carries a copy of its village's name, which
-        // the Officer responses table shows and searches. (A villager's
-        // carries what the villager typed, and their village is not renamed.)
-        if (place.kind === "village" && patch.name) {
-            await storeFor("officer").updateMany(
-                { villageId: place._id },
-                { $set: { villageName: patch.name } },
-                { timestamps: false }
-            );
-        }
+    }
+    // An officer's response carries a copy of its village's name, which the
+    // Officer responses table shows and searches. (A villager's carries what
+    // the villager typed, and their village is not renamed.) Asked of the
+    // request, not of the patch: a rename whose second write failed is put
+    // right by sending it again, when the village itself already has the name.
+    if (place.kind === "village" && value.name) {
+        const villageName = value.name.toLowerCase();
+        await storeFor("officer").updateMany(
+            { villageId: place._id, villageName: { $ne: villageName } },
+            { $set: { villageName } },
+            { timestamps: false }
+        );
     }
 
     // A move changes what the villagers inside are asked — they inherit

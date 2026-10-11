@@ -134,8 +134,9 @@ router.put(
  *        For a question - answerCount (responses that answer it) and
  *        usedOptions (option keys those answers hold). For a category -
  *        answerCount (responses saved for that page). A regional account may
- *        ask about the Master's and about what the places above, at and
- *        inside its own have added.
+ *        ask about the villagers' Master's and about what the places above,
+ *        at and inside its own have added; about the officers' questionnaire
+ *        it is refused (403).
  *      produces:
  *        - application/json
  *
