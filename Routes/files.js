@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const multer = require("multer");
 const files_controller = require("../Controllers/files");
 const officer_controller = require("../Controllers/officer");
 const {
@@ -10,57 +9,8 @@ const {
 } = require("../Middlewares/user");
 const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 const ControllerWrapper = require("../utils/ControllerWrapper");
-const AppError = require("../AppError");
-const { MAX_FILE_BYTES } = require("../utils/fileKinds");
-
-// Into memory, never onto a disk: this host has none to write to. The limit
-// is what keeps "into memory" safe. One byte more than the most a file may
-// be, because the parser counts a file that REACHES its limit as over it.
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: MAX_FILE_BYTES + 1, files: 1 },
-}).single("file");
-
-/**
- * multer, with its refusals in words. Its own errors are not AppErrors and
- * would come out of the error handler as "500 Internal Server Error".
- *
- * Always placed AFTER the middleware that knows the caller: nobody's file is
- * read into memory before they have signed in.
- */
-const oneFile = (req, res, next) => {
-    // multer drops every listener of its parser when it gives up, and a body
-    // that ends inside the file then reports "Unexpected end of form" to
-    // nobody: an unhandled 'error' event, which ends the process. So the
-    // parser is remembered as the request is piped into it, and keeps one
-    // listener of ours.
-    let parser;
-    const pipe = req.pipe;
-    req.pipe = (to, ...rest) => {
-        parser = to;
-        return pipe.call(req, to, ...rest);
-    };
-    upload(req, res, (error) => {
-        parser?.on("error", () => {});
-        if (error?.code === "LIMIT_FILE_SIZE") {
-            return next(
-                new AppError(
-                    0,
-                    `This file is larger than ${MAX_FILE_BYTES / 1024 / 1024} MB.`,
-                    413
-                )
-            );
-        }
-        // Everything else the parser objects to (another field name, a
-        // second file, a body cut short), and no file at all.
-        if (error || !req.file) {
-            return next(
-                new AppError(0, "Send one file in the field “file”.", 400)
-            );
-        }
-        next();
-    });
-};
+// The questionnaire's photos and recordings: one file in the field "file".
+const oneFile = require("../Middlewares/upload").oneFile("file");
 
 /**
  * @swagger

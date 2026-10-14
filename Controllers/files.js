@@ -46,6 +46,10 @@ const notFound = () => new AppError(0, "File not found", 404);
 /** What says a file is this villager's own. */
 const ownedBy = (user) => ({ ownerType: "user", ownerId: user._id });
 
+/** The id of the photo of a villager's address proof, if it is one of ours. */
+const proofOf = (user) =>
+    FILE_ID.test(String(user?.address_proof ?? "")) ? [user.address_proof] : [];
+
 /**
  * Whose files a request deals with, as the three things asked of them here:
  *
@@ -54,13 +58,18 @@ const ownedBy = (user) => ({ ownerType: "user", ownerId: user._id });
  *   `among`  the files looked through for ones that no answer holds;
  *   `held`   reads the ids of the files the answers concerned do hold.
  *
- * A villager's are theirs alone, whichever of their pages holds them.
+ * A villager's are theirs alone, whichever of their pages holds them. The
+ * photo of their address proof is held by their account (keepAddressProof).
  */
 const villagerFiles = (user) => ({
     own: ownedBy(user),
     among: ownedBy(user),
-    held: () =>
-        storeFor("villager").distinct("fileIds", { userId: user._id }),
+    held: async () => [
+        ...(await storeFor("villager").distinct("fileIds", {
+            userId: user._id,
+        })),
+        ...proofOf(user),
+    ],
 });
 
 /**
@@ -241,6 +250,24 @@ const takeIn = async (req, files) => {
         contentType: file.contentType,
         size: file.size,
     };
+};
+
+/**
+ * The photo of the document a villager registers with: taken in as an answer
+ * photo is (checked, upright, JPEG, no EXIF) and kept here, the one store
+ * this host has. users.address_proof holds its id, and that is what keeps it
+ * (villagerFiles): a photo it no longer holds goes in the sweep of unattached
+ * files, a day on.
+ */
+module.exports.keepAddressProof = async (user, buffer) => {
+    const stored = await photoFrom(buffer);
+    const file = await AnswerFiles.create({
+        ...ownedBy(user),
+        kind: "photo",
+        size: stored.data.length,
+        ...stored,
+    });
+    return file._id;
 };
 
 /** App-facing: a villager adds a file of their own. */
