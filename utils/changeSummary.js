@@ -49,8 +49,8 @@ const describe = (targetType, before, after) => {
         if (changed("required")) kinds.push("required");
         if (changed("type")) kinds.push("type");
         if (changed("min", "max", "presentation")) kinds.push("settings");
-        // Along its page, or (a place's own question) to another page.
-        if (changed("order", "categoryId")) kinds.push("moved");
+        // Along its page, into or out of a group, or to another page.
+        if (changed("order", "categoryId", "parentQuestionId")) kinds.push("moved");
     }
     if (after.active === false) kinds.push("archived");
     if (after.active === true) kinds.push("restored");
@@ -464,13 +464,17 @@ const pendingRows = ({
         if (!draft) return;
         if (!onlyOrder(draft)) {
             // On its way to a page that is itself new (a place moving its
-            // question to its new page): the page goes out first.
+            // question to its new page), or into a group that is: that goes
+            // out first.
             rows.push(
-                rowFor(
-                    "question",
-                    question,
-                    draft.categoryId ? waitsForCategory(draft.categoryId) : []
-                )
+                rowFor("question", question, [
+                    ...(draft.categoryId ? waitsForCategory(draft.categoryId) : []),
+                    ...(draft.parentQuestionId
+                        ? waitsForParent(
+                              questionById.get(String(draft.parentQuestionId))
+                          )
+                        : []),
+                ])
             );
             return;
         }
@@ -1031,6 +1035,13 @@ if (require.main === module) {
     // So does a new page in a new category, and a published one moving in.
     assert.deepStrictEqual(row("category:nested").dependsOn, ["category:shelf"]);
     assert.strictEqual(row("category:farm").summary, "moved");
+    // A published question moved into the new group: "moved", after it.
+    const joins = pendingRows({
+        categories,
+        questions: [...questions, edit(q("joins", "census"), { parentQuestionId: "crops", order: 3 })],
+    }).find((entry) => entry.key === "question:joins");
+    assert.strictEqual(joins.summary, "moved");
+    assert.deepStrictEqual(joins.dependsOn, ["question:crops"]);
     assert.deepStrictEqual(row("category:farm").dependsOn, ["category:shelf"]);
     assert.deepStrictEqual(row("category:farm").before, { parentId: null });
 
@@ -1830,6 +1841,31 @@ if (require.main === module) {
         assert.strictEqual(
             (await plan(["v-field", "l-group", "l-field"].map(own), inLadakh)).published,
             2
+        );
+
+        // Moved into a list, or out of one, a question's answers would stay
+        // where nothing reads them: answered meanwhile, it stays where it
+        // was. Between the sections of one list they do not move at all.
+        const lists = [
+            q("herdlist", "census", { type: "repeatable_group" }),
+            q("herdsec", "census", { type: "section", parentQuestionId: "herdlist" }),
+            q("herdsec2", "census", { type: "section", parentQuestionId: "herdlist" }),
+            edit(q("into", "census"), { parentQuestionId: "herdlist", order: 2 }),
+            edit(q("across", "census", { parentQuestionId: "herdsec" }), {
+                parentQuestionId: "herdsec2",
+            }),
+        ];
+        const listWorld = { questions: [...questions, ...lists] };
+        const listItem = (id) => sent("question", id, listWorld.questions);
+        assert.deepStrictEqual(
+            reasons(await plan([listItem("into")], { ...listWorld, answeredIds: ["into"] })),
+            [["into", "It has saved answers now, so it stays where it is."]]
+        );
+        assert.strictEqual((await plan([listItem("into")], listWorld)).published, 1);
+        assert.strictEqual(
+            (await plan([listItem("across")], { ...listWorld, answeredIds: ["across"] }))
+                .published,
+            1
         );
 
         // A question moved to a new page goes with the page, and takes what

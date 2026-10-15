@@ -326,6 +326,74 @@ router.put(
 
 /**
  * @swagger
+ * /questions/arrange:
+ *    put:
+ *      tags:
+ *        - Questions
+ *      summary: Move Master questions (as a draft) along a page, into or out of a group or section, or to another page.
+ *      description: >
+ *        One or several of the Master's questions go, in the order sent, to
+ *        `categoryId`, inside `parentQuestionId` (null: the top of the page),
+ *        in front of `before` (null: at the end). What is inside a question
+ *        moves with it, and one sent together with its group goes along with
+ *        the group. Every move waits for a publish; all of it is written or
+ *        none. Refused with 409 when a question (or anything in it) has saved
+ *        answers and the move would change where they are kept - another
+ *        page, or into, out of or between repeating groups (between the
+ *        sections of one group is fine) - and for a stale rev, a move into
+ *        itself, into a plain question, onto a page of the other
+ *        questionnaire or a place's; 400 for a section inside a section or
+ *        groups more than two deep.
+ *      produces:
+ *        - application/json
+ *
+ *      parameters:
+ *       - name: body
+ *         in: body
+ *         description:
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             items:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   question_id:
+ *                     type: string
+ *                   rev:
+ *                     type: number
+ *             categoryId:
+ *               type: string
+ *             parentQuestionId:
+ *               type: string
+ *             before:
+ *               type: string
+ *
+ *      responses:
+ *        200:
+ *          description: Returns { moved }, how many were moved (what is inside them not counted).
+ *        400:
+ *          description: Nesting not allowed
+ *        403:
+ *          description: Not a super admin
+ *        404:
+ *          description: Question, group or page not found
+ *        409:
+ *          description: Cannot be moved there, or changed by someone else
+ *        500:
+ *          description: Internal Server Error
+ */
+router.put(
+    "/arrange",
+    verifyAdmin,
+    requireRole("admin"),
+    ControllerWrapper(questions_controller.arrange_questions)
+);
+
+/**
+ * @swagger
  * /questions/delete-question:
  *    delete:
  *      tags:

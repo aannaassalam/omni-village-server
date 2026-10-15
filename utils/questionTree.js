@@ -51,6 +51,28 @@ const groupDepth = (question, byId) => {
 };
 
 /**
+ * The list a question's answers are kept in: the id of the nearest
+ * repeatable group ABOVE it (looking through sections, which hold nothing),
+ * as a string, or null for the top level of its page. Asked with the id of
+ * the question's parent, so a question can be asked about before it moves.
+ *
+ * A move that changes it (into a list, out of one, or into another) would
+ * leave the answers already saved where nothing reads them any more.
+ */
+const storeOf = (parentId, byId) => {
+    const seen = new Set();
+    let current = parentId ? byId.get(String(parentId)) : null;
+    while (current && !seen.has(String(current._id))) {
+        if (current.type === "repeatable_group") return String(current._id);
+        seen.add(String(current._id));
+        current = current.parentQuestionId
+            ? byId.get(String(current.parentQuestionId))
+            : null;
+    }
+    return null;
+};
+
+/**
  * The field that names each entry of `group`: its first one that is not a
  * photo or a recording, because a file id is no name. null when there is no
  * such field (an empty list, or one that holds nothing but files).
@@ -149,6 +171,7 @@ module.exports = {
     rowQuestions,
     isTopLevel,
     groupDepth,
+    storeOf,
     listShape,
     namingIds,
     servedTo,
@@ -196,6 +219,17 @@ if (require.main === module) {
     ]);
     assert.strictEqual(groupDepth(byId.get("products"), byId), 2);
     assert.strictEqual(groupDepth(byId.get("use.eaten"), byId), 1);
+
+    // Where answers are kept, asked by the parent a question has (or would
+    // have): a section changes nothing, a group is the list itself.
+    assert.strictEqual(storeOf(null, byId), null);
+    assert.strictEqual(storeOf("sub", byId), null);
+    assert.strictEqual(storeOf("crops", byId), "crops");
+    assert.strictEqual(storeOf("use", byId), "crops");
+    assert.strictEqual(storeOf("products", byId), "products");
+    // Between the sections of one group, or out of a top section: the same.
+    assert.strictEqual(storeOf("use", byId), storeOf("crops", byId));
+    assert.strictEqual(storeOf("sub", byId), storeOf(null, byId));
 
     // A page with a number, a section and a group at the top is a form.
     assert.strictEqual(listShape(all), null);

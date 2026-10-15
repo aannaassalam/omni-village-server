@@ -6,6 +6,7 @@ const PlaceOverrides = require("../Models/placeOverrides");
 const AppError = require("../AppError");
 const { DEFAULT_LANGUAGE, normaliseLocalised } = require("./localised");
 const { pendingRows } = require("./changeSummary");
+const { storeOf } = require("./questionTree");
 
 /**
  * Editing the questionnaire without the app seeing it, for questions and
@@ -126,13 +127,14 @@ const assertRev = (doc, rev) => {
  *
  * The write only lands on the revision the caller was shown. When the caller
  * sent none, it lands on the one read a moment ago, so a write that slipped
- * in between is refused rather than overwritten blind.
+ * in between is refused rather than overwritten blind. `session`: when it is
+ * one write of several that must all land, or none.
  */
-const writeDraft = async (Model, doc, rev, patch, adminId) => {
+const writeDraft = async (Model, doc, rev, patch, adminId, session = null) => {
     const saved = await Model.findOneAndUpdate(
         { _id: doc._id, ...revFilter(rev ?? doc.rev ?? 0) },
         draftUpdate(doc, patch, adminId),
-        { new: true }
+        { new: true, session }
     )
         .select({ rev: 1 })
         .lean();
@@ -144,14 +146,16 @@ const writeDraft = async (Model, doc, rev, patch, adminId) => {
  * Drafts a new `order` on each of `pairs` (`[{ id, order }]`). No rev is
  * asked for: order is last-write-wins.
  */
-const writeOrder = async (Model, pairs, adminId) => {
+const writeOrder = async (Model, pairs, adminId, session = null) => {
     const docs = await Model.find({
         _id: { $in: pairs.map((pair) => pair.id) },
         // Only the Master can be reordered. What a place added sits after
         // it and stays there, so one sent here is passed over like an id
         // that matches nothing.
         ownerPlaceId: null,
-    }).lean();
+    })
+        .session(session)
+        .lean();
     const byId = new Map(docs.map((doc) => [String(doc._id), doc]));
 
     const writes = pairs.flatMap(({ id, order }) => {
@@ -170,7 +174,7 @@ const writeOrder = async (Model, pairs, adminId) => {
             },
         ];
     });
-    if (writes.length > 0) await Model.bulkWrite(writes);
+    if (writes.length > 0) await Model.bulkWrite(writes, { session });
 };
 
 /**
@@ -532,6 +536,7 @@ const planPublish = async ({
     const moves = [];
     const draftOf = (doc) =>
         (!doc.unpublished && doc.hasDraft && doc.draft) || {};
+    const questionById = new Map(questions.map((doc) => [String(doc._id), doc]));
 
     /** Why a row can no longer go out, or null. */
     const lockOn = async (row) => {
@@ -554,6 +559,22 @@ const planPublish = async ({
                 const inside = below(doc._id, questions, "parentQuestionId");
                 if (await answered([doc, ...inside].map((q) => q._id))) {
                     return "It has saved answers now, so it stays on its page.";
+                }
+            }
+
+            // Into a list, out of one, or into another: the answers it has
+            // are kept in the list it was in, where nothing would read them.
+            // (Between the sections of one list they do not move.)
+            if (
+                item.type === "question" &&
+                draft.parentQuestionId !== undefined &&
+                !draft.deleted &&
+                storeOf(draft.parentQuestionId, questionById) !==
+                    storeOf(doc.parentQuestionId, questionById)
+            ) {
+                const inside = below(doc._id, questions, "parentQuestionId");
+                if (await answered([doc, ...inside].map((q) => q._id))) {
+                    return "It has saved answers now, so it stays where it is.";
                 }
             }
 

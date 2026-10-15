@@ -1,8 +1,9 @@
 const Joi = require("joi");
+const mongoose = require("mongoose");
 const Questions = require("../Models/questions");
 const Categories = require("../Models/categories");
 const AppError = require("../AppError");
-const { categoryFilter } = require("../utils/audience");
+const { audienceOf, categoryFilter } = require("../utils/audience");
 const { storeFor, countAnswers } = require("../utils/responseStores");
 const { resolveUserGeo } = require("../utils/geoResolver");
 const {
@@ -15,7 +16,12 @@ const {
     localise,
     normaliseLocalised,
 } = require("../utils/localised");
-const { groupDepth, listShape, servedTo } = require("../utils/questionTree");
+const {
+    groupDepth,
+    listShape,
+    servedTo,
+    storeOf,
+} = require("../utils/questionTree");
 const {
     FILE_TYPES,
     MAX_FILES,
@@ -28,6 +34,7 @@ const {
     usageOf,
 } = require("../utils/questionUsage");
 const {
+    CONFLICT,
     TYPE_LOCKED,
     PLACE_CANNOT_ARCHIVE,
     applied,
@@ -822,6 +829,341 @@ module.exports.move_question = async (req, res) => {
     }
 
     return res.json(saved);
+};
+
+/**
+ * One attempt at an arrange, inside a transaction: the driver may run it
+ * again, so it reads everything it works from here.
+ *
+ * The tree is judged as the editor shows it (drafts laid over), with the
+ * move made; where answers are kept is judged against what is published,
+ * because that is where the saved answers are.
+ */
+const arrangeOnce = async (
+    { items, categoryId, parentQuestionId, before },
+    adminId,
+    session
+) => {
+    const pageDoc = await Categories.findById(categoryId).session(session).lean();
+    const page = pageDoc && applied(pageDoc);
+    if (!page) throw new AppError(0, "Category not found", 404);
+    if (!page.is_screen) {
+        throw new AppError(
+            0,
+            "Questions can only be added to a screen category",
+            409
+        );
+    }
+    if (page.ownerPlaceId) {
+        throw new AppError(
+            0,
+            "That page is a place's own. Only the Master's pages are arranged here.",
+            409
+        );
+    }
+    if (page.active === false) {
+        throw new AppError(0, "That page is archived.", 409);
+    }
+
+    const chosenIds = items.map((item) => item.question_id);
+    const stored = await Questions.find({ _id: { $in: chosenIds } })
+        .session(session)
+        .lean();
+    const storedById = new Map(stored.map((doc) => [String(doc._id), doc]));
+    items.forEach(({ question_id, rev }) => {
+        const doc = storedById.get(question_id);
+        if (!doc) throw new AppError(0, "Question not found", 404);
+        if (doc.ownerPlaceId) {
+            throw new AppError(
+                0,
+                "Only the Master's questions are moved here. A place moves its own on its questionnaire.",
+                409
+            );
+        }
+        if ((doc.rev || 0) !== rev) throw new AppError(0, CONFLICT, 409);
+        if (applied(doc).deleted) {
+            throw new AppError(
+                0,
+                "It is waiting to be deleted: publish or discard that first.",
+                409
+            );
+        }
+    });
+
+    // Every page concerned, whole: where they are published, where a draft
+    // has them, and where they go. A question drafted onto one of those
+    // pages counts as on it, as the editor shows it.
+    const pageIds = [
+        ...new Set([
+            categoryId,
+            ...stored.flatMap((doc) => [
+                String(doc.categoryId),
+                String(applied(doc).categoryId),
+            ]),
+        ]),
+    ];
+    const pages = await Categories.find({ _id: { $in: pageIds } })
+        .session(session)
+        .lean();
+    const audience = audienceOf(page);
+    if (pages.some((other) => audienceOf(applied(other)) !== audience)) {
+        throw new AppError(
+            0,
+            "A question cannot move to the other questionnaire.",
+            409
+        );
+    }
+    const all = await Questions.find({
+        $or: [
+            { categoryId: { $in: pageIds } },
+            {
+                "draft.categoryId": {
+                    $in: [
+                        ...pageIds,
+                        ...pageIds.map((id) => new mongoose.Types.ObjectId(id)),
+                    ],
+                },
+            },
+        ],
+    })
+        .session(session)
+        .lean();
+    const view = all.map(applied);
+    const viewById = new Map(view.map((doc) => [String(doc._id), doc]));
+    const published = new Map(all.map((doc) => [String(doc._id), doc]));
+
+    const above = (doc, byId) => {
+        const ids = [];
+        let current =
+            doc.parentQuestionId && byId.get(String(doc.parentQuestionId));
+        while (current && !ids.includes(String(current._id))) {
+            ids.push(String(current._id));
+            current =
+                current.parentQuestionId &&
+                byId.get(String(current.parentQuestionId));
+        }
+        return ids;
+    };
+
+    // Inside what, as the editor shows it.
+    let parent = null;
+    if (parentQuestionId) {
+        parent = viewById.get(parentQuestionId);
+        if (!parent) throw new AppError(0, "Parent question not found", 404);
+        if (parent.ownerPlaceId) {
+            throw new AppError(0, "That group is a place's own.", 409);
+        }
+        if (!["repeatable_group", "section"].includes(parent.type)) {
+            throw new AppError(
+                0,
+                "Only a repeatable_group or section can have children",
+                409
+            );
+        }
+        // Published on that page: a group on its way to another page takes
+        // what is put in it along only once that move is published.
+        if (
+            String(published.get(parentQuestionId).categoryId) !== categoryId ||
+            String(parent.categoryId) !== categoryId
+        ) {
+            throw new AppError(0, "That group is on another page", 409);
+        }
+        if (parent.active === false) {
+            throw new AppError(0, "That group is archived.", 409);
+        }
+    }
+
+    // A group chosen with something inside it takes that along.
+    const chosen = new Set(chosenIds);
+    const roots = chosenIds
+        .filter((id, index, list) => list.indexOf(id) === index)
+        .filter(
+            (id) =>
+                !above(viewById.get(id), viewById).some((up) => chosen.has(up))
+        )
+        .map((id) => viewById.get(id));
+    const rootIds = new Set(roots.map((doc) => String(doc._id)));
+    if (
+        parent &&
+        [parentQuestionId, ...above(parent, viewById)].some((id) =>
+            rootIds.has(id)
+        )
+    ) {
+        throw new AppError(0, "A question cannot be moved inside itself.", 409);
+    }
+
+    // The tree as it would be, with the move made: no section in a section,
+    // and groups two deep at most, for everything that moves.
+    const after = new Map(viewById);
+    roots.forEach((root) =>
+        after.set(String(root._id), {
+            ...root,
+            parentQuestionId: parentQuestionId || null,
+            categoryId,
+        })
+    );
+    roots
+        .flatMap((root) => [root, ...below(root._id, view, "parentQuestionId")])
+        .forEach((doc) => {
+            const now = after.get(String(doc._id));
+            const up =
+                now.parentQuestionId && after.get(String(now.parentQuestionId));
+            if (now.type === "section" && up?.type === "section") {
+                throw new AppError(0, "Sections cannot be nested", 400);
+            }
+            if (groupDepth(now, after) > 2) {
+                throw new AppError(
+                    0,
+                    "Groups can only be nested two levels deep",
+                    400
+                );
+            }
+        });
+
+    // Answers are kept on their page, in the list the question is in
+    // (looking through sections). A move that changes either would leave
+    // them where nothing reads them, so an answered question moves only
+    // within that.
+    const keptAt = `${categoryId}:${storeOf(parentQuestionId, after)}`;
+    for (const root of roots) {
+        const was = published.get(String(root._id));
+        const keptBefore = `${was.categoryId}:${storeOf(
+            was.parentQuestionId,
+            published
+        )}`;
+        if (keptBefore === keptAt) continue;
+        const ids = [
+            ...new Set(
+                [
+                    root,
+                    ...below(root._id, all, "parentQuestionId"),
+                    ...below(root._id, view, "parentQuestionId"),
+                ].map((doc) => String(doc._id))
+            ),
+        ];
+        const answered = await countAnswers(
+            { $or: ids.map(answeredFilter) },
+            session
+        );
+        if (answered > 0) {
+            throw new AppError(
+                0,
+                `“${localise(root.label)}” has saved answers (${answered}), so it can only move where they are kept: on its page, and not into, out of or between repeating groups.`,
+                409
+            );
+        }
+    }
+
+    // Its new neighbours, in their order: the Master's (what a place added
+    // sits after them, and stays there).
+    const besideIt = (doc) =>
+        !doc.ownerPlaceId &&
+        !rootIds.has(String(doc._id)) &&
+        (parentQuestionId
+            ? String(doc.parentQuestionId || "") === parentQuestionId
+            : !doc.parentQuestionId && String(doc.categoryId) === categoryId);
+    const neighbours = view
+        .filter(besideIt)
+        .sort((a, b) => (a.order || 0) - (b.order || 0));
+    let at = neighbours.length;
+    if (before) {
+        at = neighbours.findIndex((doc) => String(doc._id) === before);
+        if (at < 0) {
+            throw new AppError(
+                0,
+                "The question they were to go before has moved. The screen has been reloaded.",
+                409
+            );
+        }
+    }
+    const sequence = [
+        ...neighbours.slice(0, at),
+        ...roots,
+        ...neighbours.slice(at),
+    ];
+    const orderOf = new Map(
+        sequence.map((doc, index) => [String(doc._id), index + 1])
+    );
+
+    for (const root of roots) {
+        const doc = storedById.get(String(root._id));
+        await writeDraft(
+            Questions,
+            doc,
+            doc.rev || 0,
+            {
+                categoryId: pageDoc._id,
+                parentQuestionId: parent
+                    ? published.get(parentQuestionId)._id
+                    : null,
+                order: orderOf.get(String(root._id)),
+            },
+            adminId,
+            session
+        );
+        // Never published, what is inside it is new too, and is written as
+        // it is: every question carries its page. A published one moves
+        // when its draft is published, with all of it.
+        if (doc.unpublished && String(doc.categoryId) !== categoryId) {
+            const inside = below(doc._id, all, "parentQuestionId");
+            if (inside.length > 0) {
+                await Questions.updateMany(
+                    { _id: { $in: inside.map((one) => one._id) } },
+                    { $set: { categoryId: pageDoc._id } },
+                    { session }
+                );
+            }
+        }
+    }
+    await writeOrder(
+        Questions,
+        neighbours.map((doc) => ({
+            id: doc._id,
+            order: orderOf.get(String(doc._id)),
+        })),
+        adminId,
+        session
+    );
+    return roots.length;
+};
+
+/**
+ * Moves one or several of the Master's questions: along their page, into or
+ * out of a group or section, or to another page, in the order sent and in
+ * front of `before` (null: at the end). What is inside a question goes with
+ * it. As a draft, like any other edit; all of it is written, or none.
+ */
+module.exports.arrange_questions = async (req, res) => {
+    const id = Joi.string().hex().length(24).lowercase();
+    const schema = Joi.object({
+        items: Joi.array()
+            .items(
+                Joi.object({
+                    question_id: id.required(),
+                    rev: Joi.number().required(),
+                })
+            )
+            .min(1)
+            .required(),
+        categoryId: id.required(),
+        parentQuestionId: id.allow(null).default(null),
+        before: id.allow(null).default(null),
+    }).options({ stripUnknown: true });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) throw error;
+    assertMaster(res.locals.admin);
+
+    const session = await mongoose.startSession();
+    let moved;
+    try {
+        await session.withTransaction(async () => {
+            moved = await arrangeOnce(value, res.locals.admin._id, session);
+        });
+    } finally {
+        await session.endSession();
+    }
+    return res.json({ moved });
 };
 
 module.exports.delete_question = async (req, res) => {
