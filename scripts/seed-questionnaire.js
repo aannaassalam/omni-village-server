@@ -676,7 +676,10 @@ const run = async () => {
                     isScreen: true,
                     order: childIndex + 1,
                 });
-                const questions = await buildQuestions(child.model);
+                const questions = [
+                    ...(child.first || []),
+                    ...(await buildQuestions(child.model)),
+                ];
                 for (const definition of questions) {
                     await createQuestion(screen._id, definition);
                 }

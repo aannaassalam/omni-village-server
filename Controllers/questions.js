@@ -891,16 +891,24 @@ const arrangeOnce = async (
     });
 
     // Every page concerned, whole: where they are published, where a draft
-    // has them, and where they go. A question drafted onto one of those
-    // pages counts as on it, as the editor shows it.
+    // has them, where they go, and where the group they go into is. A
+    // question drafted onto one of those pages counts as on it, as the
+    // editor shows it.
+    const parentStored = parentQuestionId
+        ? await Questions.findById(parentQuestionId).session(session).lean()
+        : null;
+    if (parentQuestionId && !parentStored) {
+        throw new AppError(0, "Parent question not found", 404);
+    }
     const pageIds = [
-        ...new Set([
-            categoryId,
-            ...stored.flatMap((doc) => [
-                String(doc.categoryId),
-                String(applied(doc).categoryId),
-            ]),
-        ]),
+        ...new Set(
+            [
+                categoryId,
+                ...[...stored, ...(parentStored ? [parentStored] : [])].flatMap(
+                    (doc) => [doc.categoryId, applied(doc).categoryId]
+                ),
+            ].map(String)
+        ),
     ];
     const pages = await Categories.find({ _id: { $in: pageIds } })
         .session(session)

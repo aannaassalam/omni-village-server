@@ -9,6 +9,8 @@
  * into separate screens.
  */
 
+const { HOUSEHOLD_MEMBERS } = require("./household-members");
+
 /* Never become questions: identity, bookkeeping, and the draft/approval flag. */
 const SKIP_FIELDS = new Set([
     "_id",
@@ -214,7 +216,8 @@ const LABEL_OVERRIDES = {
 
 /**
  * The household census. `model` names a Mongoose model in ../Models; every
- * field on it becomes a question unless skipped above.
+ * field on it becomes a question unless skipped above. `first` are questions
+ * written out by hand, asked before those (household-members.js).
  *
  * Production and Consumption are NOT here: they are written out in
  * app-screens.js to mirror the mobile app's screens, which a schema cannot
@@ -228,7 +231,11 @@ const TREE = [
     {
         title: "Household census",
         children: [
-            { title: "Demographics", model: "demographicInfo" },
+            {
+                title: "Demographics",
+                model: "demographicInfo",
+                first: [HOUSEHOLD_MEMBERS],
+            },
             { title: "Landholding", model: "landholding" },
             { title: "Housing", model: "housing" },
             { title: "Water", model: "water", split: "water" },
