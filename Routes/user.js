@@ -1,28 +1,9 @@
 const router = require("express").Router();
-const multer = require("multer");
 const user_controller = require("../Controllers/user");
 const { verifyToken, checkUser } = require("../Middlewares/user");
-const fs = require("fs");
-const sharp = require("sharp");
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const ext = file.mimetype.split("/")[0];
-        if (ext === "image") {
-            fs.mkdir("./uploads", (err) => {
-                cb(null, "./uploads");
-            });
-        } else {
-            cb("Only image formats are supported", null);
-        }
-    },
-    filename: (req, file, cb) => {
-        // console.log(file.mimetype.split("/")[1]);
-        cb(null, `${Date.now()}.png`);
-    },
-});
-
-const upload = multer({ storage });
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
+const ControllerWrapper = require("../utils/ControllerWrapper");
+const { oneFile } = require("../Middlewares/upload");
 
 /**
  * @swagger
@@ -53,7 +34,12 @@ const upload = multer({ storage });
  *        500:
  *          description: Internal Server Error
  */
-router.get("/list-all", user_controller.list_all);
+router.get(
+    "/list-all",
+    verifyAdmin,
+    requireRole("admin"),
+    user_controller.list_all
+);
 
 router.get("/download-pdf", user_controller.download_pdf);
 
@@ -131,20 +117,35 @@ router.post("/register", user_controller.register);
  *        500:
  *          description: Internal Server Error
  */
-router.post("/generate_token", user_controller.generate_token);
+// Hands out a villager's token for a phone number, with no OTP: a support
+// tool, so a super admin's only. (Neither the app nor the dashboard calls it.)
+router.post(
+    "/generate_token",
+    verifyAdmin,
+    requireRole("admin"),
+    user_controller.generate_token
+);
 router.post("/send_otp", user_controller.send_otp);
 router.get("/current_user", checkUser, user_controller.get_current_user);
 router.post("/login", user_controller.login);
 router.post(
     "/edit_user",
-    upload.fields([{ name: "address_proof", maxCount: 1 }]),
+    // A session that is no longer good is a 401 here, before anything else:
+    // the handler used to fail on it without ever answering.
+    verifyToken,
     checkUser,
-    user_controller.edit_user
+    // The photo of the address proof, at registration. Into memory: this
+    // host has no disk (Controllers/files.js keeps it). An edit sends no
+    // file.
+    oneFile("address_proof", { required: false }),
+    ControllerWrapper(user_controller.edit_user)
 );
 router.post("/refresh", user_controller.refresh);
 router.delete("/delete_user", verifyToken, user_controller.delete_user);
 router.delete(
     "/delete_individual_user",
+    verifyAdmin,
+    requireRole("admin"),
     user_controller.delete_individual_user
 );
 router.post(

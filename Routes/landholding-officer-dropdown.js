@@ -1,8 +1,10 @@
 const router = require("express").Router();
 const landholding_officer_dropdown = require("../Controllers/landholding-officer-dropdown");
 const { verifyToken, checkUser } = require("../Middlewares/user");
+const { verifyAdmin, requireRole } = require("../Middlewares/admin");
 const ControllerWrapper = require("../utils/ControllerWrapper");
 
+// What the officer app's screens read, and without a token, as before.
 router.get(
     "/",
     // verifyToken,
@@ -11,12 +13,20 @@ router.get(
         landholding_officer_dropdown.get_landholding_officer_dropdown
     )
 );
-router.get("/get-all", landholding_officer_dropdown.get_all);
+
+// The rest is the dashboard's Moderator Dropdowns page, and a super admin's.
+// These had no guard at all: anyone could add, rename or delete an option.
+router.get(
+    "/get-all",
+    verifyAdmin,
+    requireRole("admin"),
+    landholding_officer_dropdown.get_all
+);
 
 router.post(
     "/",
-    // verifyToken,
-    // checkUser,
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(
         landholding_officer_dropdown.add_landholding_officer_dropdown
     )
@@ -24,13 +34,16 @@ router.post(
 
 router.put(
     "/",
-    // verifyToken,
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(
         landholding_officer_dropdown.edit_landholding_officer_data
     )
 );
 router.delete(
     "/",
+    verifyAdmin,
+    requireRole("admin"),
     ControllerWrapper(
         landholding_officer_dropdown.delete_landholding_officer_data
     )

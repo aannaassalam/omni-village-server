@@ -1,482 +1,484 @@
 const mongoose = require("mongoose");
 
 const demograhicSchema = new mongoose.Schema({
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: [true, "User id is required!"],
-        ref: "User",
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true, "User id is required!"],
+    ref: "User",
+  },
+  marital_status: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    marital_status: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  diet: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    diet: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  height: {
+    type: mongoose.Schema.Types.Number,
+    required: function () {
+      return this.status === 1;
     },
-    height: {
-        type: mongoose.Schema.Types.Number,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  weight: {
+    type: mongoose.Schema.Types.Number,
+    required: function () {
+      return this.status === 1;
     },
-    weight: {
-        type: mongoose.Schema.Types.Number,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  language_speak: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    language_speak: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    language_read: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    language_write: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    occupation: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    other_occupation: {
-        type: String,
-        default: null,
+  ],
+  language_read: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    yearly_income: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+  ],
+  language_write: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    bank_account: {
-        type: mongoose.Schema.Types.Boolean,
-        required: function () {
-            return this.status === 1;
-        },
-        default: null,
+  ],
+  occupation: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    savings_investment: {
-        type: mongoose.Schema.Types.Boolean,
-        required: function () {
-            return this.status === 1;
-        },
-        default: null,
+  ],
+  other_occupation: {
+    type: String,
+    default: null,
+  },
+  yearly_income: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    savings_investment_amount: {
-        type: mongoose.Schema.Types.Number,
-        default: 0,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  bank_account: {
+    type: mongoose.Schema.Types.Boolean,
+    required: function () {
+      return this.status === 1;
     },
-    chronic_disease: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    other_chronic: {
-        type: String,
-        default: null,
+    default: null,
+  },
+  savings_investment: {
+    type: mongoose.Schema.Types.Boolean,
+    required: function () {
+      return this.status === 1;
     },
-    motor_disablity: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    default: null,
+  },
+  savings_investment_amount: {
+    type: mongoose.Schema.Types.Number,
+    default: 0,
+  },
+  chronic_disease: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    other_motor: {
-        type: String,
-        default: null,
+  ],
+  other_chronic: {
+    type: String,
+    default: null,
+  },
+  motor_disablity: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    currently_feeling: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  other_motor: {
+    type: String,
+    default: null,
+  },
+  currently_feeling: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    feelings_with_others: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  feelings_with_others: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    support_you_have: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    recover_from_stress: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  support_you_have: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    share_feelings_of_others: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+  ],
+  recover_from_stress: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    specific_habit: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  share_feelings_of_others: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    other_habit: {
-        type: String,
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  specific_habit: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    education_status: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  other_habit: {
+    type: String,
+    default: null,
+  },
+  education_status: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    other_education_status: {
-        type: String,
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  other_education_status: {
+    type: String,
+    default: null,
+  },
+  education_seeking_to_gain: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: function () {
+      return this.status === 1;
     },
-    education_seeking_to_gain: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: function () {
-            return this.status === 1;
-        },
-        ref: "demographic_dropdown",
-        default: null,
+    ref: "demographic_dropdown",
+    default: null,
+  },
+  other_education_seeking: {
+    type: String,
+    default: null,
+  },
+  cultural_traditional_hobbies: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    other_education_seeking: {
-        type: String,
-        default: null,
+  ],
+  outdoor_nature_based_hobbies: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    cultural_traditional_hobbies: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    outdoor_nature_based_hobbies: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    modern_digital_hobbies: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    creative_artistics_hobbies: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    other_hobbies: {
-        type: mongoose.Schema.Types.String,
-        default: "",
+  ],
+  modern_digital_hobbies: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    technical_vocational_skills_learn: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    entrepreneurial_business_skills_learn: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    digital_technological_skills_learn: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    communication_language_skills_learn: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    health_well_being_skills_learn: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    creative_artistics_skills_learn: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    others_skills_learn: {
-        type: mongoose.Schema.Types.String,
-        default: "",
+  ],
+  creative_artistics_hobbies: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    technical_vocational_skills: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    entrepreneurial_business_skills: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    interpersonal_skills: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    creative_artistic_skills: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    professional_skills: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    others_skills: {
-        type: mongoose.Schema.Types.String,
-        default: "",
+  ],
+  other_hobbies: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
+  technical_vocational_skills_learn: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    economic: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    educational: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    health_well_being: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    infrastructure_technology: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    environmental_sustainability: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    cultural: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    community_social: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    personal_growth: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    spiritual: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            required: function () {
-                return this.status === 1;
-            },
-            ref: "demographic_dropdown",
-            default: null,
-        },
-    ],
-    unfulfilled_needs: {
-        type: mongoose.Schema.Types.String,
-        default: "",
+  ],
+  entrepreneurial_business_skills_learn: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    wishes: {
-        type: mongoose.Schema.Types.String,
-        default: "",
+  ],
+  digital_technological_skills_learn: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
-    status: {
-        type: mongoose.Schema.Types.Number,
-        default: 1,
-        enum: [0, 1],
+  ],
+  communication_language_skills_learn: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
     },
+  ],
+  health_well_being_skills_learn: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  creative_artistics_skills_learn: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  others_skills_learn: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
+  technical_vocational_skills: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  entrepreneurial_business_skills: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  interpersonal_skills: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  creative_artistic_skills: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  professional_skills: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  others_skills: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
+  economic: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  educational: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  health_well_being: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  infrastructure_technology: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  environmental_sustainability: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  cultural: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  community_social: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  personal_growth: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  spiritual: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      required: function () {
+        return this.status === 1;
+      },
+      ref: "demographic_dropdown",
+      default: null,
+    },
+  ],
+  unfulfilled_needs: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
+  wishes: {
+    type: mongoose.Schema.Types.String,
+    default: "",
+  },
+  status: {
+    type: mongoose.Schema.Types.Number,
+    default: 1,
+    enum: [0, 1],
+  },
 });
 
-module.exports = mongoose.model("Demographic", demograhicSchema);
+module.exports =
+  mongoose.models.Demographic ||
+  mongoose.model("Demographic", demograhicSchema);

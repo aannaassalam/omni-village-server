@@ -1,4 +1,5 @@
 const User = require("../Models/user");
+const { keepAddressProof } = require("./files");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const sharp = require("sharp");
@@ -898,11 +899,15 @@ module.exports.generate_token = async (req, res) => {
     }
 };
 
+// Twilio's codes for a number it cannot send an SMS to: the person's
+// mistake, and told as such. Any other failure (the account, the service) is
+// ours.
+const UNREACHABLE = [21211, 21214, 21217, 21612, 21614];
+const NOT_SENT = "The code could not be sent. Please try again in a moment.";
+
 module.exports.send_otp = async (req, res) => {
     try {
-        // console.log(authToken);
         const { country_code, phone, type = "login" } = req.body;
-        console.log(req.body);
         const user = await User.findOne({
             phone: phone,
             country_code,
@@ -915,43 +920,42 @@ module.exports.send_otp = async (req, res) => {
             return res.status(400).json({
                 message: "User doesn't exists, Please Register!",
             });
-        } else {
-            if (`${phone}` !== "1234567890") {
-                otp_keeper[`${country_code}${phone}`] = otpGenerator.generate(
-                    4,
-                    {
-                        upperCaseAlphabets: false,
-                        specialChars: false,
-                        lowerCaseAlphabets: false,
-                        digits: true,
-                    }
-                );
-            }
-
-            console.log(otp_keeper);
-
-            client.messages
-                .create({
-                    body: `Your login OTP for Omni Village - ${
-                        otp_keeper[`${country_code}${phone}`]
-                    }`,
-                    messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
-                    to: `${country_code}${phone}`,
-                    statusCallback:
-                        "https://omnivillage.azurewebsites.net/api/webhook/",
-                })
-                .then((message) => res.send(message))
-                .catch((err) => {
-                    if (err.code === 21211)
-                        res.status(400).json({
-                            message: "Please enter a valid phone number!",
-                        });
-                    console.log(err, "message");
-                });
         }
+        const to = `${country_code}${phone}`;
+        // A test number keeps its fixed code (otp_keeper), and is sent no SMS.
+        if (`${phone}` === "1234567890") {
+            return res.json({ message: "Code sent" });
+        }
+        otp_keeper[to] = otpGenerator.generate(4, {
+            upperCaseAlphabets: false,
+            specialChars: false,
+            lowerCaseAlphabets: false,
+            digits: true,
+        });
+        try {
+            await client.messages.create({
+                body: `Your login OTP for Omni Village - ${otp_keeper[to]}`,
+                messagingServiceSid: "MGd4add4653516dbb9e97b4bdc350f9367",
+                to,
+                statusCallback:
+                    "https://omnivillage.azurewebsites.net/api/webhook/",
+            });
+        } catch (err) {
+            // Every failure is answered: one that was not left the app
+            // waiting until the host gave up on the request.
+            console.log(err, "message");
+            return UNREACHABLE.includes(err.code)
+                ? res
+                      .status(400)
+                      .json({ message: "Please enter a valid phone number!" })
+                : res.status(502).json({ message: NOT_SENT });
+        }
+        // Never the SMS itself: its text is the code, and whoever asked for
+        // a number's code would have had it.
+        return res.json({ message: "Code sent" });
     } catch (err) {
         console.log(err);
-        return res.status(400).json({ message: "Bad request" });
+        return res.status(500).json({ message: NOT_SENT });
     }
 };
 
@@ -1083,60 +1087,51 @@ module.exports.edit_user = async (req, res) => {
         street_address = "",
     } = req.body;
 
-    const address_proof = req.files?.address_proof?.[0];
+    // Kept first: a file that is no photo is refused with nothing changed.
+    const address_proof = req.file
+        ? String(await keepAddressProof(user, req.file.buffer))
+        : user.address_proof;
 
-    try {
-        const new_members =
-            typeof members === "string" ? JSON.parse(members) : members;
-        const updatedUser = await User.findByIdAndUpdate(
-            user._id,
-            {
-                ...user._doc,
-                first_name: first_name?.trim().length
-                    ? first_name.trim()
-                    : user.first_name,
-                last_name: last_name?.trim().length
-                    ? last_name.trim()
-                    : user.last_name,
-                village_name: village_name?.trim().length
-                    ? village_name.trim()
-                    : user.village_name,
-                number_of_members: number_of_members.trim().length
-                    ? number_of_members.trim()
-                    : user.number_of_members,
-                members: new_members.length > 0 ? new_members : user.members,
-                document_type: document_type?.trim().length
-                    ? document_type.trim()
-                    : user.document_type,
-                social_security_number: social_security_number?.trim().length
-                    ? social_security_number.trim()
-                    : user.social_security_number,
-                address: address?.trim().length ? address.trim() : user.address,
-                address_proof: address_proof
-                    ? address_proof?.path
-                    : user.address_proof,
-                land_measurement: land_measurement.trim().length
-                    ? land_measurement.trim()
-                    : user.land_measurement,
-                land_measurement_symbol: land_measurement_symbol.trim().length
-                    ? land_measurement_symbol.trim()
-                    : user.land_measurement_symbol,
-                street_address: street_address.trim().length
-                    ? street_address.trim()
-                    : user.street_address,
-            },
-            { runValidators: true, new: true }
-        );
-        res.json({ msg: "User updated successfully!" });
-    } catch (err) {
-        console.log(err);
-        // !req.body.edit && fs.unlinkSync("./" + req.file.path);
-        if (user._id) {
-            res.status(400).json({ error: err });
-        } else {
-            res.status(401).json({ error: "Token Expired!" });
-        }
-    }
+    const new_members =
+        typeof members === "string" ? JSON.parse(members) : members;
+    await User.findByIdAndUpdate(
+        user._id,
+        {
+            ...user._doc,
+            first_name: first_name?.trim().length
+                ? first_name.trim()
+                : user.first_name,
+            last_name: last_name?.trim().length
+                ? last_name.trim()
+                : user.last_name,
+            village_name: village_name?.trim().length
+                ? village_name.trim()
+                : user.village_name,
+            number_of_members: number_of_members.trim().length
+                ? number_of_members.trim()
+                : user.number_of_members,
+            members: new_members.length > 0 ? new_members : user.members,
+            document_type: document_type?.trim().length
+                ? document_type.trim()
+                : user.document_type,
+            social_security_number: social_security_number?.trim().length
+                ? social_security_number.trim()
+                : user.social_security_number,
+            address: address?.trim().length ? address.trim() : user.address,
+            address_proof,
+            land_measurement: land_measurement.trim().length
+                ? land_measurement.trim()
+                : user.land_measurement,
+            land_measurement_symbol: land_measurement_symbol.trim().length
+                ? land_measurement_symbol.trim()
+                : user.land_measurement_symbol,
+            street_address: street_address.trim().length
+                ? street_address.trim()
+                : user.street_address,
+        },
+        { runValidators: true, new: true }
+    );
+    res.json({ msg: "User updated successfully!" });
 };
 
 module.exports.delete_user = async (req, res) => {
